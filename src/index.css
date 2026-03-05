@@ -1,0 +1,158 @@
+@import "tailwindcss";
+
+/* ===== Custom Water-Themed Design Tokens ===== */
+@theme {
+  --color-water-50: #ecfeff;
+  --color-water-100: #cffafe;
+  --color-water-200: #a5f3fc;
+  --color-water-300: #67e8f9;
+  --color-water-400: #22d3ee;
+  --color-water-500: #06b6d4;
+  --color-water-600: #0891b2;
+  --color-water-700: #0e7490;
+  --color-water-800: #155e75;
+  --color-water-900: #164e63;
+  --color-water-950: #083344;
+
+  --color-ocean-50: #eff6ff;
+  --color-ocean-100: #dbeafe;
+  --color-ocean-200: #bfdbfe;
+  --color-ocean-300: #93c5fd;
+  --color-ocean-400: #60a5fa;
+  --color-ocean-500: #3b82f6;
+  --color-ocean-600: #2563eb;
+  --color-ocean-700: #1d4ed8;
+  --color-ocean-800: #1e40af;
+  --color-ocean-900: #1e3a8a;
+  --color-ocean-950: #172554;
+
+  --color-safe: #10b981;
+  --color-safe-light: #d1fae5;
+  --color-warning: #f59e0b;
+  --color-warning-light: #fef3c7;
+  --color-danger: #ef4444;
+  --color-danger-light: #fee2e2;
+
+  --color-panel: #0f172a;
+  --color-panel-light: #1e293b;
+  --color-panel-lighter: #334155;
+  --color-surface: #0c1222;
+}
+
+/* ===== Global Styles ===== */
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background-color: var(--color-surface);
+    color: #e2e8f0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-panel);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-panel-lighter);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-water-700);
+  }
+}
+
+/* ===== Utility Animations ===== */
+@layer utilities {
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+  @keyframes pulse-ring {
+    0% { transform: scale(0.95); opacity: 1; }
+    100% { transform: scale(1.4); opacity: 0; }
+  }
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes slide-in-left {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes gradient-x {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+  .animate-pulse-ring {
+    animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+  }
+  .animate-shimmer {
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+  }
+  .animate-fade-in {
+    animation: fade-in 0.5s ease-out forwards;
+  }
+  .animate-slide-in-left {
+    animation: slide-in-left 0.4s ease-out forwards;
+  }
+  .animate-gradient-x {
+    background-size: 200% 200%;
+    animation: gradient-x 3s ease infinite;
+  }
+}
+
+/* ===== Glassmorphism Panels ===== */
+.glass-panel {
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.glass-panel-hover:hover {
+  background: rgba(30, 41, 59, 0.8);
+  border-color: rgba(6, 182, 212, 0.3);
+  box-shadow: 0 0 20px rgba(6, 182, 212, 0.08);
+}
+
+/* ===== Leaflet Map Overrides ===== */
+.leaflet-container {
+  background: var(--color-panel) !important;
+  border-radius: 12px;
+}
+.leaflet-tile-pane {
+  filter: brightness(0.7) saturate(1.2) contrast(1.1);
+}
+.leaflet-control-zoom a {
+  background: var(--color-panel-light) !important;
+  color: #e2e8f0 !important;
+  border-color: var(--color-panel-lighter) !important;
+}
+.leaflet-control-attribution {
+  background: rgba(15, 23, 42, 0.8) !important;
+  color: #94a3b8 !important;
+  font-size: 10px !important;
+}
+.leaflet-control-attribution a {
+  color: var(--color-water-400) !important;
+}
