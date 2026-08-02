@@ -80,12 +80,12 @@ export default function LocationMap({ reading }: LocationMapProps) {
                                 margin: '-14px -20px',
                             }}>
                                 <p style={{ fontWeight: 700, fontSize: '13px', marginBottom: '8px', color: '#22d3ee' }}>
-                                    💧 WaterSafe Sensor
+                                    WaterSafe Sensor
                                 </p>
                                 <div style={{ fontSize: '11px', lineHeight: '1.8', color: '#94a3b8' }}>
-                                    <div>🌡️ Suhu: <strong style={{ color: '#e2e8f0' }}>{temperature}°C</strong></div>
-                                    <div>⚗️ pH: <strong style={{ color: '#e2e8f0' }}>{pH}</strong></div>
-                                    <div>💎 TDS: <strong style={{ color: '#e2e8f0' }}>{tds} ppm</strong></div>
+                                    <div>Suhu: <strong style={{ color: '#e2e8f0' }}>{temperature}°C</strong></div>
+                                    <div>pH: <strong style={{ color: '#e2e8f0' }}>{pH}</strong></div>
+                                    <div>TDS: <strong style={{ color: '#e2e8f0' }}>{tds} ppm</strong></div>
                                 </div>
                             </div>
                         </Popup>

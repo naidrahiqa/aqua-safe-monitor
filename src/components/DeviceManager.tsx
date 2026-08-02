@@ -250,7 +250,7 @@ export default function DeviceManager() {
             {/* Add Device Form */}
             {showAddForm && (
                 <div className="glass-panel rounded-2xl p-5 border border-water-500/20 animate-fade-in">
-                    <h3 className="text-sm font-bold text-white mb-3">✨ Tambah Perangkat Baru</h3>
+                    <h3 className="text-sm font-bold text-white mb-3">Tambah Perangkat Baru</h3>
                     <div className="flex gap-3">
                         <input
                             id="new-device-name"
@@ -293,7 +293,7 @@ export default function DeviceManager() {
                         </div>
                         <div className="flex-1">
                             <h3 className="text-sm font-bold text-safe mb-1">
-                                ✅ Perangkat "{newlyCreated.device_name}" berhasil dibuat!
+                                Perangkat "{newlyCreated.device_name}" berhasil dibuat!
                             </h3>
                             <p className="text-xs text-slate-400 mb-3">
                                 Simpan kredensial ini — API key hanya ditampilkan sekali. Copy ke kode ESP32 kamu:
@@ -317,7 +317,7 @@ export default function DeviceManager() {
                                 {/* API Key */}
                                 <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-panel/80 border border-warning/20">
                                     <div>
-                                        <span className="text-[10px] text-slate-500 uppercase tracking-wider block">Secret API Key 🔑</span>
+                                        <span className="text-[10px] text-slate-500 uppercase tracking-wider block">Secret API Key</span>
                                         <code className="text-xs text-warning font-mono">{newlyCreated.secret_api_key}</code>
                                     </div>
                                     <button

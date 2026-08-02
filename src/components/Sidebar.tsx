@@ -35,7 +35,7 @@ export default function Sidebar({ active, onNavigate }: SidebarProps) {
             <button
                 id="sidebar-mobile-toggle"
                 onClick={() => setMobileOpen(!mobileOpen)}
-                className="fixed top-4 left-4 z-50 lg:hidden p-2 rounded-xl glass-panel text-water-300 hover:text-white transition-colors"
+                className="fixed top-3 left-3 sm:top-4 sm:left-4 z-50 lg:hidden p-2 rounded-xl glass-panel text-water-300 hover:text-white transition-colors"
                 aria-label="Toggle sidebar"
             >
                 {mobileOpen ? <X size={22} /> : <Menu size={22} />}
@@ -84,32 +84,41 @@ export default function Sidebar({ active, onNavigate }: SidebarProps) {
                     {NAV_ITEMS.map((item) => {
                         const isActive = active === item.id;
                         return (
-                            <button
-                                key={item.id}
-                                id={`nav-${item.id}`}
-                                onClick={() => {
-                                    onNavigate(item.id);
-                                    setMobileOpen(false);
-                                }}
-                                className={`
-                  group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl
+                            <div key={item.id} className="relative group">
+                                <button
+                                    id={`nav-${item.id}`}
+                                    onClick={() => {
+                                        onNavigate(item.id);
+                                        setMobileOpen(false);
+                                    }}
+                                    className={`
+                  group/btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl
                   transition-all duration-200 cursor-pointer
                   ${isActive
                                         ? 'bg-gradient-to-r from-water-500/20 to-ocean-500/10 text-water-300 shadow-sm shadow-water-500/10'
                                         : 'text-slate-400 hover:bg-white/5 hover:text-slate-200'
                                     }
                 `}
-                            >
-                                <span className={`flex-shrink-0 transition-transform duration-200 ${isActive ? 'scale-110' : 'group-hover:scale-105'}`}>
-                                    {item.icon}
-                                </span>
-                                {!collapsed && (
-                                    <span className="text-sm font-medium truncate">{item.label}</span>
+                                >
+                                    <span className={`flex-shrink-0 transition-transform duration-200 ${isActive ? 'scale-110' : 'group-hover/btn:scale-105'}`}>
+                                        {item.icon}
+                                    </span>
+                                    {!collapsed && (
+                                        <span className="text-sm font-medium truncate">{item.label}</span>
+                                    )}
+                                    {isActive && !collapsed && (
+                                        <div className="ml-auto w-1.5 h-1.5 rounded-full bg-water-400 animate-pulse" />
+                                    )}
+                                </button>
+
+                                {/* Tooltip for collapsed mode */}
+                                {collapsed && (
+                                    <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2.5 py-1.5 rounded-lg bg-panel-light border border-white/10 text-xs text-white font-medium whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-200 z-50 shadow-lg">
+                                        {item.label}
+                                        <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-panel-light" />
+                                    </div>
                                 )}
-                                {isActive && !collapsed && (
-                                    <div className="ml-auto w-1.5 h-1.5 rounded-full bg-water-400 animate-pulse" />
-                                )}
-                            </button>
+                            </div>
                         );
                     })}
                 </nav>

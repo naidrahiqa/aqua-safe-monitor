@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Droplets, Mail, Lock, Eye, EyeOff, ArrowRight, Loader2 } from 'lucide-react';
+import { Droplets, Mail, Lock, Eye, EyeOff, ArrowRight, Loader2, BarChart3, Bell, MapPin, Shield, Play, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { isSupabaseConfigured } from '../lib/supabase';
 
@@ -104,13 +104,13 @@ export default function AuthPage() {
                     {/* Feature cards */}
                     <div className="mt-10 space-y-3">
                         {[
-                            { emoji: '📊', text: 'Dashboard real-time dengan grafik interaktif' },
-                            { emoji: '🔔', text: 'Notifikasi otomatis saat status BAHAYA' },
-                            { emoji: '📍', text: 'Peta lokasi sensor dengan Leaflet' },
-                            { emoji: '🔐', text: 'Autentikasi aman untuk setiap perangkat' },
+                            { icon: <BarChart3 size={18} />, text: 'Dashboard real-time dengan grafik interaktif' },
+                            { icon: <Bell size={18} />, text: 'Notifikasi otomatis saat status BAHAYA' },
+                            { icon: <MapPin size={18} />, text: 'Peta lokasi sensor dengan Leaflet' },
+                            { icon: <Shield size={18} />, text: 'Autentikasi aman untuk setiap perangkat' },
                         ].map((f, i) => (
                             <div key={i} className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 border border-white/5 backdrop-blur-sm">
-                                <span className="text-lg">{f.emoji}</span>
+                                <span className="text-water-400">{f.icon}</span>
                                 <span className="text-sm text-slate-300">{f.text}</span>
                             </div>
                         ))}
@@ -200,13 +200,15 @@ export default function AuthPage() {
 
                         {/* Error / Success messages */}
                         {error && (
-                            <div className="px-4 py-3 rounded-xl bg-danger/10 border border-danger/20 text-danger text-xs font-medium animate-fade-in">
-                                ⚠️ {error}
+                            <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-danger/10 border border-danger/20 text-danger text-xs font-medium animate-fade-in">
+                                <AlertCircle size={14} />
+                                {error}
                             </div>
                         )}
                         {success && (
-                            <div className="px-4 py-3 rounded-xl bg-safe/10 border border-safe/20 text-safe text-xs font-medium animate-fade-in">
-                                ✅ {success}
+                            <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-safe/10 border border-safe/20 text-safe text-xs font-medium animate-fade-in">
+                                <CheckCircle2 size={14} />
+                                {success}
                             </div>
                         )}
 
@@ -255,11 +257,11 @@ export default function AuthPage() {
                             <button
                                 id="demo-mode-button"
                                 onClick={handleDemoMode}
-                                className="w-full py-3 rounded-xl border border-white/10
+                                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-white/10
                                     text-slate-400 hover:text-white hover:border-water-500/30
                                     text-sm font-medium transition-all"
                             >
-                                🎮 Masuk Mode Demo (tanpa Supabase)
+                                <Play size={14} /> Masuk Mode Demo (tanpa Supabase)
                             </button>
                         </div>
                     )}

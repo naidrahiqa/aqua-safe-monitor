@@ -66,12 +66,12 @@ export default function MetricCard({ id, title, value, unit, icon, status, subti
       `}
             style={{ animationDelay: `${delay}ms` }}
         >
-            {/* Decorative gradient blob */}
+            {/* Subtle gradient accent */}
             <div
-                className={`absolute -top-8 -right-8 w-24 h-24 rounded-full blur-2xl opacity-30
+                className={`absolute -top-8 -right-8 w-20 h-20 rounded-full blur-2xl opacity-15
           ${isWqi
                         ? `bg-gradient-to-br ${styles!.bg}`
-                        : 'bg-gradient-to-br from-water-500/20 to-ocean-500/10'
+                        : 'bg-gradient-to-br from-water-500/15 to-ocean-500/5'
                     }`
                 }
             />
