@@ -12,6 +12,17 @@ dist-ssr/
 .env.local
 .env.*.local
 
+# Local secrets (SENSITIVE!)
+firmware/AquaSafeMonitor/secrets.h
+pw-supabase.txt
+
+# Supabase CLI local cache
+supabase/.temp/
+
+# opencode config (local tooling) — only AGENTS.md is committed
+.opencode/*
+!.opencode/AGENTS.md
+
 # IDE
 .vscode/
 .idea/
