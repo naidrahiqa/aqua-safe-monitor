@@ -1,0 +1,16 @@
+# ===================================================================
+# Supabase CLI project config
+#
+# ingest-sensor-data is a public device-ingestion endpoint: the ESP32
+# authenticates itself with its own `api_key` field inside the JSON
+# body (checked against the devices table), NOT with a Supabase user
+# session. So we turn off the platform's default JWT check for this
+# one function — otherwise Supabase's gateway rejects the ESP32's
+# request with 401 before the function code even runs.
+#
+# Apply with: supabase link --project-ref <your-project-ref>
+#             supabase functions deploy ingest-sensor-data
+# ===================================================================
+
+[functions.ingest-sensor-data]
+verify_jwt = false
