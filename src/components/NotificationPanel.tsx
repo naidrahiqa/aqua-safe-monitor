@@ -1,9 +1,11 @@
-import { X, AlertTriangle, Shield, Droplets, FlaskConical, Bell } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { X, AlertTriangle, Shield, Droplets, FlaskConical, Bell, CheckCheck } from 'lucide-react';
 import type { SensorReading } from '../types';
 
 // ===================================================================
-// NotificationPanel — Shows alerts for BAHAYA status readings.
-// Slides in from the right as an overlay.
+// NotificationPanel — Shows alerts for BAHAYA/LAYAK status readings.
+// Slides in from the right as an overlay. Dismissed alerts persist
+// in localStorage so they don't reappear on the next open.
 // ===================================================================
 
 interface NotificationPanelProps {
@@ -11,14 +13,61 @@ interface NotificationPanelProps {
     onClose: () => void;
 }
 
+const STORAGE_KEY = 'watersafe-dismissed-notifs';
+
+function loadDismissed(): Set<string> {
+    try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return new Set(raw ? (JSON.parse(raw) as string[]) : []);
+    } catch {
+        return new Set();
+    }
+}
+
 export default function NotificationPanel({ readings, onClose }: NotificationPanelProps) {
-    const dangerReadings = readings.filter((r) => r.status === 'BAHAYA');
-    const warningReadings = readings.filter((r) => r.status === 'LAYAK');
+    const [dismissed, setDismissed] = useState<Set<string>>(loadDismissed);
+
+    const persist = (next: Set<string>) => {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify([...next]));
+    };
+
+    const dismiss = (id: string) => {
+        setDismissed((prev) => {
+            const next = new Set(prev);
+            next.add(id);
+            persist(next);
+            return next;
+        });
+    };
+
+    const dismissAll = () => {
+        setDismissed((prev) => {
+            const next = new Set(prev);
+            readings.forEach((r) => next.add(r.id));
+            persist(next);
+            return next;
+        });
+    };
+
+    const visible = useMemo(() => readings.filter((r) => !dismissed.has(r.id)), [readings, dismissed]);
+    const dangerReadings = visible.filter((r) => r.status === 'BAHAYA');
+    const warningReadings = visible.filter((r) => r.status === 'LAYAK');
+    const totalVisible = dangerReadings.length + warningReadings.length;
 
     const formatTime = (iso: string) => {
         const d = new Date(iso);
         return d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
     };
+
+    const dismissButton = (id: string) => (
+        <button
+            onClick={() => dismiss(id)}
+            title="Tandai sudah dibaca"
+            className="p-0.5 rounded-md text-slate-600 hover:text-white hover:bg-white/10 transition-colors"
+        >
+            <X size={12} />
+        </button>
+    );
 
     return (
         <div className="fixed inset-0 z-50 flex justify-end">
@@ -38,12 +87,23 @@ export default function NotificationPanel({ readings, onClose }: NotificationPan
                             </span>
                         )}
                     </div>
-                    <button
-                        onClick={onClose}
-                        className="p-1.5 rounded-lg hover:bg-white/5 text-slate-400 hover:text-white transition-colors"
-                    >
-                        <X size={16} />
-                    </button>
+                    <div className="flex items-center gap-2">
+                        {totalVisible > 0 && (
+                            <button
+                                onClick={dismissAll}
+                                className="flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-semibold text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 transition-colors"
+                            >
+                                <CheckCheck size={12} />
+                                Tandai dibaca
+                            </button>
+                        )}
+                        <button
+                            onClick={onClose}
+                            className="p-1.5 rounded-lg hover:bg-white/5 text-slate-400 hover:text-white transition-colors"
+                        >
+                            <X size={16} />
+                        </button>
+                    </div>
                 </div>
 
                 {/* Content */}
@@ -63,7 +123,10 @@ export default function NotificationPanel({ readings, onClose }: NotificationPan
                                     >
                                         <div className="flex items-center justify-between mb-1">
                                             <span className="text-[10px] font-bold text-danger uppercase">Bahaya</span>
-                                            <span className="text-[10px] text-slate-500">{formatTime(r.timestamp)}</span>
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-[10px] text-slate-500">{formatTime(r.timestamp)}</span>
+                                                {dismissButton(r.id)}
+                                            </div>
                                         </div>
                                         <div className="grid grid-cols-2 gap-2 text-xs">
                                             <div className="flex items-center gap-1.5">
@@ -100,7 +163,10 @@ export default function NotificationPanel({ readings, onClose }: NotificationPan
                                     >
                                         <div className="flex items-center justify-between mb-1">
                                             <span className="text-[10px] font-bold text-warning uppercase">Peringatan</span>
-                                            <span className="text-[10px] text-slate-500">{formatTime(r.timestamp)}</span>
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-[10px] text-slate-500">{formatTime(r.timestamp)}</span>
+                                                {dismissButton(r.id)}
+                                            </div>
                                         </div>
                                         <div className="text-xs">
                                             <span className="text-slate-400">WQI: </span>

@@ -39,6 +39,9 @@ export interface SensorReading {
 
 /** Data point for time-series charts */
 export interface ChartDataPoint {
+    /** ISO-8601 timestamp for filtering */
+    timestamp: string;
+    /** Display label e.g. "14:30" */
     time: string;
     pH: number;
     tds: number;

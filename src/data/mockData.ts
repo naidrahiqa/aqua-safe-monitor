@@ -5,7 +5,7 @@ import type { SensorReading, ChartDataPoint } from '../types';
 // All data strictly adheres to the SensorReading interface.
 // ===================================================================
 
-const BASE_LOCATION = { lat: -6.9175, lng: 107.6191 }; // Bandung, Indonesia
+const BASE_LOCATION = { lat: -6.5833, lng: 110.6667 }; // Jepara, Indonesia
 
 function generateId(): string {
     return `WSM-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
@@ -116,6 +116,7 @@ export const chartData: ChartDataPoint[] = mockReadings
     .map((r) => {
         const d = new Date(r.timestamp);
         return {
+            timestamp: r.timestamp,
             time: `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`,
             pH: r.pH,
             tds: r.tds,

@@ -1,6 +1,9 @@
 import { useState, useMemo } from 'react';
-import { Clock, ArrowUpRight, Filter, Search } from 'lucide-react';
+import { Clock, Download, Filter, Search, ChevronUp, ChevronDown } from 'lucide-react';
 import type { SensorReading, WaterStatus } from '../types';
+
+type SortKey = 'timestamp' | 'temperature' | 'pH' | 'tds' | 'turbidity' | 'wqiScore' | 'status';
+type SortDir = 'asc' | 'desc';
 
 interface DataTableProps {
     readings: SensorReading[];
@@ -36,10 +39,22 @@ function formatDate(iso: string): string {
 
 const ITEMS_PER_PAGE = 10;
 
+const COLUMNS: { key: SortKey; label: string }[] = [
+    { key: 'timestamp', label: 'Waktu' },
+    { key: 'temperature', label: 'Suhu' },
+    { key: 'pH', label: 'pH' },
+    { key: 'tds', label: 'TDS' },
+    { key: 'turbidity', label: 'Turbidity' },
+    { key: 'wqiScore', label: 'WQI' },
+    { key: 'status', label: 'Status' },
+];
+
 export default function DataTable({ readings, showFilters = false }: DataTableProps) {
     const [statusFilter, setStatusFilter] = useState<WaterStatus | 'all'>('all');
     const [searchQuery, setSearchQuery] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
+    const [sortKey, setSortKey] = useState<SortKey>('timestamp');
+    const [sortDir, setSortDir] = useState<SortDir>('desc');
 
     const filteredReadings = useMemo(() => {
         let filtered = readings;
@@ -60,8 +75,18 @@ export default function DataTable({ readings, showFilters = false }: DataTablePr
             );
         }
 
-        return filtered;
-    }, [readings, statusFilter, searchQuery]);
+        return [...filtered].sort((a, b) => {
+            let cmp: number;
+            if (sortKey === 'status') {
+                cmp = a.status.localeCompare(b.status);
+            } else {
+                const av = sortKey === 'timestamp' ? new Date(a.timestamp).getTime() : a[sortKey];
+                const bv = sortKey === 'timestamp' ? new Date(b.timestamp).getTime() : b[sortKey];
+                cmp = (av as number) - (bv as number);
+            }
+            return sortDir === 'asc' ? cmp : -cmp;
+        });
+    }, [readings, statusFilter, searchQuery, sortKey, sortDir]);
 
     const totalPages = Math.ceil(filteredReadings.length / ITEMS_PER_PAGE);
     const paginatedReadings = filteredReadings.slice(
@@ -80,6 +105,40 @@ export default function DataTable({ readings, showFilters = false }: DataTablePr
         setCurrentPage(1);
     };
 
+    const handleSort = (key: SortKey) => {
+        if (sortKey === key) {
+            setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
+        } else {
+            setSortKey(key);
+            setSortDir(key === 'timestamp' ? 'desc' : 'desc');
+        }
+        setCurrentPage(1);
+    };
+
+    const exportCSV = () => {
+        if (filteredReadings.length === 0) return;
+        const header = ['Waktu', 'Suhu (°C)', 'pH', 'TDS (ppm)', 'Turbidity (NTU)', 'WQI', 'Status'];
+        const rows = filteredReadings.map((r) => [
+            new Date(r.timestamp).toLocaleString('id-ID'),
+            r.temperature,
+            r.pH,
+            r.tds,
+            r.turbidity,
+            r.wqiScore,
+            r.status,
+        ]);
+        const csv = '\uFEFF' + [header, ...rows].map((row) => row.join(';')).join('\n');
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `watersafe-export-${new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-')}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+    };
+
     return (
         <div id="data-table" className="glass-panel rounded-2xl p-5 animate-fade-in" style={{ animationDelay: '500ms' }}>
             {/* Header */}
@@ -94,12 +153,16 @@ export default function DataTable({ readings, showFilters = false }: DataTablePr
                     </p>
                 </div>
                 <button
-                    id="view-all-button"
-                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-[11px] font-semibold
+                    id="export-button"
+                    onClick={exportCSV}
+                    disabled={filteredReadings.length === 0}
+                    title="Export data ke CSV"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold
             text-water-400 hover:text-water-300 bg-water-500/10 hover:bg-water-500/15
-            border border-water-500/20 transition-all duration-200"
+            border border-water-500/20 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
                 >
-                    Export <ArrowUpRight size={12} />
+                    <Download size={12} />
+                    Export CSV
                 </button>
             </div>
 
@@ -150,9 +213,18 @@ export default function DataTable({ readings, showFilters = false }: DataTablePr
                 <table className="w-full text-left min-w-[640px]">
                     <thead>
                         <tr className="border-b border-white/5">
-                            {['Waktu', 'Suhu', 'pH', 'TDS', 'Turbidity', 'WQI', 'Status'].map((h) => (
-                                <th key={h} className="pb-3 pr-4 text-[11px] font-semibold uppercase tracking-wider text-slate-500 whitespace-nowrap">
-                                    {h}
+                            {COLUMNS.map((col) => (
+                                <th key={col.key} className="pb-3 pr-4 text-[11px] font-semibold uppercase tracking-wider text-slate-500 whitespace-nowrap">
+                                    <button
+                                        onClick={() => handleSort(col.key)}
+                                        className={`flex items-center gap-1 transition-colors ${
+                                            sortKey === col.key ? 'text-water-400' : 'hover:text-slate-300'
+                                        }`}
+                                    >
+                                        {col.label}
+                                        {sortKey === col.key &&
+                                            (sortDir === 'asc' ? <ChevronUp size={12} /> : <ChevronDown size={12} />)}
+                                    </button>
                                 </th>
                             ))}
                         </tr>

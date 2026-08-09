@@ -4,7 +4,7 @@ import L from 'leaflet';
 import type { SensorReading } from '../types';
 
 // Custom marker icon using a data URI to avoid broken default icon issues
-const customIcon = new L.Icon({
+export const customIcon = new L.Icon({
     iconUrl: 'data:image/svg+xml;base64,' + btoa(`
     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="42" viewBox="0 0 32 42">
       <defs>

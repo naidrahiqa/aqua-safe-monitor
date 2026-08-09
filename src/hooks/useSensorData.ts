@@ -29,8 +29,8 @@ function dbRecordToReading(record: SensorDataRecord & { device_name?: string; lo
         wqiScore: record.wqi_score,
         status: record.status,
         location: {
-            lat: record.location_lat ?? -6.9175,
-            lng: record.location_lng ?? 107.6191,
+            lat: record.location_lat ?? -6.5833,
+            lng: record.location_lng ?? 110.6667,
         },
     };
 }
@@ -43,6 +43,7 @@ function buildChartData(readings: SensorReading[]): ChartDataPoint[] {
         .map((r) => {
             const d = new Date(r.timestamp);
             return {
+                timestamp: r.timestamp,
                 time: `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`,
                 pH: r.pH,
                 tds: r.tds,
@@ -167,6 +168,7 @@ export function useSensorData(limit = 50): UseSensorDataResult {
                         setChart((prev) => {
                             const d = new Date(newReading.timestamp);
                             const newPoint: ChartDataPoint = {
+                                timestamp: newReading.timestamp,
                                 time: `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`,
                                 pH: newReading.pH,
                                 tds: newReading.tds,

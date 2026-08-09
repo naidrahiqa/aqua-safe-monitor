@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
     Thermometer,
     Droplets,
@@ -9,21 +9,23 @@ import {
     Search,
     Wifi,
     LogOut,
-    Settings,
     AlertTriangle,
     RefreshCw,
 } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
-import MetricCard from '../components/MetricCard';
+import GaugeCard from '../components/GaugeCard';
 import AnalyticsChart from '../components/AnalyticsChart';
 import LocationMap from '../components/LocationMap';
 import DataTable from '../components/DataTable';
 import DeviceManager from '../components/DeviceManager';
 import NotificationPanel from '../components/NotificationPanel';
+import LocationSettings from '../components/LocationSettings';
+import AlertSettings from '../components/AlertSettings';
 import SkeletonCard from '../components/SkeletonCard';
 import SkeletonChart from '../components/SkeletonChart';
 import { useAuth } from '../contexts/AuthContext';
 import { useSensorContext } from '../contexts/SensorDataContext';
+import { loadAlertConfig } from '../lib/alertConfig';
 import type { NavSection } from '../types';
 
 export default function Dashboard() {
@@ -31,9 +33,34 @@ export default function Dashboard() {
     const [showNotifications, setShowNotifications] = useState(false);
     const { user, signOut } = useAuth();
     const { latestReading, readings, chartData, loading, error, refresh } = useSensorContext();
+    const [alertCfg, setAlertCfg] = useState(loadAlertConfig);
 
     const dangerCount = readings.filter((r) => r.status === 'BAHAYA').length;
     const isLoading = loading && readings.length === 0;
+
+    const average = (key: 'pH' | 'tds' | 'temperature' | 'turbidity') => {
+        if (readings.length === 0) return 0;
+        return readings.reduce((s, r) => s + r[key], 0) / readings.length;
+    };
+
+    // Real-time indicator: last update timestamp, refreshed every 5s
+    const [now, setNow] = useState(Date.now());
+    useEffect(() => {
+        const t = setInterval(() => setNow(Date.now()), 5000);
+        return () => clearInterval(t);
+    }, []);
+
+    const lastTs = latestReading?.timestamp ? new Date(latestReading.timestamp).getTime() : null;
+    const secondsAgo = lastTs ? Math.max(0, Math.floor((now - lastTs) / 1000)) : null;
+    const isOnline = secondsAgo !== null && secondsAgo < 120;
+    const onlineLabel =
+        secondsAgo === null
+            ? 'Menunggu data…'
+            : secondsAgo < 60
+                ? `Online • ${secondsAgo} dtk lalu`
+                : secondsAgo < 120
+                    ? 'Online • 1 mnt lalu'
+                    : `Tidak update • ${Math.floor(secondsAgo / 60)} mnt lalu`;
 
     return (
         <div className="flex min-h-screen bg-surface">
@@ -79,9 +106,24 @@ export default function Dashboard() {
                             </button>
 
                             {/* Status indicator */}
-                            <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-safe/10 border border-safe/20">
-                                <Wifi size={12} className="text-safe" />
-                                <span className="text-[11px] font-semibold text-safe">Online</span>
+                            <div
+                                className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg border ${
+                                    secondsAgo === null
+                                        ? 'bg-white/5 border-white/5'
+                                        : isOnline
+                                            ? 'bg-safe/10 border-safe/20'
+                                            : 'bg-warning/10 border-warning/20'
+                                }`}
+                                title="Update terakhir dari sensor"
+                            >
+                                {secondsAgo === null ? (
+                                    <Wifi size={12} className="text-slate-500" />
+                                ) : (
+                                    <span className={`w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-safe animate-pulse' : 'bg-warning'}`} />
+                                )}
+                                <span className={`text-[11px] font-semibold ${secondsAgo === null ? 'text-slate-500' : isOnline ? 'text-safe' : 'text-warning'}`}>
+                                    {onlineLabel}
+                                </span>
                             </div>
 
                             {/* Notifications */}
@@ -158,52 +200,73 @@ export default function Dashboard() {
 
                     {!isLoading && activeNav === 'overview' && (
                         <div className="space-y-6 animate-fade-in">
-                            {/* Metric Cards Grid */}
+                            {/* Gauge Cards Grid */}
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-                                <MetricCard
+                                <GaugeCard
                                     id="card-wqi"
                                     title="Water Quality Index"
                                     value={latestReading.wqiScore}
-                                    unit="/ 100"
+                                    unit="/100"
                                     icon={<Activity size={18} />}
+                                    min={0}
+                                    max={100}
                                     status={latestReading.status}
                                     delay={0}
+                                    decimals={0}
                                 />
-                                <MetricCard
+                                <GaugeCard
                                     id="card-temperature"
                                     title="Suhu Air"
                                     value={latestReading.temperature}
                                     unit="°C"
                                     icon={<Thermometer size={18} />}
-                                    subtitle="Normal range: 20–30°C"
+                                    min={0}
+                                    max={50}
+                                    safeMin={alertCfg.tempMin}
+                                    safeMax={alertCfg.tempMax}
+                                    subtitle={`Normal: ${alertCfg.tempMin}–${alertCfg.tempMax}°C`}
                                     delay={80}
                                 />
-                                <MetricCard
+                                <GaugeCard
                                     id="card-ph"
                                     title="pH Level"
                                     value={latestReading.pH}
                                     unit="pH"
                                     icon={<FlaskConical size={18} />}
-                                    subtitle="Ideal: 6.5 – 8.5"
+                                    min={0}
+                                    max={14}
+                                    safeMin={alertCfg.phMin}
+                                    safeMax={alertCfg.phMax}
+                                    subtitle={`Ideal: ${alertCfg.phMin} – ${alertCfg.phMax}`}
                                     delay={160}
                                 />
-                                <MetricCard
+                                <GaugeCard
                                     id="card-tds"
                                     title="TDS"
                                     value={latestReading.tds}
                                     unit="ppm"
                                     icon={<Droplets size={18} />}
-                                    subtitle="Max aman: 500 ppm"
+                                    min={0}
+                                    max={1000}
+                                    safeMin={0}
+                                    safeMax={alertCfg.tdsMax}
+                                    subtitle={`Max aman: ${alertCfg.tdsMax} ppm`}
                                     delay={240}
+                                    decimals={0}
                                 />
-                                <MetricCard
+                                <GaugeCard
                                     id="card-turbidity"
                                     title="Turbidity"
                                     value={latestReading.turbidity}
                                     unit="NTU"
                                     icon={<Waves size={18} />}
-                                    subtitle="Max aman: 5 NTU"
+                                    min={0}
+                                    max={100}
+                                    safeMin={0}
+                                    safeMax={alertCfg.turbidityMax}
+                                    subtitle={`Max aman: ${alertCfg.turbidityMax} NTU`}
                                     delay={320}
+                                    decimals={0}
                                 />
                             </div>
 
@@ -226,41 +289,59 @@ export default function Dashboard() {
                         <div className="space-y-6 animate-fade-in">
                             <AnalyticsChart data={chartData} showAllLines />
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                                <MetricCard
+                                <GaugeCard
                                     id="card-avg-ph"
                                     title="Rata-Rata pH"
-                                    value={readings.length > 0 ? (readings.reduce((s, r) => s + r.pH, 0) / readings.length).toFixed(1) : '—'}
+                                    value={average('pH')}
                                     unit="pH"
                                     icon={<FlaskConical size={18} />}
+                                    min={0}
+                                    max={14}
+                                    safeMin={alertCfg.phMin}
+                                    safeMax={alertCfg.phMax}
                                     subtitle="Seluruh data"
                                     delay={100}
                                 />
-                                <MetricCard
+                                <GaugeCard
                                     id="card-avg-tds"
                                     title="Rata-Rata TDS"
-                                    value={readings.length > 0 ? Math.round(readings.reduce((s, r) => s + r.tds, 0) / readings.length) : '—'}
+                                    value={average('tds')}
                                     unit="ppm"
                                     icon={<Droplets size={18} />}
+                                    min={0}
+                                    max={1000}
+                                    safeMin={0}
+                                    safeMax={alertCfg.tdsMax}
                                     subtitle="Seluruh data"
                                     delay={200}
+                                    decimals={0}
                                 />
-                                <MetricCard
+                                <GaugeCard
                                     id="card-avg-temp"
                                     title="Rata-Rata Suhu"
-                                    value={readings.length > 0 ? (readings.reduce((s, r) => s + r.temperature, 0) / readings.length).toFixed(1) : '—'}
+                                    value={average('temperature')}
                                     unit="°C"
                                     icon={<Thermometer size={18} />}
+                                    min={0}
+                                    max={50}
+                                    safeMin={alertCfg.tempMin}
+                                    safeMax={alertCfg.tempMax}
                                     subtitle="Seluruh data"
                                     delay={300}
                                 />
-                                <MetricCard
+                                <GaugeCard
                                     id="card-avg-turbidity"
                                     title="Rata-Rata Turbidity"
-                                    value={readings.length > 0 ? (readings.reduce((s, r) => s + r.turbidity, 0) / readings.length).toFixed(1) : '—'}
+                                    value={average('turbidity')}
                                     unit="NTU"
                                     icon={<Waves size={18} />}
+                                    min={0}
+                                    max={100}
+                                    safeMin={0}
+                                    safeMax={alertCfg.turbidityMax}
                                     subtitle="Seluruh data"
                                     delay={400}
+                                    decimals={0}
                                 />
                             </div>
                         </div>
@@ -278,35 +359,11 @@ export default function Dashboard() {
 
                     {!isLoading && activeNav === 'settings' && (
                         <div className="animate-fade-in space-y-6">
-                            <div className="glass-panel rounded-2xl p-5 sm:p-6">
-                                <h2 className="flex items-center gap-2 text-base font-bold text-white mb-4">
-                                    <Settings size={18} className="text-water-400" />
-                                    Pengaturan Sensor
-                                </h2>
-                                <div className="space-y-4">
-                                    {[
-                                        { label: 'Interval Pembacaan', value: '5 detik', desc: 'Frekuensi pengambilan data sensor' },
-                                        { label: 'Batas pH Aman', value: '6.5 – 8.5', desc: 'Range pH yang dianggap aman' },
-                                        { label: 'Batas TDS Aman', value: '< 500 ppm', desc: 'Maksimum TDS yang diizinkan' },
-                                        { label: 'Batas Turbidity Aman', value: '< 5 NTU', desc: 'Maksimum turbidity yang diizinkan' },
-                                        { label: 'Batas Suhu Aman', value: '20 – 30°C', desc: 'Range suhu yang dianggap ideal' },
-                                        { label: 'Notifikasi', value: 'Aktif', desc: 'Alert ketika status BAHAYA terdeteksi' },
-                                    ].map((item, i) => (
-                                        <div
-                                            key={i}
-                                            className="flex flex-col sm:flex-row sm:items-center justify-between py-3 border-b border-white/5 last:border-0 gap-2"
-                                        >
-                                            <div>
-                                                <p className="text-sm font-medium text-slate-200">{item.label}</p>
-                                                <p className="text-xs text-slate-500 mt-0.5">{item.desc}</p>
-                                            </div>
-                                            <span className="self-start sm:self-auto px-3 py-1 rounded-lg bg-water-500/10 text-water-400 text-xs font-semibold border border-water-500/20 whitespace-nowrap">
-                                                {item.value}
-                                            </span>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
+                            {/* Alert Config */}
+                            <AlertSettings config={alertCfg} onChange={setAlertCfg} />
+
+                            {/* Location Settings */}
+                            <LocationSettings onSaved={refresh} />
 
                             {/* System Info */}
                             <div className="glass-panel rounded-2xl p-5 sm:p-6">
