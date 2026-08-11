@@ -7,9 +7,8 @@ import {
     CartesianGrid,
     Tooltip,
     ResponsiveContainer,
-    Legend,
 } from 'recharts';
-import { TrendingUp, Clock, Waves } from 'lucide-react';
+import { TrendingUp, Clock, Waves, FlaskConical, Droplets, Thermometer, Eye } from 'lucide-react';
 import type { ChartDataPoint } from '../types';
 
 type TimeRange = '5M' | '15M' | '30M' | '1J' | '4J' | '8J' | '24J' | 'all';
@@ -19,10 +18,27 @@ interface AnalyticsChartProps {
     showAllLines?: boolean;
 }
 
+interface SingleChartProps {
+    data: ChartDataPoint[];
+    title: string;
+    subtitle: string;
+    dataKey: string;
+    name: string;
+    color: string;
+    icon: React.ReactNode;
+    unit: string;
+    domain: [number, number];
+    timeRange: TimeRange;
+    onTimeRangeChange: (r: TimeRange) => void;
+    decimals?: number;
+    gradient?: boolean;
+}
+
 interface CustomTooltipProps {
     active?: boolean;
     payload?: { name: string; value: number; color: string }[];
     label?: string;
+    unit?: string;
 }
 
 const TIME_RANGES: { key: TimeRange; label: string; minutes: number | null }[] = [
@@ -36,11 +52,19 @@ const TIME_RANGES: { key: TimeRange; label: string; minutes: number | null }[] =
     { key: 'all', label: 'Semua', minutes: null },
 ];
 
-function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
-    if (!active || !payload?.length) return null;
+function filterByRange(data: ChartDataPoint[], range: TimeRange): ChartDataPoint[] {
+    if (range === 'all') return data;
+    const minutes = TIME_RANGES.find((r) => r.key === range)?.minutes;
+    if (!minutes) return data;
+    const now = new Date();
+    const cutoff = new Date(now.getTime() - minutes * 60 * 1000);
+    return data.filter((d) => new Date(d.timestamp) >= cutoff);
+}
 
+function CustomTooltip({ active, payload, label, unit }: CustomTooltipProps) {
+    if (!active || !payload?.length) return null;
     return (
-        <div className="glass-panel rounded-xl p-3 shadow-xl border border-white/10 min-w-[160px]">
+        <div className="glass-panel rounded-xl p-3 shadow-xl border border-white/10 min-w-[140px]">
             <p className="flex items-center gap-1.5 text-xs font-semibold text-slate-300 mb-2 border-b border-white/5 pb-1.5">
                 <Clock size={12} /> {label}
             </p>
@@ -50,46 +74,23 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
                         <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
                         <span className="text-xs text-slate-400">{entry.name}</span>
                     </div>
-                    <span className="text-xs font-bold text-white">{entry.value}</span>
+                    <span className="text-xs font-bold text-white">
+                        {entry.value}{unit ? ` ${unit}` : ''}
+                    </span>
                 </div>
             ))}
         </div>
     );
 }
 
-function filterByRange(data: ChartDataPoint[], range: TimeRange): ChartDataPoint[] {
-    if (range === 'all') return data;
-    const minutes = TIME_RANGES.find((r) => r.key === range)?.minutes;
-    if (!minutes) return data;
-
-    const now = new Date();
-    const cutoff = new Date(now.getTime() - minutes * 60 * 1000);
-    return data.filter((d) => new Date(d.timestamp) >= cutoff);
-}
-
-export default function AnalyticsChart({ data, showAllLines = false }: AnalyticsChartProps) {
-    const [visibleLines, setVisibleLines] = useState<Record<string, boolean>>({
-        pH: true,
-        tds: true,
-        temperature: showAllLines,
-        turbidity: showAllLines,
-    });
-    const [timeRange, setTimeRange] = useState<TimeRange>('8J');
-
-    const toggleLine = (key: string) => {
-        setVisibleLines((prev) => ({ ...prev, [key]: !prev[key] }));
-    };
-
-    const filteredData = useMemo(() => filterByRange(data, timeRange), [data, timeRange]);
-    const rangeLabel = TIME_RANGES.find((r) => r.key === timeRange)?.label ?? '8J';
-
-    const RangeSelector = () => (
-        <div className="flex items-center gap-1 bg-white/5 rounded-lg p-0.5">
+function RangeSelector({ timeRange, onChange }: { timeRange: TimeRange; onChange: (r: TimeRange) => void }) {
+    return (
+        <div className="flex items-center gap-0.5 bg-white/5 rounded-lg p-0.5">
             {TIME_RANGES.map((r) => (
                 <button
                     key={r.key}
-                    onClick={() => setTimeRange(r.key)}
-                    className={`px-2 py-1 rounded-md text-xs font-medium transition-all ${
+                    onClick={() => onChange(r.key)}
+                    className={`px-1.5 py-0.5 rounded-md text-[10px] font-medium transition-all ${
                         timeRange === r.key
                             ? 'bg-water-500/20 text-water-300 border border-water-500/30'
                             : 'text-slate-500 hover:text-slate-300'
@@ -100,187 +101,235 @@ export default function AnalyticsChart({ data, showAllLines = false }: Analytics
             ))}
         </div>
     );
+}
 
-    // Show empty state if no data
+function SingleSensorChart({ data, title, subtitle, dataKey, name, color, icon, unit, domain, timeRange, onTimeRangeChange, decimals = 2, gradient = false }: SingleChartProps) {
+    const filteredData = useMemo(() => filterByRange(data, timeRange), [data, timeRange]);
+
     if (!filteredData.length) {
         return (
-            <div id="analytics-chart" className="glass-panel rounded-2xl p-5 animate-fade-in" style={{ animationDelay: '300ms' }}>
-                <div className="flex items-center justify-between mb-5">
-                    <div>
-                        <h2 className="text-base font-bold text-white flex items-center gap-2">
-                            <TrendingUp size={18} className="text-water-400" />
-                            Tren Kualitas Air
-                        </h2>
-                        <p className="text-xs text-slate-500 mt-0.5">Belum ada data untuk rentang ini</p>
+            <div className="glass-panel rounded-2xl p-4 h-full flex flex-col">
+                <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                        <div className="p-1.5 rounded-lg" style={{ backgroundColor: `${color}15` }}>
+                            {icon}
+                        </div>
+                        <div>
+                            <h3 className="text-sm font-bold text-white">{title}</h3>
+                            <p className="text-[10px] text-slate-500">{subtitle}</p>
+                        </div>
                     </div>
-                    <RangeSelector />
+                    <RangeSelector timeRange={timeRange} onChange={onTimeRangeChange} />
                 </div>
-                <div className="h-72 flex items-center justify-center">
-                    <p className="text-slate-500 text-sm">Tidak ada data sensor dalam rentang {rangeLabel}</p>
+                <div className="flex-1 min-h-0 flex items-center justify-center">
+                    <p className="text-slate-600 text-xs">Tidak ada data</p>
                 </div>
             </div>
         );
     }
 
-    // Dynamic domains from filtered data
-    const phVals = filteredData.map((d) => d.pH).filter(Boolean);
-    const tempVals = filteredData.map((d) => d.temperature).filter(Boolean);
-    const tdsVals = filteredData.map((d) => d.tds).filter(Boolean);
-    const turbVals = filteredData.map((d) => d.turbidity).filter(Boolean);
+    const vals = filteredData.map((d) => (d as Record<string, unknown>)[dataKey] as number).filter((v) => v != null && !isNaN(v));
+    const autoMin = vals.length ? Math.min(...vals) : domain[0];
+    const autoMax = vals.length ? Math.max(...vals) : domain[1];
+    const padding = Math.max((autoMax - autoMin) * 0.15, 1);
+    const finalDomain: [number, number] = [
+        Math.floor(autoMin - padding),
+        Math.ceil(autoMax + padding),
+    ];
 
-    const phDomain = [Math.floor(Math.min(...phVals, 0) - 1), Math.ceil(Math.max(...phVals, 14) + 1)];
-    const tempDomain = [Math.floor(Math.min(...tempVals, 15) - 2), Math.ceil(Math.max(...tempVals, 30) + 2)];
-    const tdsDomain = [0, Math.ceil(Math.max(...tdsVals, 500) * 1.2)];
-    const turbDomain = [0, Math.ceil(Math.max(...turbVals, 500) * 1.2)];
+    const gradientId = `gradient-${dataKey}`;
+
+    return (
+        <div className="glass-panel rounded-2xl p-4 h-full flex flex-col">
+            <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                    <div className="p-1.5 rounded-lg" style={{ backgroundColor: `${color}15` }}>
+                        {icon}
+                    </div>
+                    <div>
+                        <h3 className="text-sm font-bold text-white">{title}</h3>
+                        <p className="text-[10px] text-slate-500">{subtitle}</p>
+                    </div>
+                </div>
+                <RangeSelector timeRange={timeRange} onChange={onTimeRangeChange} />
+            </div>
+            <div className="flex-1 min-h-[160px]">
+                <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={filteredData} margin={{ top: 5, right: 12, left: -10, bottom: 5 }}>
+                        <defs>
+                            {gradient && (
+                                <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stopColor={color} stopOpacity={0.3} />
+                                    <stop offset="100%" stopColor={color} stopOpacity={0} />
+                                </linearGradient>
+                            )}
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.06)" vertical={false} />
+                        <XAxis
+                            dataKey="time"
+                            tick={{ fontSize: 10, fill: '#64748b' }}
+                            tickLine={false}
+                            axisLine={{ stroke: 'rgba(148,163,184,0.08)' }}
+                            interval={Math.max(0, Math.ceil(filteredData.length / 6) - 1)}
+                        />
+                        <YAxis
+                            domain={finalDomain}
+                            tick={{ fontSize: 10, fill: '#64748b' }}
+                            tickLine={false}
+                            axisLine={false}
+                            width={35}
+                            tickFormatter={(v: number) => decimals === 0 ? String(Math.round(v)) : v.toFixed(1)}
+                        />
+                        <Tooltip content={<CustomTooltip unit={unit} />} />
+                        {gradient ? (
+                            <Line
+                                type="monotone"
+                                dataKey={dataKey}
+                                name={name}
+                                stroke={color}
+                                strokeWidth={2.5}
+                                dot={false}
+                                activeDot={{ r: 5, fill: color, stroke: '#0c1222', strokeWidth: 2 }}
+                            />
+                        ) : (
+                            <Line
+                                type="monotone"
+                                dataKey={dataKey}
+                                name={name}
+                                stroke={color}
+                                strokeWidth={2.5}
+                                dot={{ r: 2.5, fill: '#0c1222', stroke: color, strokeWidth: 1.5 }}
+                                activeDot={{ r: 5, fill: color, stroke: '#0c1222', strokeWidth: 2 }}
+                            />
+                        )}
+                    </LineChart>
+                </ResponsiveContainer>
+            </div>
+        </div>
+    );
+}
+
+const SENSOR_CONFIG = [
+    {
+        key: 'pH',
+        dataKey: 'pH',
+        title: 'pH Air',
+        name: 'pH Level',
+        color: '#22d3ee',
+        unit: '',
+        icon: <FlaskConical size={14} style={{ color: '#22d3ee' }} />,
+        domain: [0, 14] as [number, number],
+        decimals: 2,
+        subtitle: 'Parameter kimia',
+    },
+    {
+        key: 'temperature',
+        dataKey: 'temperature',
+        title: 'Suhu Air',
+        name: 'Suhu (°C)',
+        color: '#f97316',
+        unit: '°C',
+        icon: <Thermometer size={14} style={{ color: '#f97316' }} />,
+        domain: [15, 40] as [number, number],
+        decimals: 1,
+        subtitle: 'Parameter fisik',
+    },
+    {
+        key: 'tds',
+        dataKey: 'tds',
+        title: 'TDS Air',
+        name: 'TDS (ppm)',
+        color: '#60a5fa',
+        unit: 'ppm',
+        icon: <Droplets size={14} style={{ color: '#60a5fa' }} />,
+        domain: [0, 2000] as [number, number],
+        decimals: 0,
+        subtitle: 'Total dissolved solids',
+    },
+    {
+        key: 'turbidity',
+        dataKey: 'turbidity',
+        title: 'Turbidity Air',
+        name: 'Turbidity (NTU)',
+        color: '#a78bfa',
+        unit: 'NTU',
+        icon: <Eye size={14} style={{ color: '#a78bfa' }} />,
+        domain: [0, 100] as [number, number],
+        decimals: 0,
+        subtitle: 'Kejernihan air',
+    },
+];
+
+export default function AnalyticsChart({ data, showAllLines = false }: AnalyticsChartProps) {
+    const [timeRange, setTimeRange] = useState<TimeRange>('8J');
 
     if (!showAllLines) {
+        const overviewSensors = SENSOR_CONFIG.filter((s) => s.key === 'pH' || s.key === 'tds');
         return (
-            <div id="analytics-chart" className="glass-panel rounded-2xl p-5 animate-fade-in" style={{ animationDelay: '300ms' }}>
-                <div className="flex items-center justify-between mb-5">
+            <div id="analytics-chart" className="space-y-4 animate-fade-in" style={{ animationDelay: '300ms' }}>
+                <div className="flex items-center justify-between">
                     <div>
                         <h2 className="text-base font-bold text-white flex items-center gap-2">
                             <TrendingUp size={18} className="text-water-400" />
                             Tren Kualitas Air
                         </h2>
-                        <p className="text-xs text-slate-500 mt-0.5">pH & TDS — {rangeLabel} terakhir</p>
+                        <p className="text-xs text-slate-500 mt-0.5">Monitor pH & TDS secara terpisah</p>
                     </div>
-                    <RangeSelector />
                 </div>
-                <div className="h-72">
-                    <ResponsiveContainer width="100%" height="100%">
-                        <LineChart data={filteredData} margin={{ top: 5, right: 10, left: -10, bottom: 5 }}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.08)" vertical={false} />
-                            <XAxis dataKey="time" tick={{ fontSize: 12, fill: '#64748b' }} tickLine={false} axisLine={{ stroke: 'rgba(148,163,184,0.1)' }} interval={Math.max(0, Math.ceil(filteredData.length / 8) - 1)} />
-                            <YAxis yAxisId="pH" domain={phDomain} tick={{ fontSize: 12, fill: '#64748b' }} tickLine={false} axisLine={false}
-                                label={{ value: 'pH', angle: -90, position: 'insideLeft', style: { fontSize: 12, fill: '#64748b' } }} />
-                            <YAxis yAxisId="tds" orientation="right" domain={tdsDomain} tick={{ fontSize: 12, fill: '#64748b' }} tickLine={false} axisLine={false}
-                                label={{ value: 'ppm', angle: 90, position: 'insideRight', style: { fontSize: 12, fill: '#64748b' } }} />
-                            <Tooltip content={<CustomTooltip />} />
-                            <Legend wrapperStyle={{ fontSize: 12, paddingTop: '8px' }} iconType="circle" iconSize={8} />
-                            {visibleLines.pH && (
-                                <Line yAxisId="pH" type="monotone" dataKey="pH" name="pH Level" stroke="#22d3ee" strokeWidth={2.5}
-                                    dot={{ r: 4, fill: '#0c1222', stroke: '#22d3ee', strokeWidth: 2 }}
-                                    activeDot={{ r: 6, fill: '#22d3ee', stroke: '#0c1222', strokeWidth: 2 }} />
-                            )}
-                            {visibleLines.tds && (
-                                <Line yAxisId="tds" type="monotone" dataKey="tds" name="TDS (ppm)" stroke="#60a5fa" strokeWidth={2.5}
-                                    dot={{ r: 4, fill: '#0c1222', stroke: '#60a5fa', strokeWidth: 2 }}
-                                    activeDot={{ r: 6, fill: '#60a5fa', stroke: '#0c1222', strokeWidth: 2 }}
-                                    strokeDasharray="6 3" />
-                            )}
-                        </LineChart>
-                    </ResponsiveContainer>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {overviewSensors.map((sensor) => (
+                        <SingleSensorChart
+                            key={sensor.key}
+                            data={data}
+                            title={sensor.title}
+                            subtitle={sensor.subtitle}
+                            dataKey={sensor.dataKey}
+                            name={sensor.name}
+                            color={sensor.color}
+                            icon={sensor.icon}
+                            unit={sensor.unit}
+                            domain={sensor.domain}
+                            decimals={sensor.decimals}
+                            timeRange={timeRange}
+                            onTimeRangeChange={setTimeRange}
+                        />
+                    ))}
                 </div>
             </div>
         );
     }
 
-    // Full mode: 2 charts stacked
     return (
         <div id="analytics-chart" className="space-y-4 animate-fade-in" style={{ animationDelay: '300ms' }}>
-            {/* Chart 1: pH + Suhu */}
-            <div className="glass-panel rounded-2xl p-5">
-                <div className="flex items-center justify-between mb-4">
-                    <div>
-                        <h2 className="text-base font-bold text-white flex items-center gap-2">
-                            <TrendingUp size={18} className="text-water-400" />
-                            pH & Suhu
-                        </h2>
-                        <p className="text-xs text-slate-500 mt-0.5">Parameter kimia — {rangeLabel} terakhir</p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                        <RangeSelector />
-                        <div className="flex items-center gap-2">
-                            {[
-                                { key: 'pH', color: '#22d3ee', label: 'pH' },
-                                { key: 'temperature', color: '#f97316', label: 'Suhu' },
-                            ].map((item) => (
-                                <button key={item.key} onClick={() => toggleLine(item.key)}
-                                    className={`flex items-center gap-1.5 px-2 py-1 rounded-lg text-xs font-medium transition-all ${visibleLines[item.key] ? 'bg-white/5 text-slate-300 border border-white/10' : 'text-slate-600 hover:text-slate-400'}`}>
-                                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: visibleLines[item.key] ? item.color : '#475569' }} />
-                                    {item.label}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
+            <div className="flex items-center justify-between">
+                <div>
+                    <h2 className="text-base font-bold text-white flex items-center gap-2">
+                        <TrendingUp size={18} className="text-water-400" />
+                        Detail Sensor
+                    </h2>
+                    <p className="text-xs text-slate-500 mt-0.5">Setiap parameter — {timeRange === 'all' ? 'Semua data' : `${timeRange} terakhir`}</p>
                 </div>
-                <div className="h-56">
-                    <ResponsiveContainer width="100%" height="100%">
-                        <LineChart data={filteredData} margin={{ top: 5, right: 10, left: -10, bottom: 5 }}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.08)" vertical={false} />
-                            <XAxis dataKey="time" tick={{ fontSize: 12, fill: '#64748b' }} tickLine={false} axisLine={{ stroke: 'rgba(148,163,184,0.1)' }} interval={Math.max(0, Math.ceil(filteredData.length / 8) - 1)} />
-                            <YAxis yAxisId="pH" domain={phDomain} tick={{ fontSize: 12, fill: '#64748b' }} tickLine={false} axisLine={false}
-                                label={{ value: 'pH', angle: -90, position: 'insideLeft', style: { fontSize: 12, fill: '#64748b' } }} />
-                            <YAxis yAxisId="temp" orientation="right" domain={tempDomain} tick={{ fontSize: 12, fill: '#64748b' }} tickLine={false} axisLine={false}
-                                label={{ value: '°C', angle: 90, position: 'insideRight', style: { fontSize: 12, fill: '#64748b' } }} />
-                            <Tooltip content={<CustomTooltip />} />
-                            <Legend wrapperStyle={{ fontSize: 12, paddingTop: '8px' }} iconType="circle" iconSize={8} />
-                            {visibleLines.pH && (
-                                <Line yAxisId="pH" type="monotone" dataKey="pH" name="pH Level" stroke="#22d3ee" strokeWidth={2.5}
-                                    dot={{ r: 3, fill: '#0c1222', stroke: '#22d3ee', strokeWidth: 2 }}
-                                    activeDot={{ r: 5, fill: '#22d3ee', stroke: '#0c1222', strokeWidth: 2 }} />
-                            )}
-                            {visibleLines.temperature && (
-                                <Line yAxisId="temp" type="monotone" dataKey="temperature" name="Suhu (°C)" stroke="#f97316" strokeWidth={2}
-                                    dot={{ r: 3, fill: '#0c1222', stroke: '#f97316', strokeWidth: 2 }}
-                                    activeDot={{ r: 5, fill: '#f97316', stroke: '#0c1222', strokeWidth: 2 }} />
-                            )}
-                        </LineChart>
-                    </ResponsiveContainer>
-                </div>
+                <RangeSelector timeRange={timeRange} onChange={setTimeRange} />
             </div>
-
-            {/* Chart 2: TDS + Turbidity */}
-            <div className="glass-panel rounded-2xl p-5">
-                <div className="flex items-center justify-between mb-4">
-                    <div>
-                        <h2 className="text-base font-bold text-white flex items-center gap-2">
-                            <Waves size={18} className="text-water-400" />
-                            TDS & Turbidity
-                        </h2>
-                        <p className="text-xs text-slate-500 mt-0.5">Parameter fisik — {rangeLabel} terakhir</p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                        <RangeSelector />
-                        <div className="flex items-center gap-2">
-                            {[
-                                { key: 'tds', color: '#60a5fa', label: 'TDS' },
-                                { key: 'turbidity', color: '#a78bfa', label: 'Turbidity' },
-                            ].map((item) => (
-                                <button key={item.key} onClick={() => toggleLine(item.key)}
-                                    className={`flex items-center gap-1.5 px-2 py-1 rounded-lg text-xs font-medium transition-all ${visibleLines[item.key] ? 'bg-white/5 text-slate-300 border border-white/10' : 'text-slate-600 hover:text-slate-400'}`}>
-                                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: visibleLines[item.key] ? item.color : '#475569' }} />
-                                    {item.label}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-                <div className="h-56">
-                    <ResponsiveContainer width="100%" height="100%">
-                        <LineChart data={filteredData} margin={{ top: 5, right: 10, left: -10, bottom: 5 }}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.08)" vertical={false} />
-                            <XAxis dataKey="time" tick={{ fontSize: 12, fill: '#64748b' }} tickLine={false} axisLine={{ stroke: 'rgba(148,163,184,0.1)' }} interval={Math.max(0, Math.ceil(filteredData.length / 8) - 1)} />
-                            <YAxis yAxisId="tds" domain={tdsDomain} tick={{ fontSize: 12, fill: '#64748b' }} tickLine={false} axisLine={false}
-                                label={{ value: 'ppm', angle: -90, position: 'insideLeft', style: { fontSize: 12, fill: '#64748b' } }} />
-                            <YAxis yAxisId="turb" orientation="right" domain={turbDomain} tick={{ fontSize: 12, fill: '#64748b' }} tickLine={false} axisLine={false}
-                                label={{ value: 'NTU', angle: 90, position: 'insideRight', style: { fontSize: 12, fill: '#64748b' } }} />
-                            <Tooltip content={<CustomTooltip />} />
-                            <Legend wrapperStyle={{ fontSize: 12, paddingTop: '8px' }} iconType="circle" iconSize={8} />
-                            {visibleLines.tds && (
-                                <Line yAxisId="tds" type="monotone" dataKey="tds" name="TDS (ppm)" stroke="#60a5fa" strokeWidth={2.5}
-                                    dot={{ r: 3, fill: '#0c1222', stroke: '#60a5fa', strokeWidth: 2 }}
-                                    activeDot={{ r: 5, fill: '#60a5fa', stroke: '#0c1222', strokeWidth: 2 }} />
-                            )}
-                            {visibleLines.turbidity && (
-                                <Line yAxisId="turb" type="monotone" dataKey="turbidity" name="Turbidity (NTU)" stroke="#a78bfa" strokeWidth={2}
-                                    dot={{ r: 3, fill: '#0c1222', stroke: '#a78bfa', strokeWidth: 2 }}
-                                    activeDot={{ r: 5, fill: '#a78bfa', stroke: '#0c1222', strokeWidth: 2 }}
-                                    strokeDasharray="6 3" />
-                            )}
-                        </LineChart>
-                    </ResponsiveContainer>
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {SENSOR_CONFIG.map((sensor) => (
+                    <SingleSensorChart
+                        key={sensor.key}
+                        data={data}
+                        title={sensor.title}
+                        subtitle={sensor.subtitle}
+                        dataKey={sensor.dataKey}
+                        name={sensor.name}
+                        color={sensor.color}
+                        icon={sensor.icon}
+                        unit={sensor.unit}
+                        domain={sensor.domain}
+                        decimals={sensor.decimals}
+                        timeRange={timeRange}
+                        onTimeRangeChange={setTimeRange}
+                        gradient={sensor.key === 'temperature'}
+                    />
+                ))}
             </div>
         </div>
     );
