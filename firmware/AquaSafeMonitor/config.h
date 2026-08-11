@@ -22,11 +22,13 @@
 #define LCD_COLS 16
 #define LCD_ROWS 2
 
-// ===== SD CARD (HSPI) =====
-#define SD_MISO 12
+// ===== SD CARD =====
+// storage_init() retries at 25 / 8 / 1 / 0.4 MHz automatically.
+// Physical wiring: SCK=9, MISO=10, MOSI=11, CS=8.
+#define SD_SCK  25
+#define SD_MISO 26
 #define SD_MOSI 13
-#define SD_SCK  14
-#define SD_CS   15
+#define SD_CS   33
 
 // ===== BUZZER =====
 // Pending: needs 2N2222 transistor (in transit). Firmware side is
@@ -48,8 +50,14 @@
 
 // ===== pH CALIBRATION — PLACEHOLDER, DO NOT TRUST =====
 // pH = PH_CAL_SLOPE * voltage + PH_CAL_OFFSET
-// Replace after running CALIBRATION_MODE with buffer 4.0 / 7.0 / 10.0.
-// See .opencode/skills/FIRMWARE.md for the exact 2-point calibration steps.
+// Procedure (needs pH 4.0 + 7.0 buffer solutions):
+//   1. Set CALIBRATION_MODE 1, upload, open Serial @ 115200.
+//   2. Dip probe in pH 7.0 buffer, wait until stable, note V7.
+//   3. Rinse, dip in pH 4.0 buffer, note V4.
+//   4. slope = (7 - 4) / (V7 - V4);  offset = 7 - slope * V7.
+//   5. Fill values in below, set CALIBRATION_MODE 0, re-upload.
+// Note: pH ~21.34 exactly means the ADC reads 0V -> module unpowered
+// or signal wire unplugged (dry probe on powered module reads ~2.5V).
 #define PH_CAL_SLOPE  -5.70
 #define PH_CAL_OFFSET 21.34
 

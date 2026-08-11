@@ -61,14 +61,38 @@ void setup() {
 
 void loop() {
 #if CALIBRATION_MODE
-  int rawPh = analogRead(PIN_PH);
-  float voltPh = rawPh * (ADC_VOLTAGE_REF / ADC_MAX_VALUE);
-  int rawTds = analogRead(PIN_TDS);
-  float voltTds = rawTds * (ADC_VOLTAGE_REF / ADC_MAX_VALUE);
-  int rawTurb = analogRead(PIN_TURBIDITY);
-  float voltTurb = rawTurb * (ADC_VOLTAGE_REF / ADC_MAX_VALUE);
-  Serial.printf("pH raw:%4d V:%.3f | TDS raw:%4d V:%.3f | Turb raw:%4d V:%.3f\n",
-                rawPh, voltPh, rawTds, voltTds, rawTurb, voltTurb);
+  // Averaged reads so the numbers are stable enough to trust while
+  // probes stabilize in buffer/standard solutions.
+  const int N = 64;
+  long sumPh = 0, sumTds = 0, sumTurb = 0;
+  for (int i = 0; i < N; i++) {
+    sumPh   += analogRead(PIN_PH);
+    sumTds  += analogRead(PIN_TDS);
+    sumTurb += analogRead(PIN_TURBIDITY);
+    delay(2);
+  }
+
+  float voltPh   = (sumPh / N) * (ADC_VOLTAGE_REF / ADC_MAX_VALUE);
+  float voltTds  = (sumTds / N) * (ADC_VOLTAGE_REF / ADC_MAX_VALUE);
+  float voltTurb = (sumTurb / N) * (ADC_VOLTAGE_REF / ADC_MAX_VALUE);
+
+  // Same formulas as sensors.cpp, temp fixed at 25C for TDS.
+  float ph  = PH_CAL_SLOPE * voltPh + PH_CAL_OFFSET;
+  float tds = (133.42 * pow(voltTds, 3) - 255.86 * pow(voltTds, 2)
+               + 857.39 * voltTds) * 0.5;
+  tds = tds < 0 ? 0 : tds;
+  float ntu;
+  if (voltTurb < 2.5) ntu = 3000;
+  else {
+    ntu = -1120.4 * sq(voltTurb) + 5742.3 * voltTurb - 4352.9;
+    if (ntu < 0) ntu = 0;
+  }
+
+  Serial.printf("pH V:%.3f ph:%.2f | TDS V:%.3f ppm:%.1f | Turb V:%.3f NTU:%.1f\n",
+                voltPh, ph, voltTds, tds, voltTurb, ntu);
+  Serial.println("Hint: if ALL voltages are ~0.000, the sensor modules are "
+                 "unpowered / signal pins unplugged - not a calibration issue. "
+                 "A dry pH probe on a powered module reads near V=2.5 (ph~7).");
   delay(500);
   return;
 #endif

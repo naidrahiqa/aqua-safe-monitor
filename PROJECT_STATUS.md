@@ -1,6 +1,6 @@
 # WaterSafe Monitor — Project Status
 
-## Last Updated: 2026-08-09
+## Last Updated: 2026-08-10
 
 ---
 
@@ -43,21 +43,27 @@
 ## ⚠️ Partially Working
 
 ### SD Card Logging
-- **Status**: FAILED to initialize
-- **Current pin**: GPIO 15 (CS), GPIO 14 (SCK), GPIO 13 (MOSI), GPIO 12 (MISO) - HSPI
+- **Status**: FAILED to initialize (wiring re-done 2026-08-10)
+- **Current pin**: GPIO 5 (CS), GPIO 14 (SCK), GPIO 13 (MOSI), GPIO 12 (MISO) - HSPI
 - **Card**: V-Gen 8GB (SDHC)
 - **Power**: 5V from module
-- **Error**: `[SD] Initializing on CS pin 15... FAILED`
-- **Tried**:
-  - GPIO 5 (VSPI) → FAILED
-  - GPIO 15 (VSPI) → FAILED
-  - GPIO 15 (HSPI) → FAILED
-  - FAT32 format (non-quick) → still FAILED
-- **Next steps**:
-  - Check MOSI/MISO wiring order
-  - Try different CS pin (GPIO 2, 4)
-  - Test with different SD card
-  - Check solder joints on SD card module
+- **Error**: `[SD] Initializing on CS pin 5... FAILED`
+- **Code fixes applied**:
+  - `storage.cpp` now retries init at 25 / 8 / 1 / 0.4 MHz (SPI clock is
+    the #1 cause of FAILED on breadboard/jumper wiring)
+  - New diagnostic: `tools/sd_scanner/sd_scanner.ino` brute-forces
+    HSPI/VSPI x CS(15,5,2,4) x 4 speeds and prints what works
+- **Hardware tested**:
+  - 2 different SD card modules (both failed)
+  - Multiple CS pins tried (5, 15, 2, 4, 33)
+  - MISO/MOSI swap tried
+  - Both HSPI and VSPI buses tried
+- **Next steps** (hardware):
+  - **Rewire everything** using `firmware/WIRING_PLAN.md` (clean wiring from scratch)
+  - Verify wiring with CALIBRATION_MODE before testing SD
+  - If still fails → try different SD card (not just different module)
+  - If ESP32 won't boot with module connected → MISO pull-up latches
+    GPIO12 (strapping pin) at boot
 
 ---
 
@@ -65,16 +71,20 @@
 
 ### Sensor Calibration (requires physical testing)
 - [ ] **pH sensor calibration**
-  - Current: reads 21.34 (placeholder offset)
+  - Current: reads 21.34 (~0V ADC → module unpowered or signal wire
+    unplugged — verify with CALIBRATION_MODE; dry probe on powered
+    module reads ~2.5V ≈ pH 7)
   - Needs: buffer solutions pH 4.0 and pH 7.0
-  - Status: `CALIBRATION_MODE` ready in firmware, waiting for physical access
+  - Status: `CALIBRATION_MODE` ready in firmware (now prints computed
+    pH/TDS/NTU + mV, averaged 64 samples), waiting for physical access
   - Procedure:
     1. Set `CALIBRATION_MODE 1` in config.h
     2. Upload firmware
-    3. Dip sensor in pH 4.0 buffer, note voltage
-    4. Dip sensor in pH 7.0 buffer, note voltage
-    5. Calculate slope & offset
-    6. Update PH_CAL_SLOPE and PH_CAL_OFFSET
+    3. Dip sensor in pH 7.0 buffer, note V7 (stable)
+    4. Dip sensor in pH 4.0 buffer, note V4
+    5. slope = (7-4)/(V7-V4); offset = 7 - slope*V7 → update
+       PH_CAL_SLOPE / PH_CAL_OFFSET, set CALIBRATION_MODE 0 (procedure
+       also documented in config.h)
 
 - [ ] **TDS sensor calibration**
   - Current: reads 0.0ppm
@@ -100,19 +110,27 @@
 
 ## 🔧 Current Configuration
 
-### Firmware Pin Mapping (config.h):
+### Firmware Pin Mapping (config.h) — Updated 2026-08-10:
 ```
-pH Sensor      → GPIO 32 (ADC1_CH4)
-TDS Sensor     → GPIO 34 (ADC1_CH6, input-only)
-Turbidity      → GPIO 35 (ADC1_CH7, input-only)
-DS18B20        → GPIO 4  (OneWire)
-LCD I2C SDA    → GPIO 21
-LCD I2C SCL    → GPIO 22
-SD Card MISO   → GPIO 12 (HSPI)
-SD Card MOSI   → GPIO 13 (HSPI)
-SD Card SCK    → GPIO 14 (HSPI)
-SD Card CS     → GPIO 15 (HSPI)
-Buzzer         → GPIO 27 (pending)
+ESP32 DevKit V1 30-pin (dilihat dari bawah, Type-C kiri):
+
+pH Sensor      → GPIO 32 (Bawah-10, ADC1_CH4)
+TDS Sensor     → GPIO 34 (Bawah-12, ADC1_CH6, input-only)
+Turbidity      → GPIO 35 (Bawah-11, ADC1_CH7, input-only)
+DS18B20        → GPIO 4  (Atas-5, OneWire + 4.7kΩ pull-up)
+LCD I2C SDA    → GPIO 21 (Atas-11)
+LCD I2C SCL    → GPIO 22 (Atas-14)
+SD Card SCK    → GPIO 14 (Bawah-5, HSPI)
+SD Card MISO   → GPIO 12 (Bawah-4, HSPI)
+SD Card MOSI   → GPIO 13 (Bawah-3, HSPI)
+SD Card CS     → GPIO 5  (Atas-8, HSPI)
+Buzzer         → GPIO 27 (Bawah-6, pending transistor)
+```
+
+### ESP32 DevKit V1 30-Pin Layout:
+```
+Baris Atas (dari kiri): 3V3 GND D15 D2 D4 D16 D17 D5 D18 D19 D21 RX0 TX0 D22 D23
+Baris Bawah (dari kiri): VIN GND D13 D12 D14 D27 D26 D25 D33 D32 D35 D34 VN VP EN
 ```
 
 ### Calibration Values (config.h) - PLACEHOLDER:

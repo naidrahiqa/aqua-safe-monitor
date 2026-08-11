@@ -15,10 +15,29 @@ bool storage_init() {
   Serial.print(SD_CS);
   Serial.print("... ");
 
-  sdOk = SD.begin(SD_CS, spi);
+  // The SD library defaults to 25 MHz, which often fails on
+  // breadboard/jumper-wire modules (long leads, no proper
+  // termination). Retry at progressively slower clocks - most
+  // marginal cards/modules initialize fine at or below 1 MHz.
+  const uint32_t speeds[] = { 25000000UL, 8000000UL, 1000000UL, 400000UL };
+  for (uint8_t i = 0; i < sizeof(speeds) / sizeof(speeds[0]); i++) {
+    sdOk = SD.begin(SD_CS, spi, speeds[i]);
+    if (sdOk) {
+      if (speeds[i] < 25000000UL) {
+        Serial.print("OK (SPI ");
+        Serial.print(speeds[i] / 1000UL);
+        Serial.println(" kHz)");
+      } else {
+        Serial.println("OK");
+      }
+      break;
+    }
+    Serial.print("FAILED @ ");
+    Serial.print(speeds[i] / 1000UL);
+    Serial.println(" kHz, retrying slower...");
+  }
 
   if (sdOk) {
-    Serial.println("OK");
     Serial.print("[SD] Card type: ");
     uint8_t cardType = SD.cardType();
     if (cardType == CARD_MMC) Serial.println("MMC");
