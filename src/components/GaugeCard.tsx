@@ -81,9 +81,9 @@ export default function GaugeCard({
             style={{ animationDelay: `${delay}ms` }}
         >
             {/* Header */}
-            <div className="flex items-center justify-between w-full mb-1">
-                <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">{title}</span>
-                <div className="p-1.5 rounded-lg bg-water-500/10 text-water-400 border border-water-500/10">{icon}</div>
+            <div className="flex items-center justify-between w-full mb-1 gap-2">
+                <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 truncate flex-1 min-w-0">{title}</span>
+                <div className="p-1.5 rounded-lg bg-water-500/10 text-water-400 border border-water-500/10 flex-shrink-0">{icon}</div>
             </div>
 
             {/* Gauge */}
