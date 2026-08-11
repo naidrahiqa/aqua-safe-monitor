@@ -50,7 +50,7 @@ export interface ChartDataPoint {
 }
 
 /** Navigation section identifiers */
-export type NavSection = 'overview' | 'analytics' | 'history' | 'settings' | 'devices';
+export type NavSection = 'overview' | 'ph' | 'suhu' | 'tds' | 'turbidity' | 'history' | 'settings' | 'devices';
 
 // ===================================================================
 // Supabase Database Types

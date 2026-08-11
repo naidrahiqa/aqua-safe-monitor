@@ -11,10 +11,11 @@ import {
     LogOut,
     AlertTriangle,
     RefreshCw,
+    Eye,
 } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 import GaugeCard from '../components/GaugeCard';
-import AnalyticsChart from '../components/AnalyticsChart';
+import SensorDetail from '../components/SensorDetail';
 import LocationMap from '../components/LocationMap';
 import DataTable from '../components/DataTable';
 import DeviceManager from '../components/DeviceManager';
@@ -38,11 +39,6 @@ export default function Dashboard() {
     const dangerCount = readings.filter((r) => r.status === 'BAHAYA').length;
     const isLoading = loading && readings.length === 0;
 
-    const average = (key: 'pH' | 'tds' | 'temperature' | 'turbidity') => {
-        if (readings.length === 0) return 0;
-        return readings.reduce((s, r) => s + r[key], 0) / readings.length;
-    };
-
     const [now, setNow] = useState(Date.now());
     useEffect(() => {
         const t = setInterval(() => setNow(Date.now()), 5000);
@@ -59,7 +55,19 @@ export default function Dashboard() {
                 ? `Online • ${secondsAgo} dtk lalu`
                 : secondsAgo < 120
                     ? 'Online • 1 mnt lalu'
-                    : `Tidak update • ${Math.floor(secondsAgo / 60)} mnt lalu`;
+                    : `Offline • ${Math.floor(secondsAgo / 60)} mnt lalu`;
+
+    // Page title mapping
+    const PAGE_TITLES: Record<NavSection, string> = {
+        overview: 'Overview',
+        ph: 'pH Level',
+        suhu: 'Suhu Air',
+        tds: 'TDS',
+        turbidity: 'Turbidity',
+        history: 'Riwayat',
+        devices: 'Perangkat',
+        settings: 'Pengaturan',
+    };
 
     return (
         <div className="flex min-h-screen bg-surface">
@@ -68,23 +76,20 @@ export default function Dashboard() {
             {/* Main Content */}
             <main className="flex-1 min-h-screen overflow-y-auto">
                 {/* ===== Top Bar ===== */}
-                <header id="top-bar" className="sticky top-0 z-30 backdrop-blur-xl bg-surface/80 border-b border-white/[0.06]">
+                <header id="top-bar" className="sticky top-0 z-30 backdrop-blur-2xl bg-surface/70 border-b border-white/[0.04]">
                     <div className="flex items-center justify-between px-4 py-3 sm:px-6 sm:py-4 lg:px-8">
                         <div className="pl-10 sm:pl-12 lg:pl-0">
                             <h1 className="text-base sm:text-lg font-bold text-white tracking-tight">
-                                Dashboard{' '}
-                                <span className="bg-gradient-to-r from-water-400 to-ocean-400 bg-clip-text text-transparent">
-                                    WaterSafe
-                                </span>
+                                {PAGE_TITLES[activeNav]}
                             </h1>
-                            <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-                                Monitoring kualitas air real-time • ESP32 IoT
+                            <p className="text-xs text-slate-500 mt-0.5">
+                                {activeNav === 'overview' ? 'Monitoring kualitas air real-time • ESP32 IoT' : 'WaterSafe Monitor'}
                             </p>
                         </div>
 
                         <div className="flex items-center gap-2 sm:gap-3">
-                            {/* Search (desktop) */}
-                            <div className="hidden lg:flex items-center gap-2 px-3 py-2 rounded-xl bg-white/[0.04] border border-white/[0.06] text-slate-500 hover:border-water-500/30 focus-within:border-water-500/40 focus-within:ring-1 focus-within:ring-water-500/20 transition-all w-52">
+                            {/* Search */}
+                            <div className="hidden lg:flex items-center gap-2 px-3 py-2 rounded-xl bg-white/[0.03] border border-white/[0.05] text-slate-500 hover:border-water-500/20 focus-within:border-water-500/30 focus-within:ring-1 focus-within:ring-water-500/15 transition-all w-52">
                                 <Search size={14} />
                                 <input
                                     id="search-input"
@@ -98,7 +103,7 @@ export default function Dashboard() {
                             {/* Refresh */}
                             <button
                                 onClick={refresh}
-                                className="p-2 sm:p-2.5 rounded-xl bg-white/[0.04] border border-white/[0.06] hover:border-water-500/30 text-slate-400 hover:text-white transition-all"
+                                className="p-2 sm:p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.05] hover:border-water-500/20 text-slate-400 hover:text-white transition-all"
                                 title="Refresh data"
                                 aria-label="Refresh sensor data"
                             >
@@ -109,10 +114,10 @@ export default function Dashboard() {
                             <div
                                 className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg border ${
                                     secondsAgo === null
-                                        ? 'bg-white/[0.04] border-white/[0.06]'
+                                        ? 'bg-white/[0.03] border-white/[0.05]'
                                         : isOnline
-                                            ? 'bg-safe/10 border-safe/20'
-                                            : 'bg-warning/10 border-warning/20'
+                                            ? 'bg-safe/10 border-safe/15'
+                                            : 'bg-warning/10 border-warning/15'
                                 }`}
                                 title="Update terakhir dari sensor"
                             >
@@ -130,7 +135,7 @@ export default function Dashboard() {
                             <button
                                 id="notification-button"
                                 onClick={() => setShowNotifications(!showNotifications)}
-                                className="relative p-2 sm:p-2.5 rounded-xl bg-white/[0.04] border border-white/[0.06] hover:border-water-500/30 text-slate-400 hover:text-white transition-all"
+                                className="relative p-2 sm:p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.05] hover:border-water-500/20 text-slate-400 hover:text-white transition-all"
                                 aria-label={`Notifications${dangerCount > 0 ? ` (${dangerCount} alerts)` : ''}`}
                                 aria-expanded={showNotifications}
                             >
@@ -144,7 +149,7 @@ export default function Dashboard() {
                             <button
                                 id="sign-out-button"
                                 onClick={signOut}
-                                className="hidden sm:flex p-2.5 rounded-xl bg-white/[0.04] border border-white/[0.06] hover:border-danger/30 text-slate-400 hover:text-danger transition-all"
+                                className="hidden sm:flex p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.05] hover:border-danger/20 text-slate-400 hover:text-danger transition-all"
                                 title="Keluar"
                                 aria-label="Sign out"
                             >
@@ -154,7 +159,7 @@ export default function Dashboard() {
                             {/* Avatar */}
                             <div
                                 id="user-avatar"
-                                className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-water-500 to-ocean-600 flex items-center justify-center text-white text-[10px] sm:text-xs font-bold ring-2 ring-water-500/20 cursor-pointer hover:ring-water-500/40 transition-all"
+                                className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-water-500 to-ocean-600 flex items-center justify-center text-white text-[10px] sm:text-xs font-bold ring-2 ring-water-500/15 cursor-pointer hover:ring-water-500/30 transition-all"
                                 title={user?.email ?? 'Demo User'}
                                 role="img"
                                 aria-label={`User: ${user?.email ?? 'Demo User'}`}
@@ -174,7 +179,7 @@ export default function Dashboard() {
                 )}
 
                 {/* ===== Page Content ===== */}
-                <div className="px-4 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-8 max-w-[1440px] mx-auto">
+                <div className="px-4 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-8 max-w-[1600px] mx-auto">
                     {/* Loading skeleton */}
                     {isLoading && (
                         <div className="space-y-6 animate-fade-in">
@@ -203,9 +208,9 @@ export default function Dashboard() {
                         </div>
                     )}
 
+                    {/* ===== OVERVIEW ===== */}
                     {!isLoading && activeNav === 'overview' && (
                         <div className="space-y-6 animate-fade-in">
-                            {/* Gauge Cards Grid */}
                             <section aria-label="Sensor readings">
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
                                     <GaugeCard
@@ -265,7 +270,7 @@ export default function Dashboard() {
                                         title="Turbidity"
                                         value={latestReading.turbidity}
                                         unit="NTU"
-                                        icon={<Waves size={18} />}
+                                        icon={<Eye size={18} />}
                                         min={0}
                                         max={100}
                                         safeMin={0}
@@ -277,14 +282,9 @@ export default function Dashboard() {
                                 </div>
                             </section>
 
-                            {/* Charts & Map Row */}
-                            <section className="grid grid-cols-1 lg:grid-cols-3 gap-6" aria-label="Charts and location">
-                                <div className="lg:col-span-2">
-                                    <AnalyticsChart data={chartData} />
-                                </div>
-                                <div>
-                                    <LocationMap reading={latestReading} />
-                                </div>
+                            {/* Map */}
+                            <section aria-label="Sensor location">
+                                <LocationMap reading={latestReading} />
                             </section>
 
                             {/* Data Table */}
@@ -292,98 +292,41 @@ export default function Dashboard() {
                         </div>
                     )}
 
-                    {!isLoading && activeNav === 'analytics' && (
-                        <div className="space-y-6 animate-fade-in">
-                            <section aria-label="Analytics charts">
-                                <AnalyticsChart data={chartData} showAllLines />
-                            </section>
-                            <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" aria-label="Average sensor values">
-                                <GaugeCard
-                                    id="card-avg-ph"
-                                    title="Rata-Rata pH"
-                                    value={average('pH')}
-                                    unit="pH"
-                                    icon={<FlaskConical size={18} />}
-                                    min={0}
-                                    max={14}
-                                    safeMin={alertCfg.phMin}
-                                    safeMax={alertCfg.phMax}
-                                    subtitle="Seluruh data"
-                                    delay={100}
-                                />
-                                <GaugeCard
-                                    id="card-avg-tds"
-                                    title="Rata-Rata TDS"
-                                    value={average('tds')}
-                                    unit="ppm"
-                                    icon={<Droplets size={18} />}
-                                    min={0}
-                                    max={1000}
-                                    safeMin={0}
-                                    safeMax={alertCfg.tdsMax}
-                                    subtitle="Seluruh data"
-                                    delay={200}
-                                    decimals={0}
-                                />
-                                <GaugeCard
-                                    id="card-avg-temp"
-                                    title="Rata-Rata Suhu"
-                                    value={average('temperature')}
-                                    unit="°C"
-                                    icon={<Thermometer size={18} />}
-                                    min={0}
-                                    max={50}
-                                    safeMin={alertCfg.tempMin}
-                                    safeMax={alertCfg.tempMax}
-                                    subtitle="Seluruh data"
-                                    delay={300}
-                                />
-                                <GaugeCard
-                                    id="card-avg-turbidity"
-                                    title="Rata-Rata Turbidity"
-                                    value={average('turbidity')}
-                                    unit="NTU"
-                                    icon={<Waves size={18} />}
-                                    min={0}
-                                    max={100}
-                                    safeMin={0}
-                                    safeMax={alertCfg.turbidityMax}
-                                    subtitle="Seluruh data"
-                                    delay={400}
-                                    decimals={0}
-                                />
-                            </section>
-                        </div>
+                    {/* ===== SENSOR DETAIL PAGES ===== */}
+                    {!isLoading && (activeNav === 'ph' || activeNav === 'suhu' || activeNav === 'tds' || activeNav === 'turbidity') && (
+                        <SensorDetail sensorKey={activeNav} />
                     )}
 
+                    {/* ===== HISTORY ===== */}
                     {!isLoading && activeNav === 'history' && (
                         <div className="animate-fade-in">
                             <DataTable readings={readings} showFilters />
                         </div>
                     )}
 
+                    {/* ===== DEVICES ===== */}
                     {!isLoading && activeNav === 'devices' && (
                         <DeviceManager />
                     )}
 
+                    {/* ===== SETTINGS ===== */}
                     {!isLoading && activeNav === 'settings' && (
                         <div className="animate-fade-in space-y-6">
                             <AlertSettings config={alertCfg} onChange={setAlertCfg} />
                             <LocationSettings onSaved={refresh} />
 
-                            {/* System Info */}
                             <section className="glass-panel rounded-2xl p-5 sm:p-6" aria-label="System information">
                                 <h2 className="text-base font-bold text-white mb-4">Informasi Sistem</h2>
                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                    <div className="px-4 py-3 rounded-xl bg-panel-light border border-white/[0.06]">
+                                    <div className="px-4 py-3 rounded-xl bg-panel-light border border-white/[0.05]">
                                         <p className="text-[10px] text-slate-500 uppercase tracking-wider">Total Pembacaan</p>
                                         <p className="text-xl font-bold text-white mt-1 tabular-nums">{readings.length}</p>
                                     </div>
-                                    <div className="px-4 py-3 rounded-xl bg-panel-light border border-white/[0.06]">
+                                    <div className="px-4 py-3 rounded-xl bg-panel-light border border-white/[0.05]">
                                         <p className="text-[10px] text-slate-500 uppercase tracking-wider">Status BAHAYA</p>
                                         <p className="text-xl font-bold text-danger mt-1 tabular-nums">{dangerCount}</p>
                                     </div>
-                                    <div className="px-4 py-3 rounded-xl bg-panel-light border border-white/[0.06]">
+                                    <div className="px-4 py-3 rounded-xl bg-panel-light border border-white/[0.05]">
                                         <p className="text-[10px] text-slate-500 uppercase tracking-wider">Status LAYAK</p>
                                         <p className="text-xl font-bold text-warning mt-1 tabular-nums">{readings.filter((r) => r.status === 'LAYAK').length}</p>
                                     </div>
@@ -394,7 +337,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Footer */}
-                <footer className="px-4 py-4 sm:px-6 lg:px-8 border-t border-white/[0.06]">
+                <footer className="px-4 py-4 sm:px-6 lg:px-8 border-t border-white/[0.04]">
                     <p className="text-xs text-slate-500 text-center">
                         WaterSafe-Monitor v1.0 — IoT Water Quality Dashboard • Powered by ESP32
                     </p>
@@ -402,8 +345,8 @@ export default function Dashboard() {
             </main>
 
             {/* Background decorative elements */}
-            <div className="fixed top-0 right-0 w-[600px] h-[600px] pointer-events-none opacity-30 blur-3xl" aria-hidden="true">
-                <div className="absolute top-[-200px] right-[-200px] w-[500px] h-[500px] rounded-full bg-gradient-to-br from-water-500/10 to-ocean-500/5" />
+            <div className="fixed top-0 right-0 w-[700px] h-[700px] pointer-events-none opacity-20 blur-3xl" aria-hidden="true">
+                <div className="absolute top-[-250px] right-[-250px] w-[600px] h-[600px] rounded-full bg-gradient-to-br from-water-500/15 to-ocean-600/5" />
             </div>
         </div>
     );
