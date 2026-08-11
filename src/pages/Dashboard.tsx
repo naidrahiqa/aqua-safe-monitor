@@ -3,7 +3,6 @@ import {
     Thermometer,
     Droplets,
     FlaskConical,
-    Waves,
     Activity,
     Bell,
     Search,
@@ -33,7 +32,7 @@ export default function Dashboard() {
     const [activeNav, setActiveNav] = useState<NavSection>('overview');
     const [showNotifications, setShowNotifications] = useState(false);
     const { user, signOut } = useAuth();
-    const { latestReading, readings, chartData, loading, error, refresh } = useSensorContext();
+    const { latestReading, readings, loading, error, refresh } = useSensorContext();
     const [alertCfg, setAlertCfg] = useState(loadAlertConfig);
 
     const dangerCount = readings.filter((r) => r.status === 'BAHAYA').length;

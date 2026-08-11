@@ -8,7 +8,7 @@ import {
     Tooltip,
     ResponsiveContainer,
 } from 'recharts';
-import { TrendingUp, Clock, Waves, FlaskConical, Droplets, Thermometer, Eye } from 'lucide-react';
+import { TrendingUp, Clock, FlaskConical, Droplets, Thermometer, Eye } from 'lucide-react';
 import type { ChartDataPoint } from '../types';
 
 type TimeRange = '5M' | '15M' | '30M' | '1J' | '4J' | '8J' | '24J' | 'all';
@@ -128,7 +128,7 @@ function SingleSensorChart({ data, title, subtitle, dataKey, name, color, icon, 
         );
     }
 
-    const vals = filteredData.map((d) => (d as Record<string, unknown>)[dataKey] as number).filter((v) => v != null && !isNaN(v));
+    const vals = filteredData.map((d) => (d as unknown as Record<string, number>)[dataKey]).filter((v) => v != null && !isNaN(v));
     const autoMin = vals.length ? Math.min(...vals) : domain[0];
     const autoMax = vals.length ? Math.max(...vals) : domain[1];
     const padding = Math.max((autoMax - autoMin) * 0.15, 1);
