@@ -259,7 +259,7 @@ export default function DeviceManager() {
                             onChange={(e) => setNewDeviceName(e.target.value)}
                             placeholder="Nama perangkat, contoh: ESP32-Kolam-Utama"
                             className="flex-1 px-4 py-2.5 rounded-xl bg-panel border border-white/5
-                                text-sm text-white placeholder-slate-600
+                                text-sm text-white placeholder-slate-500
                                 focus:outline-none focus:border-water-500/50 focus:ring-1 focus:ring-water-500/20
                                 transition-all"
                             onKeyDown={(e) => e.key === 'Enter' && handleAddDevice()}
@@ -370,9 +370,9 @@ String payload = "{\\"api_key\\":\\"" + String(API_KEY) + "\\","
                 </div>
             ) : devices.length === 0 ? (
                 <div className="glass-panel rounded-2xl p-12 text-center">
-                    <Cpu size={40} className="text-slate-600 mx-auto mb-3" />
+                    <Cpu size={40} className="text-slate-500 mx-auto mb-3" />
                     <p className="text-sm text-slate-400 font-medium">Belum ada perangkat terdaftar</p>
-                    <p className="text-xs text-slate-600 mt-1">Klik "Tambah Perangkat" untuk mendaftarkan ESP32 kamu</p>
+                    <p className="text-xs text-slate-500 mt-1">Klik "Tambah Perangkat" untuk mendaftarkan ESP32 kamu</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -388,7 +388,7 @@ String payload = "{\\"api_key\\":\\"" + String(API_KEY) + "\\","
                             {/* Device Header */}
                             <div className="flex items-center justify-between mb-4">
                                 <div className="flex items-center gap-3">
-                                    <div className={`p-2.5 rounded-xl ${device.is_active ? 'bg-water-500/10 text-water-400' : 'bg-white/5 text-slate-600'}`}>
+                                    <div className={`p-2.5 rounded-xl ${device.is_active ? 'bg-water-500/10 text-water-400' : 'bg-white/5 text-slate-500'}`}>
                                         <Cpu size={18} />
                                     </div>
                                     <div>
@@ -402,7 +402,7 @@ String payload = "{\\"api_key\\":\\"" + String(API_KEY) + "\\","
                                             <Wifi size={10} /> Aktif
                                         </span>
                                     ) : (
-                                        <span className="flex items-center gap-1 text-[10px] font-semibold text-slate-600">
+                                        <span className="flex items-center gap-1 text-[10px] font-semibold text-slate-500">
                                             <WifiOff size={10} /> Nonaktif
                                         </span>
                                     )}
@@ -413,7 +413,7 @@ String payload = "{\\"api_key\\":\\"" + String(API_KEY) + "\\","
                             <div className="px-3 py-2.5 rounded-xl bg-panel/60 border border-white/5 mb-3">
                                 <div className="flex items-center justify-between">
                                     <div className="flex-1 min-w-0">
-                                        <span className="text-[9px] text-slate-600 uppercase tracking-wider block mb-0.5">API Key</span>
+                                        <span className="text-[9px] text-slate-500 uppercase tracking-wider block mb-0.5">API Key</span>
                                         <code className="text-[11px] text-slate-400 font-mono block truncate">
                                             {visibleKeys.has(device.id) ? device.secret_api_key : maskKey(device.secret_api_key)}
                                         </code>
@@ -439,7 +439,7 @@ String payload = "{\\"api_key\\":\\"" + String(API_KEY) + "\\","
 
                             {/* Meta & Actions */}
                             <div className="flex items-center justify-between">
-                                <span className="text-[10px] text-slate-600">
+                                <span className="text-[10px] text-slate-500">
                                     Dibuat: {new Date(device.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}
                                 </span>
                                 <div className="flex items-center gap-1">

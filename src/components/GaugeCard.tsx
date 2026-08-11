@@ -115,11 +115,11 @@ export default function GaugeCard({
                     style={{ transition: 'stroke-dasharray 1s ease-out, stroke 0.4s ease', filter: `drop-shadow(0 0 6px ${color}55)` }}
                 />
                 {/* Value */}
-                <text x="60" y="50" textAnchor="middle" fontSize="26" fontWeight="800" fill="#f8fafc">
+                <text x="60" y="50" textAnchor="middle" fontSize="28" fontWeight="800" fill="#f8fafc">
                     {value.toFixed(decimals)}
                 </text>
                 {/* Unit */}
-                <text x="60" y="68" textAnchor="middle" fontSize="11" fontWeight="500" fill="#64748b">
+                <text x="60" y="68" textAnchor="middle" fontSize="12" fontWeight="500" fill="#64748b">
                     {unit}
                 </text>
             </svg>

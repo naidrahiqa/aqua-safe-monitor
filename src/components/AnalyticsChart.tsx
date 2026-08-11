@@ -150,11 +150,11 @@ export default function AnalyticsChart({ data, showAllLines = false }: Analytics
                     <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={filteredData} margin={{ top: 5, right: 10, left: -10, bottom: 5 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.08)" vertical={false} />
-                            <XAxis dataKey="time" tick={{ fontSize: 11, fill: '#64748b' }} tickLine={false} axisLine={{ stroke: 'rgba(148,163,184,0.1)' }} interval={Math.max(0, Math.ceil(filteredData.length / 8) - 1)} />
-                            <YAxis yAxisId="pH" domain={phDomain} tick={{ fontSize: 11, fill: '#64748b' }} tickLine={false} axisLine={false}
-                                label={{ value: 'pH', angle: -90, position: 'insideLeft', style: { fontSize: 11, fill: '#64748b' } }} />
-                            <YAxis yAxisId="tds" orientation="right" domain={tdsDomain} tick={{ fontSize: 11, fill: '#64748b' }} tickLine={false} axisLine={false}
-                                label={{ value: 'ppm', angle: 90, position: 'insideRight', style: { fontSize: 11, fill: '#64748b' } }} />
+                            <XAxis dataKey="time" tick={{ fontSize: 12, fill: '#64748b' }} tickLine={false} axisLine={{ stroke: 'rgba(148,163,184,0.1)' }} interval={Math.max(0, Math.ceil(filteredData.length / 8) - 1)} />
+                            <YAxis yAxisId="pH" domain={phDomain} tick={{ fontSize: 12, fill: '#64748b' }} tickLine={false} axisLine={false}
+                                label={{ value: 'pH', angle: -90, position: 'insideLeft', style: { fontSize: 12, fill: '#64748b' } }} />
+                            <YAxis yAxisId="tds" orientation="right" domain={tdsDomain} tick={{ fontSize: 12, fill: '#64748b' }} tickLine={false} axisLine={false}
+                                label={{ value: 'ppm', angle: 90, position: 'insideRight', style: { fontSize: 12, fill: '#64748b' } }} />
                             <Tooltip content={<CustomTooltip />} />
                             <Legend wrapperStyle={{ fontSize: 11, paddingTop: '8px' }} iconType="circle" iconSize={8} />
                             {visibleLines.pH && (
@@ -208,11 +208,11 @@ export default function AnalyticsChart({ data, showAllLines = false }: Analytics
                     <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={filteredData} margin={{ top: 5, right: 10, left: -10, bottom: 5 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.08)" vertical={false} />
-                            <XAxis dataKey="time" tick={{ fontSize: 11, fill: '#64748b' }} tickLine={false} axisLine={{ stroke: 'rgba(148,163,184,0.1)' }} interval={Math.max(0, Math.ceil(filteredData.length / 8) - 1)} />
-                            <YAxis yAxisId="pH" domain={phDomain} tick={{ fontSize: 11, fill: '#64748b' }} tickLine={false} axisLine={false}
-                                label={{ value: 'pH', angle: -90, position: 'insideLeft', style: { fontSize: 11, fill: '#64748b' } }} />
-                            <YAxis yAxisId="temp" orientation="right" domain={tempDomain} tick={{ fontSize: 11, fill: '#64748b' }} tickLine={false} axisLine={false}
-                                label={{ value: '°C', angle: 90, position: 'insideRight', style: { fontSize: 11, fill: '#64748b' } }} />
+                            <XAxis dataKey="time" tick={{ fontSize: 12, fill: '#64748b' }} tickLine={false} axisLine={{ stroke: 'rgba(148,163,184,0.1)' }} interval={Math.max(0, Math.ceil(filteredData.length / 8) - 1)} />
+                            <YAxis yAxisId="pH" domain={phDomain} tick={{ fontSize: 12, fill: '#64748b' }} tickLine={false} axisLine={false}
+                                label={{ value: 'pH', angle: -90, position: 'insideLeft', style: { fontSize: 12, fill: '#64748b' } }} />
+                            <YAxis yAxisId="temp" orientation="right" domain={tempDomain} tick={{ fontSize: 12, fill: '#64748b' }} tickLine={false} axisLine={false}
+                                label={{ value: '°C', angle: 90, position: 'insideRight', style: { fontSize: 12, fill: '#64748b' } }} />
                             <Tooltip content={<CustomTooltip />} />
                             <Legend wrapperStyle={{ fontSize: 11, paddingTop: '8px' }} iconType="circle" iconSize={8} />
                             {visibleLines.pH && (
@@ -260,11 +260,11 @@ export default function AnalyticsChart({ data, showAllLines = false }: Analytics
                     <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={filteredData} margin={{ top: 5, right: 10, left: -10, bottom: 5 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.08)" vertical={false} />
-                            <XAxis dataKey="time" tick={{ fontSize: 11, fill: '#64748b' }} tickLine={false} axisLine={{ stroke: 'rgba(148,163,184,0.1)' }} interval={Math.max(0, Math.ceil(filteredData.length / 8) - 1)} />
-                            <YAxis yAxisId="tds" domain={tdsDomain} tick={{ fontSize: 11, fill: '#64748b' }} tickLine={false} axisLine={false}
-                                label={{ value: 'ppm', angle: -90, position: 'insideLeft', style: { fontSize: 11, fill: '#64748b' } }} />
-                            <YAxis yAxisId="turb" orientation="right" domain={turbDomain} tick={{ fontSize: 11, fill: '#64748b' }} tickLine={false} axisLine={false}
-                                label={{ value: 'NTU', angle: 90, position: 'insideRight', style: { fontSize: 11, fill: '#64748b' } }} />
+                            <XAxis dataKey="time" tick={{ fontSize: 12, fill: '#64748b' }} tickLine={false} axisLine={{ stroke: 'rgba(148,163,184,0.1)' }} interval={Math.max(0, Math.ceil(filteredData.length / 8) - 1)} />
+                            <YAxis yAxisId="tds" domain={tdsDomain} tick={{ fontSize: 12, fill: '#64748b' }} tickLine={false} axisLine={false}
+                                label={{ value: 'ppm', angle: -90, position: 'insideLeft', style: { fontSize: 12, fill: '#64748b' } }} />
+                            <YAxis yAxisId="turb" orientation="right" domain={turbDomain} tick={{ fontSize: 12, fill: '#64748b' }} tickLine={false} axisLine={false}
+                                label={{ value: 'NTU', angle: 90, position: 'insideRight', style: { fontSize: 12, fill: '#64748b' } }} />
                             <Tooltip content={<CustomTooltip />} />
                             <Legend wrapperStyle={{ fontSize: 11, paddingTop: '8px' }} iconType="circle" iconSize={8} />
                             {visibleLines.tds && (

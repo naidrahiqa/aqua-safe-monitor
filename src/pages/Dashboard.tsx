@@ -79,7 +79,7 @@ export default function Dashboard() {
                                     WaterSafe
                                 </span>
                             </h1>
-                            <p className="text-[10px] sm:text-xs text-slate-500 mt-0.5">
+                            <p className="text-[11px] sm:text-sm text-slate-500 mt-0.5">
                                 Monitoring kualitas air real-time • ESP32 IoT
                             </p>
                         </div>
@@ -92,7 +92,7 @@ export default function Dashboard() {
                                     id="search-input"
                                     type="text"
                                     placeholder="Cari sensor..."
-                                    className="bg-transparent text-xs text-slate-300 placeholder-slate-600 outline-none w-full"
+                                    className="bg-transparent text-sm text-slate-300 placeholder-slate-500 outline-none w-full"
                                 />
                             </div>
 
@@ -389,7 +389,7 @@ export default function Dashboard() {
 
                 {/* Footer */}
                 <footer className="px-4 py-4 sm:px-6 lg:px-8 border-t border-white/5">
-                    <p className="text-[11px] text-slate-600 text-center">
+                    <p className="text-xs text-slate-500 text-center">
                         WaterSafe-Monitor v1.0 — IoT Water Quality Dashboard • Powered by ESP32
                     </p>
                 </footer>

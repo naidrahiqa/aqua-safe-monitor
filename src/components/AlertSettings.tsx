@@ -13,7 +13,7 @@ function Row({ label, desc, children }: { label: string; desc: string; children:
         <div className="flex flex-col sm:flex-row sm:items-center justify-between py-3 border-b border-white/5 last:border-0 gap-2">
             <div>
                 <p className="text-sm font-medium text-slate-200">{label}</p>
-                <p className="text-xs text-slate-500 mt-0.5">{desc}</p>
+                <p className="text-[13px] text-slate-400 mt-0.5">{desc}</p>
             </div>
             <div className="flex items-center gap-2 self-start sm:self-auto">{children}</div>
         </div>
@@ -70,7 +70,7 @@ export default function AlertSettings({ config, onChange }: AlertSettingsProps) 
                 <Bell size={18} className="text-water-400" />
                 Pengaturan Sensor & Alert
             </h2>
-            <p className="text-xs text-slate-500 mb-2">Ubah ambang batas aman. Disimpan di perangkat ini dan dipakai untuk warna indikator.</p>
+            <p className="text-[13px] text-slate-400 mb-2">Ubah ambang batas aman. Disimpan di perangkat ini dan dipakai untuk warna indikator.</p>
 
             <div>
                 <Row label="Interval Pembacaan" desc="Frekuensi pengambilan data sensor">

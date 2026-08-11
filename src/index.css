@@ -49,10 +49,12 @@
 
   body {
     font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-size: 16px;
     background-color: var(--color-surface);
     color: #e2e8f0;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
 
   ::-webkit-scrollbar {
@@ -119,6 +121,13 @@
     background-size: 200% 200%;
     animation: gradient-x 3s ease infinite;
   }
+
+  /* ===== Legibility floor: no UI text below 11px/12px =====
+     Overrides Tailwind arbitrary sizes so micro-text (9-11px)
+     never renders. Deliberate floor for readability on dark bg. */
+  .text-\[9px\] { font-size: 10px; }
+  .text-\[10px\] { font-size: 11px; }
+  .text-\[11px\] { font-size: 12px; }
 }
 
 /* ===== Glassmorphism Panels ===== */

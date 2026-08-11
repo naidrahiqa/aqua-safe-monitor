@@ -202,7 +202,7 @@ export default function DataTable({ readings, showFilters = false }: DataTablePr
                             value={searchQuery}
                             onChange={(e) => handleSearch(e.target.value)}
                             placeholder="Cari data..."
-                            className="bg-transparent text-[11px] text-slate-300 placeholder-slate-600 outline-none w-full"
+                            className="bg-transparent text-[11px] text-slate-300 placeholder-slate-500 outline-none w-full"
                         />
                     </div>
                 </div>
@@ -239,13 +239,13 @@ export default function DataTable({ readings, showFilters = false }: DataTablePr
                                 <td className="py-3 pr-4">
                                     <div className="flex flex-col">
                                         <span className="text-xs font-medium text-slate-300">{formatTime(r.timestamp)}</span>
-                                        <span className="text-[10px] text-slate-600">{formatDate(r.timestamp)}</span>
+                                        <span className="text-[11px] text-slate-500">{formatDate(r.timestamp)}</span>
                                     </div>
                                 </td>
-                                <td className="py-3 pr-4 text-xs text-slate-300 font-medium">{r.temperature}°C</td>
-                                <td className="py-3 pr-4 text-xs text-slate-300 font-medium">{r.pH}</td>
-                                <td className="py-3 pr-4 text-xs text-slate-300 font-medium">{r.tds} <span className="text-slate-600">ppm</span></td>
-                                <td className="py-3 pr-4 text-xs text-slate-300 font-medium">{r.turbidity} <span className="text-slate-600">NTU</span></td>
+                                <td className="py-3 pr-4 text-[13px] text-slate-300 font-medium">{r.temperature}°C</td>
+                                <td className="py-3 pr-4 text-[13px] text-slate-300 font-medium">{r.pH}</td>
+                                <td className="py-3 pr-4 text-[13px] text-slate-300 font-medium">{r.tds} <span className="text-slate-500">ppm</span></td>
+                                <td className="py-3 pr-4 text-[13px] text-slate-300 font-medium">{r.turbidity} <span className="text-slate-500">NTU</span></td>
                                 <td className="py-3 pr-4">
                                     <span className={`text-sm font-bold ${r.wqiScore >= 80 ? 'text-safe' :
                                             r.wqiScore >= 60 ? 'text-warning' : 'text-danger'

@@ -149,7 +149,7 @@ export default function AuthPage() {
                     <form onSubmit={handleSubmit} className="space-y-4">
                         {/* Email field */}
                         <div>
-                            <label htmlFor="auth-email" className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                            <label htmlFor="auth-email" className="block text-[13px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
                                 Email
                             </label>
                             <div className="relative">
@@ -161,7 +161,7 @@ export default function AuthPage() {
                                     onChange={(e) => setEmail(e.target.value)}
                                     placeholder="email@example.com"
                                     className="w-full pl-10 pr-4 py-3 rounded-xl bg-panel-light border border-white/5
-                                        text-sm text-white placeholder-slate-600
+                                        text-sm text-white placeholder-slate-500
                                         focus:outline-none focus:border-water-500/50 focus:ring-1 focus:ring-water-500/20
                                         transition-all"
                                     autoComplete="email"
@@ -171,7 +171,7 @@ export default function AuthPage() {
 
                         {/* Password field */}
                         <div>
-                            <label htmlFor="auth-password" className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                            <label htmlFor="auth-password" className="block text-[13px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
                                 Password
                             </label>
                             <div className="relative">
@@ -183,7 +183,7 @@ export default function AuthPage() {
                                     onChange={(e) => setPassword(e.target.value)}
                                     placeholder="Minimal 6 karakter"
                                     className="w-full pl-10 pr-12 py-3 rounded-xl bg-panel-light border border-white/5
-                                        text-sm text-white placeholder-slate-600
+                                        text-sm text-white placeholder-slate-500
                                         focus:outline-none focus:border-water-500/50 focus:ring-1 focus:ring-water-500/20
                                         transition-all"
                                     autoComplete={isLogin ? 'current-password' : 'new-password'}

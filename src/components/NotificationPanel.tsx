@@ -183,7 +183,7 @@ export default function NotificationPanel({ readings, onClose }: NotificationPan
                         <div className="text-center py-12">
                             <Shield size={32} className="text-safe mx-auto mb-3" />
                             <p className="text-sm text-slate-400 font-medium">Semua aman!</p>
-                            <p className="text-xs text-slate-600 mt-1">Tidak ada peringatan aktif</p>
+                            <p className="text-xs text-slate-500 mt-1">Tidak ada peringatan aktif</p>
                         </div>
                     )}
                 </div>
