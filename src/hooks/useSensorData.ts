@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
-import { mockReadings, latestReading, chartData } from '../data/mockData';
-import type { SensorReading, ChartDataPoint, SensorDataRecord } from '../types';
+import { mockReadings, latestReading, chartData, mockLocationPins } from '../data/mockData';
+import type { SensorReading, ChartDataPoint, SensorDataRecord, LocationPin } from '../types';
 
 // ===================================================================
 // useSensorData — Fetches and subscribes to real-time sensor data.
@@ -12,6 +12,7 @@ interface UseSensorDataResult {
     readings: SensorReading[];
     latestReading: SensorReading;
     chartData: ChartDataPoint[];
+    locationPins: LocationPin[];
     loading: boolean;
     error: string | null;
     refresh: () => Promise<void>;
@@ -53,11 +54,32 @@ function buildChartData(readings: SensorReading[]): ChartDataPoint[] {
         });
 }
 
+/** Compute location pins — group readings by location, pick latest per unique location */
+function buildLocationPins(readings: SensorReading[]): LocationPin[] {
+    const locationMap = new Map<string, LocationPin>();
+
+    for (const reading of readings) {
+        const key = `${reading.location.lat.toFixed(4)},${reading.location.lng.toFixed(4)}`;
+        if (!locationMap.has(key)) {
+            locationMap.set(key, {
+                id: `pin-${key}`,
+                deviceName: `Sensor (${reading.location.lat.toFixed(2)}°, ${reading.location.lng.toFixed(2)}°)`,
+                location: reading.location,
+                latestReading: reading,
+                status: reading.status,
+            });
+        }
+    }
+
+    return Array.from(locationMap.values());
+}
+
 export function useSensorData(limit = 50): UseSensorDataResult {
     const configured = isSupabaseConfigured();
     const [readings, setReadings] = useState<SensorReading[]>(mockReadings);
     const [latest, setLatest] = useState<SensorReading>(latestReading);
     const [chart, setChart] = useState<ChartDataPoint[]>(chartData);
+    const [pins, setPins] = useState<LocationPin[]>(mockLocationPins);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -66,6 +88,7 @@ export function useSensorData(limit = 50): UseSensorDataResult {
             setReadings(mockReadings);
             setLatest(latestReading);
             setChart(chartData);
+            setPins(mockLocationPins);
             setLoading(false);
             return;
         }
@@ -106,16 +129,19 @@ export function useSensorData(limit = 50): UseSensorDataResult {
                 setReadings(parsed);
                 setLatest(parsed[0]);
                 setChart(buildChartData(parsed));
+                setPins(buildLocationPins(parsed));
             } else {
                 setReadings(mockReadings);
                 setLatest(latestReading);
                 setChart(chartData);
+                setPins(mockLocationPins);
             }
         } catch {
             setError('Gagal memuat data sensor');
             setReadings(mockReadings);
             setLatest(latestReading);
             setChart(chartData);
+            setPins(mockLocationPins);
         }
 
         setLoading(false);
@@ -163,7 +189,11 @@ export function useSensorData(limit = 50): UseSensorDataResult {
                             location_lng: device?.location_lng as number | undefined,
                         });
 
-                        setReadings((prev) => [newReading, ...prev].slice(0, limit));
+                        setReadings((prev) => {
+                            const updated = [newReading, ...prev].slice(0, limit);
+                            setPins(buildLocationPins(updated));
+                            return updated;
+                        });
                         setLatest(newReading);
                         setChart((prev) => {
                             const d = new Date(newReading.timestamp);
@@ -191,6 +221,7 @@ export function useSensorData(limit = 50): UseSensorDataResult {
         readings,
         latestReading: latest,
         chartData: chart,
+        locationPins: pins,
         loading,
         error,
         refresh: fetchData,

@@ -1,6 +1,6 @@
 import { createContext, useContext, type ReactNode } from 'react';
 import { useSensorData } from '../hooks/useSensorData';
-import type { SensorReading, ChartDataPoint } from '../types';
+import type { SensorReading, ChartDataPoint, LocationPin } from '../types';
 
 // ===================================================================
 // Sensor Data Context — Provides live sensor data to the entire app.
@@ -11,6 +11,7 @@ interface SensorDataContextType {
     readings: SensorReading[];
     latestReading: SensorReading;
     chartData: ChartDataPoint[];
+    locationPins: LocationPin[];
     loading: boolean;
     error: string | null;
     refresh: () => Promise<void>;

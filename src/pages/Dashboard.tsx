@@ -32,7 +32,7 @@ export default function Dashboard() {
     const [activeNav, setActiveNav] = useState<NavSection>('overview');
     const [showNotifications, setShowNotifications] = useState(false);
     const { user, signOut } = useAuth();
-    const { latestReading, readings, loading, error, refresh } = useSensorContext();
+    const { latestReading, readings, loading, error, refresh, locationPins } = useSensorContext();
     const [alertCfg, setAlertCfg] = useState(loadAlertConfig);
 
     const dangerCount = readings.filter((r) => r.status === 'BAHAYA').length;
@@ -282,8 +282,8 @@ export default function Dashboard() {
                             </section>
 
                             {/* Map */}
-                            <section aria-label="Sensor location">
-                                <LocationMap reading={latestReading} />
+                            <section aria-label="Sensor locations">
+                                <LocationMap locationPins={locationPins} />
                             </section>
 
                             {/* Data Table */}

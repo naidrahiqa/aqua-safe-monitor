@@ -1,4 +1,4 @@
-import type { SensorReading, ChartDataPoint } from '../types';
+import type { SensorReading, ChartDataPoint, LocationPin } from '../types';
 
 // ===================================================================
 // Mock Data — Simulates ESP32 sensor payloads for UI development.
@@ -124,3 +124,57 @@ export const chartData: ChartDataPoint[] = mockReadings
             turbidity: r.turbidity,
         };
     });
+
+// ===================================================================
+// Mock Location Pins — 3 test locations with different sensor data.
+// Each pin represents a physical ESP32 deployment site.
+// ===================================================================
+
+const LOCATIONS = {
+    utama: { lat: -6.5833, lng: 110.6667 },
+    kolam: { lat: -6.5850, lng: 110.6700 },
+    irigasi: { lat: -6.5810, lng: 110.6640 },
+};
+
+function locReading(
+    loc: { lat: number; lng: number },
+    temp: number, pH: number, tds: number, turb: number,
+    wqi: number, status: SensorReading['status'],
+    hoursOffset: number,
+): SensorReading {
+    return {
+        id: generateId(),
+        timestamp: hoursAgo(hoursOffset),
+        temperature: temp,
+        pH,
+        tds,
+        turbidity: turb,
+        wqiScore: wqi,
+        status,
+        location: { ...loc },
+    };
+}
+
+export const mockLocationPins: LocationPin[] = [
+    {
+        id: 'pin-utama',
+        deviceName: 'ESP32-Sumber-Air-Utama',
+        location: { ...LOCATIONS.utama },
+        latestReading: locReading(LOCATIONS.utama, 26.4, 7.2, 185, 2.1, 92, 'SANGAT LAYAK', 0),
+        status: 'SANGAT LAYAK',
+    },
+    {
+        id: 'pin-kolam',
+        deviceName: 'ESP32-Kolam-Belakang',
+        location: { ...LOCATIONS.kolam },
+        latestReading: locReading(LOCATIONS.kolam, 27.5, 6.5, 245, 5.2, 65, 'LAYAK', 3),
+        status: 'LAYAK',
+    },
+    {
+        id: 'pin-irigasi',
+        deviceName: 'ESP32-Saluran-Irigasi',
+        location: { ...LOCATIONS.irigasi },
+        latestReading: locReading(LOCATIONS.irigasi, 28.2, 5.9, 320, 8.6, 42, 'BAHAYA', 4),
+        status: 'BAHAYA',
+    },
+];

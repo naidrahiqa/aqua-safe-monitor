@@ -37,6 +37,15 @@ export interface SensorReading {
     location: SensorLocation;
 }
 
+/** A map pin representing one test location with its latest sensor data */
+export interface LocationPin {
+    id: string;
+    deviceName: string;
+    location: SensorLocation;
+    latestReading: SensorReading;
+    status: WaterStatus;
+}
+
 /** Data point for time-series charts */
 export interface ChartDataPoint {
     /** ISO-8601 timestamp for filtering */
