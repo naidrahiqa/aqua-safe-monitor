@@ -58,6 +58,10 @@ export default function GaugeCard({
     const [progress, setProgress] = useState(0);
     const color = status ? STATUS_COLORS[status] : getGaugeColor(value, safeMin, safeMax);
 
+    // Dynamic font size based on value length to prevent overflow
+    const valueStr = value.toFixed(decimals);
+    const valueFontSize = valueStr.length > 6 ? 20 : valueStr.length > 4 ? 24 : 28;
+
     useEffect(() => {
         const t = setTimeout(() => setProgress(pct), 150 + delay);
         return () => clearTimeout(t);
@@ -91,35 +95,35 @@ export default function GaugeCard({
             </div>
 
             {/* Gauge */}
-            <svg viewBox="0 0 120 100" className="w-full max-w-[150px]" aria-hidden="true">
+            <svg viewBox="0 0 120 95" className="w-full max-w-[140px]" aria-hidden="true">
                 <circle
                     cx="60"
-                    cy="58"
-                    r="44"
+                    cy="52"
+                    r="40"
                     pathLength={100}
                     fill="none"
                     stroke="rgba(148,163,184,0.12)"
-                    strokeWidth="10"
+                    strokeWidth="9"
                     strokeLinecap="round"
                     strokeDasharray="50 100"
                 />
                 <circle
                     cx="60"
-                    cy="58"
-                    r="44"
+                    cy="52"
+                    r="40"
                     pathLength={100}
                     fill="none"
                     stroke={color}
-                    strokeWidth="10"
+                    strokeWidth="9"
                     strokeLinecap="round"
                     strokeDasharray={`${arc} 100`}
-                    transform="rotate(180 60 58)"
+                    transform="rotate(180 60 52)"
                     style={{ transition: 'stroke-dasharray 1s ease-out, stroke 0.4s ease', filter: `drop-shadow(0 0 6px ${color}55)` }}
                 />
-                <text x="60" y="50" textAnchor="middle" fontSize="28" fontWeight="800" fill="#f8fafc" fontFamily="Inter, system-ui, sans-serif">
-                    {value.toFixed(decimals)}
+                <text x="60" y="44" textAnchor="middle" fontSize={valueFontSize} fontWeight="800" fill="#f8fafc" fontFamily="Inter, system-ui, sans-serif" dominantBaseline="auto">
+                    {valueStr}
                 </text>
-                <text x="60" y="68" textAnchor="middle" fontSize="12" fontWeight="500" fill="#64748b" fontFamily="Inter, system-ui, sans-serif">
+                <text x="60" y="62" textAnchor="middle" fontSize="11" fontWeight="500" fill="#64748b" fontFamily="Inter, system-ui, sans-serif">
                     {unit}
                 </text>
             </svg>

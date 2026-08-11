@@ -25,6 +25,7 @@ import SkeletonCard from '../components/SkeletonCard';
 import SkeletonChart from '../components/SkeletonChart';
 import { useAuth } from '../contexts/AuthContext';
 import { useSensorContext } from '../contexts/SensorDataContext';
+import { useTestLocations } from '../hooks/useTestLocations';
 import { loadAlertConfig } from '../lib/alertConfig';
 import type { NavSection } from '../types';
 
@@ -32,7 +33,8 @@ export default function Dashboard() {
     const [activeNav, setActiveNav] = useState<NavSection>('overview');
     const [showNotifications, setShowNotifications] = useState(false);
     const { user, signOut } = useAuth();
-    const { latestReading, readings, loading, error, refresh, locationPins } = useSensorContext();
+    const { latestReading, readings, loading, error, refresh } = useSensorContext();
+    const { locations: testLocations, addLocation, removeLocation } = useTestLocations();
     const [alertCfg, setAlertCfg] = useState(loadAlertConfig);
 
     const dangerCount = readings.filter((r) => r.status === 'BAHAYA').length;
@@ -283,7 +285,11 @@ export default function Dashboard() {
 
                             {/* Map */}
                             <section aria-label="Sensor locations">
-                                <LocationMap locationPins={locationPins} />
+                                <LocationMap
+                                    locations={testLocations}
+                                    onAddLocation={addLocation}
+                                    onRemoveLocation={removeLocation}
+                                />
                             </section>
 
                             {/* Data Table */}

@@ -46,6 +46,21 @@ export interface LocationPin {
     status: WaterStatus;
 }
 
+/** A user-saved test location with sensor readings */
+export interface TestLocation {
+    id: string;
+    name: string;
+    location: SensorLocation;
+    temperature: number;
+    pH: number;
+    tds: number;
+    turbidity: number;
+    wqiScore: number;
+    status: WaterStatus;
+    notes: string;
+    createdAt: string;
+}
+
 /** Data point for time-series charts */
 export interface ChartDataPoint {
     /** ISO-8601 timestamp for filtering */
