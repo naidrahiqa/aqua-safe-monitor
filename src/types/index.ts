@@ -59,6 +59,10 @@ export interface TestLocation {
     status: WaterStatus;
     notes: string;
     createdAt: string;
+    /** Latest reading synced from ESP32 sensor via Supabase */
+    syncedReading?: SensorReading;
+    /** Timestamp of last sync from sensor */
+    lastSyncedAt?: string;
 }
 
 /** Data point for time-series charts */

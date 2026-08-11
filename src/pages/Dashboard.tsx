@@ -34,7 +34,7 @@ export default function Dashboard() {
     const [showNotifications, setShowNotifications] = useState(false);
     const { user, signOut } = useAuth();
     const { latestReading, readings, loading, error, refresh } = useSensorContext();
-    const { locations: testLocations, addLocation, removeLocation } = useTestLocations();
+    const { locations: testLocations, addLocation, removeLocation, syncFromSensor } = useTestLocations();
     const [alertCfg, setAlertCfg] = useState(loadAlertConfig);
 
     const dangerCount = readings.filter((r) => r.status === 'BAHAYA').length;
@@ -289,6 +289,7 @@ export default function Dashboard() {
                                     locations={testLocations}
                                     onAddLocation={addLocation}
                                     onRemoveLocation={removeLocation}
+                                    onSyncLocation={syncFromSensor}
                                 />
                             </section>
 

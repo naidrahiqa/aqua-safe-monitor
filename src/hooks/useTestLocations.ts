@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
-import type { TestLocation, WaterStatus } from '../types';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import type { TestLocation, SensorReading, SensorDataRecord, WaterStatus } from '../types';
 
 // ===================================================================
 // useTestLocations — Manages user-saved test locations in localStorage.
@@ -106,6 +107,7 @@ export interface UseTestLocationsResult {
     addLocation: (data: Omit<TestLocation, 'id' | 'wqiScore' | 'status' | 'createdAt'>) => TestLocation;
     updateLocation: (id: string, data: Partial<TestLocation>) => void;
     removeLocation: (id: string) => void;
+    syncFromSensor: (locationId: string) => Promise<boolean>;
 }
 
 export function useTestLocations(): UseTestLocationsResult {
@@ -154,5 +156,58 @@ export function useTestLocations(): UseTestLocationsResult {
         });
     }, []);
 
-    return { locations, addLocation, updateLocation, removeLocation };
+    /** Fetch latest sensor reading from Supabase and sync to a test location */
+    const syncFromSensor = useCallback(async (locationId: string): Promise<boolean> => {
+        if (!isSupabaseConfigured()) return false;
+
+        try {
+            const { data, error } = await supabase
+                .from('sensor_data')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(1)
+                .single();
+
+            if (error || !data) return false;
+
+            const record = data as SensorDataRecord;
+            const reading: SensorReading = {
+                id: record.id,
+                timestamp: record.created_at,
+                temperature: record.temperature,
+                pH: record.ph,
+                tds: record.tds,
+                turbidity: record.turbidity,
+                wqiScore: record.wqi_score,
+                status: record.status,
+                location: { lat: -6.5833, lng: 110.6667 }, // default, will be overridden
+            };
+
+            setLocations((prev) => {
+                const next = prev.map((loc) => {
+                    if (loc.id !== locationId) return loc;
+                    return {
+                        ...loc,
+                        syncedReading: reading,
+                        lastSyncedAt: new Date().toISOString(),
+                        // Update sensor values from ESP32
+                        temperature: reading.temperature,
+                        pH: reading.pH,
+                        tds: reading.tds,
+                        turbidity: reading.turbidity,
+                        wqiScore: reading.wqiScore,
+                        status: reading.status,
+                    };
+                });
+                saveToStorage(next);
+                return next;
+            });
+
+            return true;
+        } catch {
+            return false;
+        }
+    }, []);
+
+    return { locations, addLocation, updateLocation, removeLocation, syncFromSensor };
 }

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents, useMap } from 'react-leaflet';
-import { MapPin, Plus, X } from 'lucide-react';
+import { MapPin, Plus, X, RefreshCw } from 'lucide-react';
 import L from 'leaflet';
 import type { TestLocation, WaterStatus } from '../types';
 
@@ -86,9 +86,10 @@ interface LocationMapProps {
     locations: TestLocation[];
     onAddLocation: (data: Omit<TestLocation, 'id' | 'wqiScore' | 'status' | 'createdAt'>) => void;
     onRemoveLocation: (id: string) => void;
+    onSyncLocation: (id: string) => Promise<boolean>;
 }
 
-export default function LocationMap({ locations, onAddLocation, onRemoveLocation }: LocationMapProps) {
+export default function LocationMap({ locations, onAddLocation, onRemoveLocation, onSyncLocation }: LocationMapProps) {
     const defaultCenter: [number, number] = [-6.5833, 110.6667];
     const mapRef = useRef(null);
 
@@ -103,6 +104,7 @@ export default function LocationMap({ locations, onAddLocation, onRemoveLocation
 
     const totalLocations = locations.length;
     const dangerCount = locations.filter((l) => l.status === 'BAHAYA').length;
+    const [syncingId, setSyncingId] = useState<string | null>(null);
 
     const handleMapClick = useCallback((lat: number, lng: number) => {
         if (addMode) {
@@ -148,6 +150,12 @@ export default function LocationMap({ locations, onAddLocation, onRemoveLocation
         setFormTDS('');
         setFormTurbidity('');
         setFormTemp('');
+    };
+
+    const handleSync = async (id: string) => {
+        setSyncingId(id);
+        await onSyncLocation(id);
+        setSyncingId(null);
     };
 
     return (
@@ -230,7 +238,7 @@ export default function LocationMap({ locations, onAddLocation, onRemoveLocation
                                     padding: '14px 18px',
                                     borderRadius: '12px',
                                     color: '#e2e8f0',
-                                    minWidth: '210px',
+                                    minWidth: '220px',
                                     fontFamily: 'Inter, system-ui, sans-serif',
                                     margin: '-14px -20px',
                                     boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
@@ -254,6 +262,26 @@ export default function LocationMap({ locations, onAddLocation, onRemoveLocation
                                             {loc.status}
                                         </span>
                                     </div>
+
+                                    {/* Synced indicator */}
+                                    {loc.syncedReading && (
+                                        <div style={{
+                                            marginBottom: '8px',
+                                            padding: '4px 8px',
+                                            borderRadius: '6px',
+                                            background: 'rgba(34,211,238,0.08)',
+                                            border: '1px solid rgba(34,211,238,0.15)',
+                                            fontSize: '9px',
+                                            color: '#22d3ee',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '4px',
+                                        }}>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                            Data dari ESP32 sensor
+                                        </div>
+                                    )}
+
                                     <div style={{ fontSize: '11px', lineHeight: '2', color: '#94a3b8' }}>
                                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                             <span>🌡 Suhu</span>
@@ -280,7 +308,40 @@ export default function LocationMap({ locations, onAddLocation, onRemoveLocation
                                                 📝 {loc.notes}
                                             </div>
                                         )}
+                                        {loc.lastSyncedAt && (
+                                            <div style={{ marginTop: '4px', fontSize: '9px', color: '#475569' }}>
+                                                Terakhir sync: {new Date(loc.lastSyncedAt).toLocaleString('id-ID', { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' })}
+                                            </div>
+                                        )}
                                     </div>
+
+                                    {/* Sync button */}
+                                    <button
+                                        onClick={() => handleSync(loc.id)}
+                                        disabled={syncingId === loc.id}
+                                        style={{
+                                            marginTop: '8px',
+                                            width: '100%',
+                                            padding: '7px',
+                                            borderRadius: '8px',
+                                            border: '1px solid rgba(34,211,238,0.3)',
+                                            background: syncingId === loc.id ? 'rgba(34,211,238,0.05)' : 'rgba(34,211,238,0.1)',
+                                            color: '#22d3ee',
+                                            fontSize: '10px',
+                                            fontWeight: 600,
+                                            cursor: syncingId === loc.id ? 'wait' : 'pointer',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            gap: '4px',
+                                            opacity: syncingId === loc.id ? 0.6 : 1,
+                                        }}
+                                    >
+                                        <RefreshCw size={11} className={syncingId === loc.id ? 'animate-spin' : ''} />
+                                        {syncingId === loc.id ? 'Syncing...' : 'Sinkron dari Sensor'}
+                                    </button>
+
+                                    {/* Delete button */}
                                     <button
                                         onClick={() => {
                                             if (confirm(`Hapus lokasi "${loc.name}"?`)) {
@@ -288,7 +349,7 @@ export default function LocationMap({ locations, onAddLocation, onRemoveLocation
                                             }
                                         }}
                                         style={{
-                                            marginTop: '8px',
+                                            marginTop: '4px',
                                             width: '100%',
                                             padding: '6px',
                                             borderRadius: '8px',
@@ -305,7 +366,7 @@ export default function LocationMap({ locations, onAddLocation, onRemoveLocation
                                         }}
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
-                                        Hapus Lokasi
+                                        Hapus
                                     </button>
                                 </div>
                             </Popup>
