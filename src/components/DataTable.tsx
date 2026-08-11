@@ -145,7 +145,7 @@ export default function DataTable({ readings, showFilters = false }: DataTablePr
             <div className="flex items-center justify-between mb-4">
                 <div>
                     <h2 className="text-base font-bold text-white flex items-center gap-2">
-                        <Clock size={18} className="text-water-400" />
+                        <Clock size={18} className="text-water-400" aria-hidden="true" />
                         Riwayat Pembacaan
                     </h2>
                     <p className="text-xs text-slate-500 mt-0.5">
@@ -157,11 +157,12 @@ export default function DataTable({ readings, showFilters = false }: DataTablePr
                     onClick={exportCSV}
                     disabled={filteredReadings.length === 0}
                     title="Export data ke CSV"
+                    aria-label="Export filtered data to CSV"
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold
-            text-water-400 hover:text-water-300 bg-water-500/10 hover:bg-water-500/15
-            border border-water-500/20 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
+                        text-water-400 hover:text-water-300 bg-water-500/10 hover:bg-water-500/15
+                        border border-water-500/20 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
                 >
-                    <Download size={12} />
+                    <Download size={12} aria-hidden="true" />
                     Export CSV
                 </button>
             </div>
@@ -210,7 +211,7 @@ export default function DataTable({ readings, showFilters = false }: DataTablePr
 
             {/* Table */}
             <div className="overflow-x-auto -mx-5 px-5">
-                <table className="w-full text-left min-w-[640px]">
+                <table className="w-full text-left min-w-[640px]" aria-label="Sensor reading history">
                     <thead>
                         <tr className="border-b border-white/5">
                             {COLUMNS.map((col) => (
@@ -242,10 +243,10 @@ export default function DataTable({ readings, showFilters = false }: DataTablePr
                                         <span className="text-xs text-slate-500">{formatDate(r.timestamp)}</span>
                                     </div>
                                 </td>
-                                <td className="py-3 pr-4 text-[13px] text-slate-300 font-medium">{r.temperature}°C</td>
-                                <td className="py-3 pr-4 text-[13px] text-slate-300 font-medium">{r.pH}</td>
-                                <td className="py-3 pr-4 text-[13px] text-slate-300 font-medium">{r.tds} <span className="text-slate-500">ppm</span></td>
-                                <td className="py-3 pr-4 text-[13px] text-slate-300 font-medium">{r.turbidity} <span className="text-slate-500">NTU</span></td>
+                                        <td className="py-3 pr-4 text-[13px] text-slate-300 font-medium tabular-nums">{r.temperature}°C</td>
+                                        <td className="py-3 pr-4 text-[13px] text-slate-300 font-medium tabular-nums">{r.pH}</td>
+                                        <td className="py-3 pr-4 text-[13px] text-slate-300 font-medium tabular-nums">{r.tds} <span className="text-slate-500">ppm</span></td>
+                                        <td className="py-3 pr-4 text-[13px] text-slate-300 font-medium tabular-nums">{r.turbidity} <span className="text-slate-500">NTU</span></td>
                                 <td className="py-3 pr-4">
                                     <span className={`text-sm font-bold ${r.wqiScore >= 80 ? 'text-safe' :
                                             r.wqiScore >= 60 ? 'text-warning' : 'text-danger'

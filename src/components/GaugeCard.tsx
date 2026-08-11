@@ -58,13 +58,11 @@ export default function GaugeCard({
     const [progress, setProgress] = useState(0);
     const color = status ? STATUS_COLORS[status] : getGaugeColor(value, safeMin, safeMax);
 
-    // Animate arc from 0 to target on mount / value change
     useEffect(() => {
         const t = setTimeout(() => setProgress(pct), 150 + delay);
         return () => clearTimeout(t);
     }, [pct, delay]);
 
-    // pathLength=100 → full circle is 100 units, semicircle is 50.
     const arc = (progress / 2).toFixed(2);
 
     const badgeClass =
@@ -74,21 +72,26 @@ export default function GaugeCard({
                 ? 'bg-warning/15 text-warning border-warning/20'
                 : 'bg-danger/15 text-danger border-danger/20';
 
+    const ariaLabel = status
+        ? `${title}: ${value.toFixed(decimals)} ${unit}, status ${status}`
+        : `${title}: ${value.toFixed(decimals)} ${unit}`;
+
     return (
         <div
             id={id}
+            role="figure"
+            aria-label={ariaLabel}
             className="glass-panel glass-panel-hover relative overflow-hidden rounded-2xl p-4 sm:p-5 transition-all duration-300 ease-out hover:scale-[1.02] hover:-translate-y-1 animate-fade-in flex flex-col items-center"
             style={{ animationDelay: `${delay}ms` }}
         >
             {/* Header */}
             <div className="flex items-center justify-between w-full mb-1 gap-1.5">
                 <span className="text-[11px] font-semibold uppercase tracking-normal text-slate-400 truncate flex-1 min-w-0">{title}</span>
-                <div className="p-1.5 rounded-lg bg-water-500/10 text-water-400 border border-water-500/10 flex-shrink-0">{icon}</div>
+                <div className="p-1.5 rounded-lg bg-water-500/10 text-water-400 border border-water-500/10 flex-shrink-0" aria-hidden="true">{icon}</div>
             </div>
 
             {/* Gauge */}
-            <svg viewBox="0 0 120 100" className="w-full max-w-[150px]">
-                {/* Track (semicircle) */}
+            <svg viewBox="0 0 120 100" className="w-full max-w-[150px]" aria-hidden="true">
                 <circle
                     cx="60"
                     cy="58"
@@ -100,7 +103,6 @@ export default function GaugeCard({
                     strokeLinecap="round"
                     strokeDasharray="50 100"
                 />
-                {/* Progress arc */}
                 <circle
                     cx="60"
                     cy="58"
@@ -114,20 +116,18 @@ export default function GaugeCard({
                     transform="rotate(180 60 58)"
                     style={{ transition: 'stroke-dasharray 1s ease-out, stroke 0.4s ease', filter: `drop-shadow(0 0 6px ${color}55)` }}
                 />
-                {/* Value */}
-                <text x="60" y="50" textAnchor="middle" fontSize="28" fontWeight="800" fill="#f8fafc">
+                <text x="60" y="50" textAnchor="middle" fontSize="28" fontWeight="800" fill="#f8fafc" fontFamily="Inter, system-ui, sans-serif">
                     {value.toFixed(decimals)}
                 </text>
-                {/* Unit */}
-                <text x="60" y="68" textAnchor="middle" fontSize="12" fontWeight="500" fill="#64748b">
+                <text x="60" y="68" textAnchor="middle" fontSize="12" fontWeight="500" fill="#64748b" fontFamily="Inter, system-ui, sans-serif">
                     {unit}
                 </text>
             </svg>
 
             {/* Status badge / subtitle */}
             {status ? (
-                <span className={`mt-1 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider border ${badgeClass}`}>
-                    <span className={`w-1.5 h-1.5 rounded-full ${status === 'SANGAT LAYAK' ? 'bg-safe' : status === 'LAYAK' ? 'bg-warning' : 'bg-danger animate-pulse'}`} />
+                <span className={`mt-1 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider border ${badgeClass}`} role="status">
+                    <span className={`w-1.5 h-1.5 rounded-full ${status === 'SANGAT LAYAK' ? 'bg-safe' : status === 'LAYAK' ? 'bg-warning' : 'bg-danger animate-pulse'}`} aria-hidden="true" />
                     {status}
                 </span>
             ) : subtitle ? (

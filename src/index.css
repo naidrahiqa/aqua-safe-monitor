@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
-/* ===== Custom Water-Themed Design Tokens ===== */
+/* ===== WaterSafe Design System — v2 ===== */
+/* Professional dark IoT dashboard theme */
 @theme {
   --color-water-50: #ecfeff;
   --color-water-100: #cffafe;
@@ -33,13 +34,15 @@
   --color-danger: #ef4444;
   --color-danger-light: #fee2e2;
 
-  --color-panel: #0f172a;
-  --color-panel-light: #1e293b;
-  --color-panel-lighter: #334155;
-  --color-surface: #0c1222;
+  --color-panel: #0b1120;
+  --color-panel-light: #131c31;
+  --color-panel-lighter: #1e2d4a;
+  --color-surface: #060a14;
+  --color-border: rgba(148, 163, 184, 0.08);
+  --color-border-hover: rgba(6, 182, 212, 0.25);
 }
 
-/* ===== Global Styles ===== */
+/* ===== Global Base ===== */
 @layer base {
   * {
     margin: 0;
@@ -47,100 +50,145 @@
     box-sizing: border-box;
   }
 
+  html {
+    color-scheme: dark;
+  }
+
   body {
-    font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-family: 'Inter', 'SF Pro Display', 'Segoe UI', system-ui, -apple-system, sans-serif;
     font-size: 16px;
     background-color: var(--color-surface);
     color: #e2e8f0;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
   }
 
-  ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-  }
-  ::-webkit-scrollbar-track {
-    background: var(--color-panel);
-  }
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb {
-    background: var(--color-panel-lighter);
-    border-radius: 3px;
+    background: rgba(100, 116, 139, 0.3);
+    border-radius: 10px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: var(--color-water-700);
+    background: rgba(6, 182, 212, 0.5);
+  }
+
+  /* Focus ring — accessible by default */
+  :focus-visible {
+    outline: 2px solid var(--color-water-400);
+    outline-offset: 2px;
+    border-radius: 4px;
   }
 }
 
-/* ===== Utility Animations ===== */
+/* ===== Animations ===== */
 @layer utilities {
-  @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-6px); }
-  }
-  @keyframes pulse-ring {
-    0% { transform: scale(0.95); opacity: 1; }
-    100% { transform: scale(1.4); opacity: 0; }
-  }
-  @keyframes shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
-  }
   @keyframes fade-in {
-    from { opacity: 0; transform: translateY(12px); }
+    from { opacity: 0; transform: translateY(8px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  @keyframes slide-in-left {
-    from { opacity: 0; transform: translateX(-20px); }
-    to { opacity: 1; transform: translateX(0); }
+  @keyframes fade-in-scale {
+    from { opacity: 0; transform: scale(0.96); }
+    to { opacity: 1; transform: scale(1); }
   }
-  @keyframes gradient-x {
-    0%, 100% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
+  @keyframes slide-up {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pulse-soft {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+  @keyframes glow {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(6, 182, 212, 0); }
+    50% { box-shadow: 0 0 20px 4px rgba(6, 182, 212, 0.15); }
   }
 
-  .animate-float {
-    animation: float 3s ease-in-out infinite;
-  }
-  .animate-pulse-ring {
-    animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
-  }
-  .animate-shimmer {
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
-    background-size: 200% 100%;
-    animation: shimmer 2s infinite;
-  }
   .animate-fade-in {
-    animation: fade-in 0.5s ease-out forwards;
+    animation: fade-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
-  .animate-slide-in-left {
-    animation: slide-in-left 0.4s ease-out forwards;
+  .animate-fade-in-scale {
+    animation: fade-in-scale 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
-  .animate-gradient-x {
-    background-size: 200% 200%;
-    animation: gradient-x 3s ease infinite;
+  .animate-slide-up {
+    animation: slide-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  .animate-pulse-soft {
+    animation: pulse-soft 2s ease-in-out infinite;
+  }
+  .animate-glow {
+    animation: glow 2.5s ease-in-out infinite;
   }
 
-  /* ===== Legibility floor: no UI text below 11px/12px =====
-     Overrides Tailwind arbitrary sizes so micro-text (9-11px)
-     never renders. Deliberate floor for readability on dark bg. */
+  /* Respect reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-fade-in,
+    .animate-fade-in-scale,
+    .animate-slide-up,
+    .animate-pulse-soft,
+    .animate-glow {
+      animation: none !important;
+    }
+  }
+
+  /* Legibility floor */
   .text-\[9px\] { font-size: 10px; }
   .text-\[10px\] { font-size: 11px; }
 }
 
-/* ===== Glassmorphism Panels ===== */
+/* ===== Glass Panels — Refined ===== */
 .glass-panel {
-  background: rgba(15, 23, 42, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(148, 163, 184, 0.08);
+  background: linear-gradient(
+    135deg,
+    rgba(11, 17, 32, 0.92) 0%,
+    rgba(19, 28, 49, 0.88) 100%
+  );
+  backdrop-filter: blur(20px) saturate(1.2);
+  -webkit-backdrop-filter: blur(20px) saturate(1.2);
+  border: 1px solid var(--color-border);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.2),
+    0 4px 16px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.02);
 }
 
+.glass-panel-hover {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
 .glass-panel-hover:hover {
-  background: rgba(30, 41, 59, 0.8);
-  border-color: rgba(6, 182, 212, 0.3);
-  box-shadow: 0 0 20px rgba(6, 182, 212, 0.08);
+  background: linear-gradient(
+    135deg,
+    rgba(19, 28, 49, 0.95) 0%,
+    rgba(30, 45, 74, 0.9) 100%
+  );
+  border-color: var(--color-border-hover);
+  box-shadow:
+    0 4px 24px rgba(6, 182, 212, 0.08),
+    0 1px 2px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  transform: translateY(-1px);
+}
+
+/* ===== Status Dot ===== */
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  position: relative;
+}
+.status-dot::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 1.5px solid currentColor;
+  opacity: 0.3;
+}
+.status-dot-pulse {
+  animation: pulse-soft 2s ease-in-out infinite;
 }
 
 /* ===== Leaflet Map Overrides ===== */
@@ -149,18 +197,27 @@
   border-radius: 12px;
 }
 .leaflet-tile-pane {
-  filter: brightness(0.7) saturate(1.2) contrast(1.1);
+  filter: brightness(0.65) saturate(1.3) contrast(1.15);
 }
 .leaflet-control-zoom a {
   background: var(--color-panel-light) !important;
   color: #e2e8f0 !important;
-  border-color: var(--color-panel-lighter) !important;
+  border-color: rgba(148, 163, 184, 0.1) !important;
+  transition: background 0.15s ease;
+}
+.leaflet-control-zoom a:hover {
+  background: var(--color-panel-lighter) !important;
 }
 .leaflet-control-attribution {
-  background: rgba(15, 23, 42, 0.8) !important;
-  color: #94a3b8 !important;
-  font-size: 10px !important;
+  background: rgba(11, 17, 32, 0.85) !important;
+  color: #64748b !important;
+  font-size: 9px !important;
 }
 .leaflet-control-attribution a {
-  color: var(--color-water-400) !important;
+  color: var(--color-water-500) !important;
+}
+
+/* ===== Tabular Numbers for Data ===== */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
 }

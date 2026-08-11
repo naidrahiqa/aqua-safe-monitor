@@ -43,7 +43,6 @@ export default function Dashboard() {
         return readings.reduce((s, r) => s + r[key], 0) / readings.length;
     };
 
-    // Real-time indicator: last update timestamp, refreshed every 5s
     const [now, setNow] = useState(Date.now());
     useEffect(() => {
         const t = setInterval(() => setNow(Date.now()), 5000);
@@ -64,13 +63,12 @@ export default function Dashboard() {
 
     return (
         <div className="flex min-h-screen bg-surface">
-            {/* Sidebar */}
             <Sidebar active={activeNav} onNavigate={setActiveNav} />
 
             {/* Main Content */}
             <main className="flex-1 min-h-screen overflow-y-auto">
                 {/* ===== Top Bar ===== */}
-                <header id="top-bar" className="sticky top-0 z-30 backdrop-blur-xl bg-surface/80 border-b border-white/5">
+                <header id="top-bar" className="sticky top-0 z-30 backdrop-blur-xl bg-surface/80 border-b border-white/[0.06]">
                     <div className="flex items-center justify-between px-4 py-3 sm:px-6 sm:py-4 lg:px-8">
                         <div className="pl-10 sm:pl-12 lg:pl-0">
                             <h1 className="text-base sm:text-lg font-bold text-white tracking-tight">
@@ -86,21 +84,23 @@ export default function Dashboard() {
 
                         <div className="flex items-center gap-2 sm:gap-3">
                             {/* Search (desktop) */}
-                            <div className="hidden lg:flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 border border-white/5 text-slate-500 hover:border-water-500/30 transition-colors w-52">
+                            <div className="hidden lg:flex items-center gap-2 px-3 py-2 rounded-xl bg-white/[0.04] border border-white/[0.06] text-slate-500 hover:border-water-500/30 focus-within:border-water-500/40 focus-within:ring-1 focus-within:ring-water-500/20 transition-all w-52">
                                 <Search size={14} />
                                 <input
                                     id="search-input"
                                     type="text"
                                     placeholder="Cari sensor..."
                                     className="bg-transparent text-sm text-slate-300 placeholder-slate-500 outline-none w-full"
+                                    aria-label="Search sensors"
                                 />
                             </div>
 
                             {/* Refresh */}
                             <button
                                 onClick={refresh}
-                                className="p-2 sm:p-2.5 rounded-xl bg-white/5 border border-white/5 hover:border-water-500/30 text-slate-400 hover:text-white transition-all"
+                                className="p-2 sm:p-2.5 rounded-xl bg-white/[0.04] border border-white/[0.06] hover:border-water-500/30 text-slate-400 hover:text-white transition-all"
                                 title="Refresh data"
+                                aria-label="Refresh sensor data"
                             >
                                 <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
                             </button>
@@ -109,7 +109,7 @@ export default function Dashboard() {
                             <div
                                 className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg border ${
                                     secondsAgo === null
-                                        ? 'bg-white/5 border-white/5'
+                                        ? 'bg-white/[0.04] border-white/[0.06]'
                                         : isOnline
                                             ? 'bg-safe/10 border-safe/20'
                                             : 'bg-warning/10 border-warning/20'
@@ -130,11 +130,13 @@ export default function Dashboard() {
                             <button
                                 id="notification-button"
                                 onClick={() => setShowNotifications(!showNotifications)}
-                                className="relative p-2 sm:p-2.5 rounded-xl bg-white/5 border border-white/5 hover:border-water-500/30 text-slate-400 hover:text-white transition-all"
+                                className="relative p-2 sm:p-2.5 rounded-xl bg-white/[0.04] border border-white/[0.06] hover:border-water-500/30 text-slate-400 hover:text-white transition-all"
+                                aria-label={`Notifications${dangerCount > 0 ? ` (${dangerCount} alerts)` : ''}`}
+                                aria-expanded={showNotifications}
                             >
                                 <Bell size={16} />
                                 {dangerCount > 0 && (
-                                    <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-danger rounded-full animate-pulse" />
+                                    <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-danger rounded-full animate-pulse" aria-hidden="true" />
                                 )}
                             </button>
 
@@ -142,8 +144,9 @@ export default function Dashboard() {
                             <button
                                 id="sign-out-button"
                                 onClick={signOut}
-                                className="hidden sm:flex p-2.5 rounded-xl bg-white/5 border border-white/5 hover:border-danger/30 text-slate-400 hover:text-danger transition-all"
+                                className="hidden sm:flex p-2.5 rounded-xl bg-white/[0.04] border border-white/[0.06] hover:border-danger/30 text-slate-400 hover:text-danger transition-all"
                                 title="Keluar"
+                                aria-label="Sign out"
                             >
                                 <LogOut size={16} />
                             </button>
@@ -153,6 +156,8 @@ export default function Dashboard() {
                                 id="user-avatar"
                                 className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-water-500 to-ocean-600 flex items-center justify-center text-white text-[10px] sm:text-xs font-bold ring-2 ring-water-500/20 cursor-pointer hover:ring-water-500/40 transition-all"
                                 title={user?.email ?? 'Demo User'}
+                                role="img"
+                                aria-label={`User: ${user?.email ?? 'Demo User'}`}
                             >
                                 {user?.email?.substring(0, 2).toUpperCase() ?? 'WS'}
                             </div>
@@ -192,7 +197,7 @@ export default function Dashboard() {
 
                     {/* Error state */}
                     {error && (
-                        <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-danger/10 border border-danger/20 text-danger text-xs font-medium mb-6">
+                        <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-danger/10 border border-danger/20 text-danger text-xs font-medium mb-6" role="alert">
                             <AlertTriangle size={14} />
                             {error}
                         </div>
@@ -201,84 +206,86 @@ export default function Dashboard() {
                     {!isLoading && activeNav === 'overview' && (
                         <div className="space-y-6 animate-fade-in">
                             {/* Gauge Cards Grid */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-                                <GaugeCard
-                                    id="card-wqi"
-                                    title="Water Quality Index"
-                                    value={latestReading.wqiScore}
-                                    unit="/100"
-                                    icon={<Activity size={18} />}
-                                    min={0}
-                                    max={100}
-                                    status={latestReading.status}
-                                    delay={0}
-                                    decimals={0}
-                                />
-                                <GaugeCard
-                                    id="card-temperature"
-                                    title="Suhu Air"
-                                    value={latestReading.temperature}
-                                    unit="°C"
-                                    icon={<Thermometer size={18} />}
-                                    min={0}
-                                    max={50}
-                                    safeMin={alertCfg.tempMin}
-                                    safeMax={alertCfg.tempMax}
-                                    subtitle={`Normal: ${alertCfg.tempMin}–${alertCfg.tempMax}°C`}
-                                    delay={80}
-                                />
-                                <GaugeCard
-                                    id="card-ph"
-                                    title="pH Level"
-                                    value={latestReading.pH}
-                                    unit="pH"
-                                    icon={<FlaskConical size={18} />}
-                                    min={0}
-                                    max={14}
-                                    safeMin={alertCfg.phMin}
-                                    safeMax={alertCfg.phMax}
-                                    subtitle={`Ideal: ${alertCfg.phMin} – ${alertCfg.phMax}`}
-                                    delay={160}
-                                />
-                                <GaugeCard
-                                    id="card-tds"
-                                    title="TDS"
-                                    value={latestReading.tds}
-                                    unit="ppm"
-                                    icon={<Droplets size={18} />}
-                                    min={0}
-                                    max={1000}
-                                    safeMin={0}
-                                    safeMax={alertCfg.tdsMax}
-                                    subtitle={`Max aman: ${alertCfg.tdsMax} ppm`}
-                                    delay={240}
-                                    decimals={0}
-                                />
-                                <GaugeCard
-                                    id="card-turbidity"
-                                    title="Turbidity"
-                                    value={latestReading.turbidity}
-                                    unit="NTU"
-                                    icon={<Waves size={18} />}
-                                    min={0}
-                                    max={100}
-                                    safeMin={0}
-                                    safeMax={alertCfg.turbidityMax}
-                                    subtitle={`Max aman: ${alertCfg.turbidityMax} NTU`}
-                                    delay={320}
-                                    decimals={0}
-                                />
-                            </div>
+                            <section aria-label="Sensor readings">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+                                    <GaugeCard
+                                        id="card-wqi"
+                                        title="Water Quality Index"
+                                        value={latestReading.wqiScore}
+                                        unit="/100"
+                                        icon={<Activity size={18} />}
+                                        min={0}
+                                        max={100}
+                                        status={latestReading.status}
+                                        delay={0}
+                                        decimals={0}
+                                    />
+                                    <GaugeCard
+                                        id="card-temperature"
+                                        title="Suhu Air"
+                                        value={latestReading.temperature}
+                                        unit="°C"
+                                        icon={<Thermometer size={18} />}
+                                        min={0}
+                                        max={50}
+                                        safeMin={alertCfg.tempMin}
+                                        safeMax={alertCfg.tempMax}
+                                        subtitle={`Normal: ${alertCfg.tempMin}–${alertCfg.tempMax}°C`}
+                                        delay={80}
+                                    />
+                                    <GaugeCard
+                                        id="card-ph"
+                                        title="pH Level"
+                                        value={latestReading.pH}
+                                        unit="pH"
+                                        icon={<FlaskConical size={18} />}
+                                        min={0}
+                                        max={14}
+                                        safeMin={alertCfg.phMin}
+                                        safeMax={alertCfg.phMax}
+                                        subtitle={`Ideal: ${alertCfg.phMin} – ${alertCfg.phMax}`}
+                                        delay={160}
+                                    />
+                                    <GaugeCard
+                                        id="card-tds"
+                                        title="TDS"
+                                        value={latestReading.tds}
+                                        unit="ppm"
+                                        icon={<Droplets size={18} />}
+                                        min={0}
+                                        max={1000}
+                                        safeMin={0}
+                                        safeMax={alertCfg.tdsMax}
+                                        subtitle={`Max aman: ${alertCfg.tdsMax} ppm`}
+                                        delay={240}
+                                        decimals={0}
+                                    />
+                                    <GaugeCard
+                                        id="card-turbidity"
+                                        title="Turbidity"
+                                        value={latestReading.turbidity}
+                                        unit="NTU"
+                                        icon={<Waves size={18} />}
+                                        min={0}
+                                        max={100}
+                                        safeMin={0}
+                                        safeMax={alertCfg.turbidityMax}
+                                        subtitle={`Max aman: ${alertCfg.turbidityMax} NTU`}
+                                        delay={320}
+                                        decimals={0}
+                                    />
+                                </div>
+                            </section>
 
                             {/* Charts & Map Row */}
-                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <section className="grid grid-cols-1 lg:grid-cols-3 gap-6" aria-label="Charts and location">
                                 <div className="lg:col-span-2">
                                     <AnalyticsChart data={chartData} />
                                 </div>
                                 <div>
                                     <LocationMap reading={latestReading} />
                                 </div>
-                            </div>
+                            </section>
 
                             {/* Data Table */}
                             <DataTable readings={readings} />
@@ -287,8 +294,10 @@ export default function Dashboard() {
 
                     {!isLoading && activeNav === 'analytics' && (
                         <div className="space-y-6 animate-fade-in">
-                            <AnalyticsChart data={chartData} showAllLines />
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <section aria-label="Analytics charts">
+                                <AnalyticsChart data={chartData} showAllLines />
+                            </section>
+                            <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" aria-label="Average sensor values">
                                 <GaugeCard
                                     id="card-avg-ph"
                                     title="Rata-Rata pH"
@@ -343,7 +352,7 @@ export default function Dashboard() {
                                     delay={400}
                                     decimals={0}
                                 />
-                            </div>
+                            </section>
                         </div>
                     )}
 
@@ -359,36 +368,33 @@ export default function Dashboard() {
 
                     {!isLoading && activeNav === 'settings' && (
                         <div className="animate-fade-in space-y-6">
-                            {/* Alert Config */}
                             <AlertSettings config={alertCfg} onChange={setAlertCfg} />
-
-                            {/* Location Settings */}
                             <LocationSettings onSaved={refresh} />
 
                             {/* System Info */}
-                            <div className="glass-panel rounded-2xl p-5 sm:p-6">
+                            <section className="glass-panel rounded-2xl p-5 sm:p-6" aria-label="System information">
                                 <h2 className="text-base font-bold text-white mb-4">Informasi Sistem</h2>
                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                    <div className="px-4 py-3 rounded-xl bg-panel-light border border-white/5">
+                                    <div className="px-4 py-3 rounded-xl bg-panel-light border border-white/[0.06]">
                                         <p className="text-[10px] text-slate-500 uppercase tracking-wider">Total Pembacaan</p>
-                                        <p className="text-xl font-bold text-white mt-1">{readings.length}</p>
+                                        <p className="text-xl font-bold text-white mt-1 tabular-nums">{readings.length}</p>
                                     </div>
-                                    <div className="px-4 py-3 rounded-xl bg-panel-light border border-white/5">
+                                    <div className="px-4 py-3 rounded-xl bg-panel-light border border-white/[0.06]">
                                         <p className="text-[10px] text-slate-500 uppercase tracking-wider">Status BAHAYA</p>
-                                        <p className="text-xl font-bold text-danger mt-1">{dangerCount}</p>
+                                        <p className="text-xl font-bold text-danger mt-1 tabular-nums">{dangerCount}</p>
                                     </div>
-                                    <div className="px-4 py-3 rounded-xl bg-panel-light border border-white/5">
+                                    <div className="px-4 py-3 rounded-xl bg-panel-light border border-white/[0.06]">
                                         <p className="text-[10px] text-slate-500 uppercase tracking-wider">Status LAYAK</p>
-                                        <p className="text-xl font-bold text-warning mt-1">{readings.filter((r) => r.status === 'LAYAK').length}</p>
+                                        <p className="text-xl font-bold text-warning mt-1 tabular-nums">{readings.filter((r) => r.status === 'LAYAK').length}</p>
                                     </div>
                                 </div>
-                            </div>
+                            </section>
                         </div>
                     )}
                 </div>
 
                 {/* Footer */}
-                <footer className="px-4 py-4 sm:px-6 lg:px-8 border-t border-white/5">
+                <footer className="px-4 py-4 sm:px-6 lg:px-8 border-t border-white/[0.06]">
                     <p className="text-xs text-slate-500 text-center">
                         WaterSafe-Monitor v1.0 — IoT Water Quality Dashboard • Powered by ESP32
                     </p>
@@ -396,7 +402,7 @@ export default function Dashboard() {
             </main>
 
             {/* Background decorative elements */}
-            <div className="fixed top-0 right-0 w-[600px] h-[600px] pointer-events-none opacity-30 blur-3xl">
+            <div className="fixed top-0 right-0 w-[600px] h-[600px] pointer-events-none opacity-30 blur-3xl" aria-hidden="true">
                 <div className="absolute top-[-200px] right-[-200px] w-[500px] h-[500px] rounded-full bg-gradient-to-br from-water-500/10 to-ocean-500/5" />
             </div>
         </div>

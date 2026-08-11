@@ -39,7 +39,7 @@ export default function LocationMap({ reading }: LocationMapProps) {
             <div className="flex items-center justify-between mb-4">
                 <div>
                     <h2 className="text-base font-bold text-white flex items-center gap-2">
-                        <MapPin size={18} className="text-water-400" />
+                        <MapPin size={18} className="text-water-400" aria-hidden="true" />
                         Lokasi Sensor
                     </h2>
                     <p className="text-xs text-slate-500 mt-0.5">

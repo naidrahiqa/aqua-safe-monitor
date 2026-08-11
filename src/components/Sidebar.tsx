@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import {
     LayoutDashboard,
     BarChart3,
@@ -28,6 +28,36 @@ const NAV_ITEMS: { id: NavSection; label: string; icon: React.ReactNode }[] = [
 export default function Sidebar({ active, onNavigate }: SidebarProps) {
     const [collapsed, setCollapsed] = useState(false);
     const [mobileOpen, setMobileOpen] = useState(false);
+    const navRef = useRef<HTMLDivElement>(null);
+
+    // Keyboard navigation: arrow keys move focus between nav items
+    useEffect(() => {
+        const nav = navRef.current;
+        if (!nav) return;
+        const handleKeyDown = (e: KeyboardEvent) => {
+            const items = Array.from(nav.querySelectorAll<HTMLButtonElement>('button[data-nav]'));
+            const idx = items.indexOf(document.activeElement as HTMLButtonElement);
+            if (idx === -1) return;
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                items[(idx + 1) % items.length]?.focus();
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                items[(idx - 1 + items.length) % items.length]?.focus();
+            }
+        };
+        nav.addEventListener('keydown', handleKeyDown);
+        return () => nav.removeEventListener('keydown', handleKeyDown);
+    }, [collapsed]);
+
+    // Close mobile sidebar on Escape
+    useEffect(() => {
+        const handleEscape = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') setMobileOpen(false);
+        };
+        document.addEventListener('keydown', handleEscape);
+        return () => document.removeEventListener('keydown', handleEscape);
+    }, []);
 
     return (
         <>
@@ -36,7 +66,9 @@ export default function Sidebar({ active, onNavigate }: SidebarProps) {
                 id="sidebar-mobile-toggle"
                 onClick={() => setMobileOpen(!mobileOpen)}
                 className="fixed top-3 left-3 sm:top-4 sm:left-4 z-50 lg:hidden p-2 rounded-xl glass-panel text-water-300 hover:text-white transition-colors"
-                aria-label="Toggle sidebar"
+                aria-label={mobileOpen ? 'Close sidebar' : 'Open sidebar'}
+                aria-expanded={mobileOpen}
+                aria-controls="sidebar"
             >
                 {mobileOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
@@ -46,25 +78,28 @@ export default function Sidebar({ active, onNavigate }: SidebarProps) {
                 <div
                     className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
                     onClick={() => setMobileOpen(false)}
+                    aria-hidden="true"
                 />
             )}
 
             {/* Sidebar */}
             <aside
                 id="sidebar"
+                role="navigation"
+                aria-label="Main navigation"
                 className={`
-          fixed top-0 left-0 h-screen z-40
-          flex flex-col
-          bg-panel/95 backdrop-blur-xl
-          border-r border-white/5
-          transition-all duration-300 ease-in-out
-          ${collapsed ? 'w-20' : 'w-64'}
-          ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}
-          lg:translate-x-0 lg:relative
-        `}
+                    fixed top-0 left-0 h-screen z-40
+                    flex flex-col
+                    bg-panel/95 backdrop-blur-xl
+                    border-r border-white/[0.06]
+                    transition-all duration-300 ease-in-out
+                    ${collapsed ? 'w-[72px]' : 'w-64'}
+                    ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}
+                    lg:translate-x-0 lg:relative
+                `}
             >
                 {/* Logo */}
-                <div className="flex items-center gap-3 px-5 py-6 border-b border-white/5">
+                <div className={`flex items-center gap-3 px-5 py-6 border-b border-white/[0.06] ${collapsed ? 'justify-center px-0' : ''}`}>
                     <div className="relative flex-shrink-0">
                         <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-water-400 to-ocean-500 flex items-center justify-center shadow-lg shadow-water-500/20">
                             <Droplets size={22} className="text-white" />
@@ -80,25 +115,28 @@ export default function Sidebar({ active, onNavigate }: SidebarProps) {
                 </div>
 
                 {/* Navigation */}
-                <nav className="flex-1 px-3 py-4 space-y-1">
+                <nav ref={navRef} className="flex-1 px-3 py-4 space-y-1" aria-label="Primary">
                     {NAV_ITEMS.map((item) => {
                         const isActive = active === item.id;
                         return (
                             <div key={item.id} className="relative group">
                                 <button
+                                    data-nav
                                     id={`nav-${item.id}`}
                                     onClick={() => {
                                         onNavigate(item.id);
                                         setMobileOpen(false);
                                     }}
+                                    aria-current={isActive ? 'page' : undefined}
                                     className={`
-                  group/btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl
-                  transition-all duration-200 cursor-pointer
-                  ${isActive
-                                        ? 'bg-gradient-to-r from-water-500/20 to-ocean-500/10 text-water-300 shadow-sm shadow-water-500/10'
-                                        : 'text-slate-400 hover:bg-white/5 hover:text-slate-200'
-                                    }
-                `}
+                                        group/btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl
+                                        transition-all duration-200 cursor-pointer
+                                        ${collapsed ? 'justify-center px-2' : ''}
+                                        ${isActive
+                                            ? 'bg-gradient-to-r from-water-500/20 to-ocean-500/10 text-water-300 shadow-sm shadow-water-500/10'
+                                            : 'text-slate-400 hover:bg-white/[0.04] hover:text-slate-200'
+                                        }
+                                    `}
                                 >
                                     <span className={`flex-shrink-0 transition-transform duration-200 ${isActive ? 'scale-110' : 'group-hover/btn:scale-105'}`}>
                                         {item.icon}
@@ -107,15 +145,15 @@ export default function Sidebar({ active, onNavigate }: SidebarProps) {
                                         <span className="text-sm font-medium truncate">{item.label}</span>
                                     )}
                                     {isActive && !collapsed && (
-                                        <div className="ml-auto w-1.5 h-1.5 rounded-full bg-water-400 animate-pulse" />
+                                        <div className="ml-auto w-1.5 h-1.5 rounded-full bg-water-400 animate-pulse" aria-hidden="true" />
                                     )}
                                 </button>
 
                                 {/* Tooltip for collapsed mode */}
                                 {collapsed && (
-                                    <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2.5 py-1.5 rounded-lg bg-panel-light border border-white/10 text-xs text-white font-medium whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-200 z-50 shadow-lg">
+                                    <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2.5 py-1.5 rounded-lg bg-panel-light border border-white/10 text-xs text-white font-medium whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-200 z-50 shadow-lg" role="tooltip">
                                         {item.label}
-                                        <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-panel-light" />
+                                        <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-panel-light" aria-hidden="true" />
                                     </div>
                                 )}
                             </div>
@@ -124,13 +162,15 @@ export default function Sidebar({ active, onNavigate }: SidebarProps) {
                 </nav>
 
                 {/* Collapse toggle (desktop) */}
-                <div className="hidden lg:flex px-3 py-4 border-t border-white/5">
+                <div className="hidden lg:flex px-3 py-4 border-t border-white/[0.06]">
                     <button
                         id="sidebar-collapse-toggle"
                         onClick={() => setCollapsed(!collapsed)}
+                        aria-expanded={!collapsed}
+                        aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
                         className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl
-              text-slate-500 hover:text-slate-300 hover:bg-white/5
-              transition-all duration-200"
+                            text-slate-500 hover:text-slate-300 hover:bg-white/[0.04]
+                            transition-all duration-200"
                     >
                         <Waves size={16} />
                         {!collapsed && <span className="text-xs font-medium">Collapse</span>}
