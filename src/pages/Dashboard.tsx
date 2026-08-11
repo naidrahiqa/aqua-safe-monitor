@@ -257,7 +257,7 @@ export default function Dashboard() {
                                         unit="ppm"
                                         icon={<Droplets size={18} />}
                                         min={0}
-                                        max={1000}
+                                        max={2000}
                                         safeMin={0}
                                         safeMax={alertCfg.tdsMax}
                                         subtitle={`Max aman: ${alertCfg.tdsMax} ppm`}
@@ -271,12 +271,12 @@ export default function Dashboard() {
                                         unit="NTU"
                                         icon={<Eye size={18} />}
                                         min={0}
-                                        max={100}
+                                        max={200}
                                         safeMin={0}
                                         safeMax={alertCfg.turbidityMax}
                                         subtitle={`Max aman: ${alertCfg.turbidityMax} NTU`}
                                         delay={320}
-                                        decimals={0}
+                                        decimals={1}
                                     />
                                 </div>
                             </section>

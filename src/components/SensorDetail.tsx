@@ -20,6 +20,8 @@ import {
     CartesianGrid,
     Tooltip,
     ResponsiveContainer,
+    ReferenceArea,
+    ReferenceLine,
 } from 'recharts';
 import type { ChartDataPoint, SensorReading, NavSection } from '../types';
 
@@ -102,10 +104,10 @@ export const SENSOR_CONFIGS: Record<string, SensorConfig> = {
         readingKey: 'turbidity',
         color: '#a78bfa',
         min: 0,
-        max: 100,
+        max: 200,
         safeMin: 0,
-        safeMax: 25,
-        decimals: 0,
+        safeMax: 5,
+        decimals: 1,
     },
 };
 
@@ -258,7 +260,7 @@ export default function SensorDetail({ sensorKey }: SensorDetailProps) {
                         <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Rata-rata</span>
                     </div>
                     <div>
-                        <p className="text-3xl font-bold text-white tabular-nums">{avg.toFixed(config.decimals)}</p>
+                        <p className="text-2xl sm:text-3xl font-bold text-white tabular-nums truncate">{avg.toFixed(config.decimals)}</p>
                         <p className="text-xs text-slate-500 mt-1">{config.unit} • Semua data</p>
                     </div>
                 </div>
@@ -268,13 +270,16 @@ export default function SensorDetail({ sensorKey }: SensorDetailProps) {
                         <Activity size={16} className="text-ocean-400" />
                         <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Min / Max</span>
                     </div>
-                    <div>
+                    <div className="space-y-1">
                         <div className="flex items-baseline gap-2">
-                            <p className="text-3xl font-bold text-white tabular-nums">{min.toFixed(config.decimals)}</p>
-                            <span className="text-sm text-slate-500">/</span>
-                            <p className="text-3xl font-bold text-white tabular-nums">{max.toFixed(config.decimals)}</p>
+                            <span className="text-[10px] font-semibold uppercase text-slate-500 w-8">Min</span>
+                            <p className="text-2xl sm:text-3xl font-bold text-white tabular-nums truncate">{min.toFixed(config.decimals)}</p>
                         </div>
-                        <p className="text-xs text-slate-500 mt-1">{config.unit} • Rentang</p>
+                        <div className="flex items-baseline gap-2">
+                            <span className="text-[10px] font-semibold uppercase text-slate-500 w-8">Max</span>
+                            <p className="text-2xl sm:text-3xl font-bold text-white tabular-nums truncate">{max.toFixed(config.decimals)}</p>
+                        </div>
+                        <p className="text-xs text-slate-500 pt-1">{config.unit} • Rentang</p>
                     </div>
                 </div>
 
@@ -288,7 +293,7 @@ export default function SensorDetail({ sensorKey }: SensorDetailProps) {
                         <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Tren</span>
                     </div>
                     <div>
-                        <p className={`text-3xl font-bold tabular-nums ${trend >= 0 ? 'text-safe' : 'text-danger'}`}>
+                        <p className={`text-2xl sm:text-3xl font-bold tabular-nums truncate ${trend >= 0 ? 'text-safe' : 'text-danger'}`}>
                             {trend >= 0 ? '+' : ''}{trend.toFixed(config.decimals)}
                         </p>
                         <p className="text-xs text-slate-500 mt-1">{config.unit} • 10 bacaan terakhir</p>
@@ -309,6 +314,22 @@ export default function SensorDetail({ sensorKey }: SensorDetailProps) {
                         </p>
                     </div>
                 </div>
+                {/* Safe range legend */}
+                <div className="flex items-center gap-4 mb-3 text-[10px] text-slate-500">
+                    <div className="flex items-center gap-1.5">
+                        <span className="w-3 h-1.5 rounded-full bg-green-500/30 border border-green-500/40" />
+                        <span>Aman ({safeMin}–{safeMax} {config.unit})</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                        <span className="w-3 h-1.5 rounded-full bg-amber-500/30 border border-amber-500/40" />
+                        <span>Waspada</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                        <span className="w-3 h-1.5 rounded-full bg-red-500/30 border border-red-500/40" />
+                        <span>Bahaya</span>
+                    </div>
+                </div>
+
                 <div className="h-[320px]">
                     {filteredData.length === 0 ? (
                         <div className="h-full flex items-center justify-center text-slate-600 text-sm">
@@ -324,6 +345,42 @@ export default function SensorDetail({ sensorKey }: SensorDetailProps) {
                                     </linearGradient>
                                 </defs>
                                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.06)" vertical={false} />
+                                {/* Safe range band */}
+                                <ReferenceArea
+                                    y1={safeMin}
+                                    y2={safeMax}
+                                    fill="#22c55e"
+                                    fillOpacity={0.06}
+                                    stroke="#22c55e"
+                                    strokeOpacity={0.15}
+                                    strokeDasharray="3 3"
+                                />
+                                {/* Caution band (1.5x safe range) */}
+                                {safeMin > config.min && (
+                                    <ReferenceArea
+                                        y1={Math.max(config.min, safeMin - (safeMax - safeMin) * 0.5)}
+                                        y2={safeMin}
+                                        fill="#f59e0b"
+                                        fillOpacity={0.04}
+                                        stroke="#f59e0b"
+                                        strokeOpacity={0.1}
+                                        strokeDasharray="3 3"
+                                    />
+                                )}
+                                {safeMax < config.max && (
+                                    <ReferenceArea
+                                        y1={safeMax}
+                                        y2={Math.min(config.max, safeMax + (safeMax - safeMin) * 0.5)}
+                                        fill="#f59e0b"
+                                        fillOpacity={0.04}
+                                        stroke="#f59e0b"
+                                        strokeOpacity={0.1}
+                                        strokeDasharray="3 3"
+                                    />
+                                )}
+                                {/* Safe range boundary lines */}
+                                <ReferenceLine y={safeMin} stroke="#22c55e" strokeOpacity={0.3} strokeDasharray="6 3" />
+                                <ReferenceLine y={safeMax} stroke="#22c55e" strokeOpacity={0.3} strokeDasharray="6 3" />
                                 <XAxis
                                     dataKey="time"
                                     tick={{ fontSize: 10, fill: '#64748b' }}
