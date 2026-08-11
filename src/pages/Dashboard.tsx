@@ -79,7 +79,7 @@ export default function Dashboard() {
                                     WaterSafe
                                 </span>
                             </h1>
-                            <p className="text-[11px] sm:text-sm text-slate-500 mt-0.5">
+                            <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
                                 Monitoring kualitas air real-time • ESP32 IoT
                             </p>
                         </div>
@@ -121,7 +121,7 @@ export default function Dashboard() {
                                 ) : (
                                     <span className={`w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-safe animate-pulse' : 'bg-warning'}`} />
                                 )}
-                                <span className={`text-[11px] font-semibold ${secondsAgo === null ? 'text-slate-500' : isOnline ? 'text-safe' : 'text-warning'}`}>
+                                <span className={`text-xs font-semibold ${secondsAgo === null ? 'text-slate-500' : isOnline ? 'text-safe' : 'text-warning'}`}>
                                     {onlineLabel}
                                 </span>
                             </div>

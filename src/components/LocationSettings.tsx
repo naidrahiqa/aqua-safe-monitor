@@ -102,7 +102,7 @@ export default function LocationSettings({ onSaved }: LocationSettingsProps) {
                 <div className="space-y-3">
                     <div className="grid grid-cols-2 gap-3">
                         <div>
-                            <label className="block text-[11px] text-slate-400 uppercase tracking-wider mb-1">Latitude</label>
+                            <label className="block text-xs text-slate-400 uppercase tracking-wider mb-1">Latitude</label>
                             <input
                                 type="text"
                                 value={lat}
@@ -112,7 +112,7 @@ export default function LocationSettings({ onSaved }: LocationSettingsProps) {
                             />
                         </div>
                         <div>
-                            <label className="block text-[11px] text-slate-400 uppercase tracking-wider mb-1">Longitude</label>
+                            <label className="block text-xs text-slate-400 uppercase tracking-wider mb-1">Longitude</label>
                             <input
                                 type="text"
                                 value={lng}
@@ -124,9 +124,9 @@ export default function LocationSettings({ onSaved }: LocationSettingsProps) {
                     </div>
 
                     <div>
-                        <label className="block text-[11px] text-slate-400 uppercase tracking-wider mb-1">Pilih di peta</label>
+                        <label className="block text-xs text-slate-400 uppercase tracking-wider mb-1">Pilih di peta</label>
                         <MapPicker lat={pickerLat} lng={pickerLng} onPick={(l, n) => { setLat(String(l)); setLng(String(n)); }} />
-                        <p className="mt-1.5 text-[11px] text-slate-500">Klik peta atau geser pin untuk mengisi koordinat.</p>
+                        <p className="mt-1.5 text-xs text-slate-500">Klik peta atau geser pin untuk mengisi koordinat.</p>
                     </div>
 
                     <div className="flex items-center gap-3">

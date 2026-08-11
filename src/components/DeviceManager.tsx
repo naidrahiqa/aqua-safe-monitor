@@ -332,7 +332,7 @@ export default function DeviceManager() {
                             {/* ESP32 Code Snippet */}
                             <div className="px-3 py-2 rounded-lg bg-panel/80 border border-white/5">
                                 <span className="text-[10px] text-slate-500 uppercase tracking-wider block mb-1">ESP32 Arduino Code</span>
-                                <pre className="text-[11px] text-slate-300 font-mono whitespace-pre-wrap leading-relaxed">{`// WiFi & HTTP headers
+                                <pre className="text-xs text-slate-300 font-mono whitespace-pre-wrap leading-relaxed">{`// WiFi & HTTP headers
 #define API_KEY "${newlyCreated.secret_api_key}"
 #define ENDPOINT "https://<project>.supabase.co/functions/v1/ingest-sensor-data"
 
@@ -414,7 +414,7 @@ String payload = "{\\"api_key\\":\\"" + String(API_KEY) + "\\","
                                 <div className="flex items-center justify-between">
                                     <div className="flex-1 min-w-0">
                                         <span className="text-[9px] text-slate-500 uppercase tracking-wider block mb-0.5">API Key</span>
-                                        <code className="text-[11px] text-slate-400 font-mono block truncate">
+                                        <code className="text-xs text-slate-400 font-mono block truncate">
                                             {visibleKeys.has(device.id) ? device.secret_api_key : maskKey(device.secret_api_key)}
                                         </code>
                                     </div>

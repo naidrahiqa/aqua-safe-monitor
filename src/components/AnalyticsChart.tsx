@@ -89,7 +89,7 @@ export default function AnalyticsChart({ data, showAllLines = false }: Analytics
                 <button
                     key={r.key}
                     onClick={() => setTimeRange(r.key)}
-                    className={`px-2 py-1 rounded-md text-[11px] font-medium transition-all ${
+                    className={`px-2 py-1 rounded-md text-xs font-medium transition-all ${
                         timeRange === r.key
                             ? 'bg-water-500/20 text-water-300 border border-water-500/30'
                             : 'text-slate-500 hover:text-slate-300'
@@ -156,7 +156,7 @@ export default function AnalyticsChart({ data, showAllLines = false }: Analytics
                             <YAxis yAxisId="tds" orientation="right" domain={tdsDomain} tick={{ fontSize: 12, fill: '#64748b' }} tickLine={false} axisLine={false}
                                 label={{ value: 'ppm', angle: 90, position: 'insideRight', style: { fontSize: 12, fill: '#64748b' } }} />
                             <Tooltip content={<CustomTooltip />} />
-                            <Legend wrapperStyle={{ fontSize: 11, paddingTop: '8px' }} iconType="circle" iconSize={8} />
+                            <Legend wrapperStyle={{ fontSize: 12, paddingTop: '8px' }} iconType="circle" iconSize={8} />
                             {visibleLines.pH && (
                                 <Line yAxisId="pH" type="monotone" dataKey="pH" name="pH Level" stroke="#22d3ee" strokeWidth={2.5}
                                     dot={{ r: 4, fill: '#0c1222', stroke: '#22d3ee', strokeWidth: 2 }}
@@ -196,7 +196,7 @@ export default function AnalyticsChart({ data, showAllLines = false }: Analytics
                                 { key: 'temperature', color: '#f97316', label: 'Suhu' },
                             ].map((item) => (
                                 <button key={item.key} onClick={() => toggleLine(item.key)}
-                                    className={`flex items-center gap-1.5 px-2 py-1 rounded-lg text-[11px] font-medium transition-all ${visibleLines[item.key] ? 'bg-white/5 text-slate-300 border border-white/10' : 'text-slate-600 hover:text-slate-400'}`}>
+                                    className={`flex items-center gap-1.5 px-2 py-1 rounded-lg text-xs font-medium transition-all ${visibleLines[item.key] ? 'bg-white/5 text-slate-300 border border-white/10' : 'text-slate-600 hover:text-slate-400'}`}>
                                     <div className="w-2 h-2 rounded-full" style={{ backgroundColor: visibleLines[item.key] ? item.color : '#475569' }} />
                                     {item.label}
                                 </button>
@@ -214,7 +214,7 @@ export default function AnalyticsChart({ data, showAllLines = false }: Analytics
                             <YAxis yAxisId="temp" orientation="right" domain={tempDomain} tick={{ fontSize: 12, fill: '#64748b' }} tickLine={false} axisLine={false}
                                 label={{ value: '°C', angle: 90, position: 'insideRight', style: { fontSize: 12, fill: '#64748b' } }} />
                             <Tooltip content={<CustomTooltip />} />
-                            <Legend wrapperStyle={{ fontSize: 11, paddingTop: '8px' }} iconType="circle" iconSize={8} />
+                            <Legend wrapperStyle={{ fontSize: 12, paddingTop: '8px' }} iconType="circle" iconSize={8} />
                             {visibleLines.pH && (
                                 <Line yAxisId="pH" type="monotone" dataKey="pH" name="pH Level" stroke="#22d3ee" strokeWidth={2.5}
                                     dot={{ r: 3, fill: '#0c1222', stroke: '#22d3ee', strokeWidth: 2 }}
@@ -248,7 +248,7 @@ export default function AnalyticsChart({ data, showAllLines = false }: Analytics
                                 { key: 'turbidity', color: '#a78bfa', label: 'Turbidity' },
                             ].map((item) => (
                                 <button key={item.key} onClick={() => toggleLine(item.key)}
-                                    className={`flex items-center gap-1.5 px-2 py-1 rounded-lg text-[11px] font-medium transition-all ${visibleLines[item.key] ? 'bg-white/5 text-slate-300 border border-white/10' : 'text-slate-600 hover:text-slate-400'}`}>
+                                    className={`flex items-center gap-1.5 px-2 py-1 rounded-lg text-xs font-medium transition-all ${visibleLines[item.key] ? 'bg-white/5 text-slate-300 border border-white/10' : 'text-slate-600 hover:text-slate-400'}`}>
                                     <div className="w-2 h-2 rounded-full" style={{ backgroundColor: visibleLines[item.key] ? item.color : '#475569' }} />
                                     {item.label}
                                 </button>
@@ -266,7 +266,7 @@ export default function AnalyticsChart({ data, showAllLines = false }: Analytics
                             <YAxis yAxisId="turb" orientation="right" domain={turbDomain} tick={{ fontSize: 12, fill: '#64748b' }} tickLine={false} axisLine={false}
                                 label={{ value: 'NTU', angle: 90, position: 'insideRight', style: { fontSize: 12, fill: '#64748b' } }} />
                             <Tooltip content={<CustomTooltip />} />
-                            <Legend wrapperStyle={{ fontSize: 11, paddingTop: '8px' }} iconType="circle" iconSize={8} />
+                            <Legend wrapperStyle={{ fontSize: 12, paddingTop: '8px' }} iconType="circle" iconSize={8} />
                             {visibleLines.tds && (
                                 <Line yAxisId="tds" type="monotone" dataKey="tds" name="TDS (ppm)" stroke="#60a5fa" strokeWidth={2.5}
                                     dot={{ r: 3, fill: '#0c1222', stroke: '#60a5fa', strokeWidth: 2 }}

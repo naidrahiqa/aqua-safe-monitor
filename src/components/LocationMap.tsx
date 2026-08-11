@@ -46,7 +46,7 @@ export default function LocationMap({ reading }: LocationMapProps) {
                         {location.lat.toFixed(4)}°S, {location.lng.toFixed(4)}°E
                     </p>
                 </div>
-                <span className={`px-2.5 py-1 rounded-lg text-[11px] font-bold uppercase tracking-wider border
+                <span className={`px-2.5 py-1 rounded-lg text-xs font-bold uppercase tracking-wider border
           ${status === 'SANGAT LAYAK' ? 'bg-safe/15 text-safe border-safe/20' :
                         status === 'LAYAK' ? 'bg-warning/15 text-warning border-warning/20' :
                             'bg-danger/15 text-danger border-danger/20'

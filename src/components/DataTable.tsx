@@ -157,7 +157,7 @@ export default function DataTable({ readings, showFilters = false }: DataTablePr
                     onClick={exportCSV}
                     disabled={filteredReadings.length === 0}
                     title="Export data ke CSV"
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold
             text-water-400 hover:text-water-300 bg-water-500/10 hover:bg-water-500/15
             border border-water-500/20 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
                 >
@@ -172,13 +172,13 @@ export default function DataTable({ readings, showFilters = false }: DataTablePr
                     {/* Status filter */}
                     <div className="flex items-center gap-1.5">
                         <Filter size={12} className="text-slate-500" />
-                        <span className="text-[11px] text-slate-500 font-medium">Status:</span>
+                        <span className="text-xs text-slate-500 font-medium">Status:</span>
                     </div>
                     {(['all', 'SANGAT LAYAK', 'LAYAK', 'BAHAYA'] as const).map((filter) => (
                         <button
                             key={filter}
                             onClick={() => handleFilterChange(filter)}
-                            className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all ${
+                            className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
                                 statusFilter === filter
                                     ? filter === 'BAHAYA'
                                         ? 'bg-danger/20 text-danger border border-danger/30'
@@ -202,7 +202,7 @@ export default function DataTable({ readings, showFilters = false }: DataTablePr
                             value={searchQuery}
                             onChange={(e) => handleSearch(e.target.value)}
                             placeholder="Cari data..."
-                            className="bg-transparent text-[11px] text-slate-300 placeholder-slate-500 outline-none w-full"
+                            className="bg-transparent text-xs text-slate-300 placeholder-slate-500 outline-none w-full"
                         />
                     </div>
                 </div>
@@ -214,7 +214,7 @@ export default function DataTable({ readings, showFilters = false }: DataTablePr
                     <thead>
                         <tr className="border-b border-white/5">
                             {COLUMNS.map((col) => (
-                                <th key={col.key} className="pb-3 pr-4 text-[11px] font-semibold uppercase tracking-wider text-slate-500 whitespace-nowrap">
+                                <th key={col.key} className="pb-3 pr-4 text-xs font-semibold uppercase tracking-wider text-slate-500 whitespace-nowrap">
                                     <button
                                         onClick={() => handleSort(col.key)}
                                         className={`flex items-center gap-1 transition-colors ${
@@ -239,7 +239,7 @@ export default function DataTable({ readings, showFilters = false }: DataTablePr
                                 <td className="py-3 pr-4">
                                     <div className="flex flex-col">
                                         <span className="text-xs font-medium text-slate-300">{formatTime(r.timestamp)}</span>
-                                        <span className="text-[11px] text-slate-500">{formatDate(r.timestamp)}</span>
+                                        <span className="text-xs text-slate-500">{formatDate(r.timestamp)}</span>
                                     </div>
                                 </td>
                                 <td className="py-3 pr-4 text-[13px] text-slate-300 font-medium">{r.temperature}°C</td>
@@ -272,14 +272,14 @@ export default function DataTable({ readings, showFilters = false }: DataTablePr
             {/* Pagination */}
             {totalPages > 1 && (
                 <div className="flex items-center justify-between mt-4 pt-4 border-t border-white/5">
-                    <p className="text-[11px] text-slate-500">
+                    <p className="text-xs text-slate-500">
                         Halaman {currentPage} dari {totalPages}
                     </p>
                     <div className="flex items-center gap-1">
                         <button
                             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                             disabled={currentPage === 1}
-                            className="px-3 py-1.5 rounded-lg text-[11px] font-medium bg-white/5 border border-white/5 text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                            className="px-3 py-1.5 rounded-lg text-xs font-medium bg-white/5 border border-white/5 text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                         >
                             Prev
                         </button>
@@ -298,7 +298,7 @@ export default function DataTable({ readings, showFilters = false }: DataTablePr
                                 <button
                                     key={pageNum}
                                     onClick={() => setCurrentPage(pageNum)}
-                                    className={`w-7 h-7 rounded-lg text-[11px] font-medium transition-all ${
+                                    className={`w-7 h-7 rounded-lg text-xs font-medium transition-all ${
                                         currentPage === pageNum
                                             ? 'bg-water-500/20 text-water-400 border border-water-500/30'
                                             : 'bg-white/5 border border-white/5 text-slate-400 hover:text-white'
@@ -311,7 +311,7 @@ export default function DataTable({ readings, showFilters = false }: DataTablePr
                         <button
                             onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                             disabled={currentPage === totalPages}
-                            className="px-3 py-1.5 rounded-lg text-[11px] font-medium bg-white/5 border border-white/5 text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                            className="px-3 py-1.5 rounded-lg text-xs font-medium bg-white/5 border border-white/5 text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                         >
                             Next
                         </button>
