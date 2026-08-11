@@ -127,7 +127,6 @@
      never renders. Deliberate floor for readability on dark bg. */
   .text-\[9px\] { font-size: 10px; }
   .text-\[10px\] { font-size: 11px; }
-  .text-\[11px\] { font-size: 12px; }
 }
 
 /* ===== Glassmorphism Panels ===== */
