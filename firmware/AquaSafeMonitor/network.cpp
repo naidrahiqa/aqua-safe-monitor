@@ -9,12 +9,44 @@ bool network_connect_wifi(unsigned long timeoutMs) {
   if (WiFi.status() == WL_CONNECTED) return true;
 
   WiFi.mode(WIFI_STA);
+
+  // Try primary SSID
+  Serial.printf("[wifi] connecting to %s ...\n", WIFI_SSID);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 
   unsigned long start = millis();
   while (WiFi.status() != WL_CONNECTED && (millis() - start) < timeoutMs) {
     delay(250);
   }
+  if (WiFi.status() == WL_CONNECTED) return true;
+
+  // Try fallback SSID 2 if defined
+#ifdef WIFI_SSID_2
+  Serial.printf("[wifi] primary failed, trying %s ...\n", WIFI_SSID_2);
+  WiFi.disconnect();
+  delay(100);
+  WiFi.begin(WIFI_SSID_2, WIFI_PASSWORD_2);
+
+  start = millis();
+  while (WiFi.status() != WL_CONNECTED && (millis() - start) < timeoutMs) {
+    delay(250);
+  }
+  if (WiFi.status() == WL_CONNECTED) return true;
+#endif
+
+  // Try fallback SSID 3 if defined
+#ifdef WIFI_SSID_3
+  Serial.printf("[wifi] fallback 2 failed, trying %s ...\n", WIFI_SSID_3);
+  WiFi.disconnect();
+  delay(100);
+  WiFi.begin(WIFI_SSID_3, WIFI_PASSWORD_3);
+
+  start = millis();
+  while (WiFi.status() != WL_CONNECTED && (millis() - start) < timeoutMs) {
+    delay(250);
+  }
+#endif
+
   return WiFi.status() == WL_CONNECTED;
 }
 
