@@ -58,9 +58,11 @@ export default function GaugeCard({
     const [progress, setProgress] = useState(0);
     const color = status ? STATUS_COLORS[status] : getGaugeColor(value, safeMin, safeMax);
 
-    // Dynamic font size based on value length to prevent overflow
+    // Dynamic font size based on value length; long values are also
+    // compressed to a fixed width so the text never collides with the arc
     const valueStr = value.toFixed(decimals);
     const valueFontSize = valueStr.length > 6 ? 20 : valueStr.length > 4 ? 24 : 28;
+    const valueTextLength = valueStr.length > 4 ? 60 : undefined;
 
     useEffect(() => {
         const t = setTimeout(() => setProgress(pct), 150 + delay);
@@ -98,7 +100,7 @@ export default function GaugeCard({
             <svg viewBox="0 0 120 95" className="w-full max-w-[140px]" aria-hidden="true">
                 <circle
                     cx="60"
-                    cy="52"
+                    cy="48"
                     r="40"
                     pathLength={100}
                     fill="none"
@@ -109,7 +111,7 @@ export default function GaugeCard({
                 />
                 <circle
                     cx="60"
-                    cy="52"
+                    cy="48"
                     r="40"
                     pathLength={100}
                     fill="none"
@@ -117,13 +119,13 @@ export default function GaugeCard({
                     strokeWidth="9"
                     strokeLinecap="round"
                     strokeDasharray={`${arc} 100`}
-                    transform="rotate(180 60 52)"
+                    transform="rotate(180 60 48)"
                     style={{ transition: 'stroke-dasharray 1s ease-out, stroke 0.4s ease', filter: `drop-shadow(0 0 6px ${color}55)` }}
                 />
-                <text x="60" y="44" textAnchor="middle" fontSize={valueFontSize} fontWeight="800" fill="#f8fafc" fontFamily="Inter, system-ui, sans-serif" dominantBaseline="auto">
+                <text x="60" y="50" textAnchor="middle" fontSize={valueFontSize} fontWeight="800" fill="#f8fafc" fontFamily="Inter, system-ui, sans-serif" dominantBaseline="auto" textLength={valueTextLength} lengthAdjust="spacingAndGlyphs" style={{ fontVariantNumeric: 'tabular-nums' }}>
                     {valueStr}
                 </text>
-                <text x="60" y="62" textAnchor="middle" fontSize="11" fontWeight="500" fill="#64748b" fontFamily="Inter, system-ui, sans-serif">
+                <text x="60" y="66" textAnchor="middle" fontSize="11" fontWeight="500" fill="#64748b" fontFamily="Inter, system-ui, sans-serif">
                     {unit}
                 </text>
             </svg>
