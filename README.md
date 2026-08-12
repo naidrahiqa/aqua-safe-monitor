@@ -5,6 +5,7 @@ Sistem monitoring kualitas air real-time berbasis IoT.
 - **ESP32** — membaca sensor pH, TDS, Turbidity, dan Suhu (DS18B20), menampilkan ke LCD, mengirim data ke cloud
 - **Supabase** — backend (PostgreSQL + edge function `ingest-sensor-data`)
 - **React + Vite + TypeScript + Tailwind + Leaflet** — web dashboard
+- **Kotlin + Jetpack Compose** — Android app ([opsi-andro](../opsi-andro/))
 
 ## Struktur
 
@@ -15,7 +16,8 @@ Sistem monitoring kualitas air real-time berbasis IoT.
 ├── tools/i2c_scanner/          # Sketsa Arduino untuk scan alamat I2C (debug LCD)
 ├── SETUP_GUIDE.md              # Panduan setup lengkap dari 0 (Bahasa Indonesia)
 ├── SETUP_CHECKLIST.md          # Checklist menghubungkan backend Supabase asli
-└── PROJECT_STATUS.md           # Status proyek terkini (selesai / pending / blocked)
+├── PROJECT_STATUS.md           # Status proyek terkini (selesai / pending / blocked)
+└── ../opsi-andro/              # Android app (Kotlin + Compose) — lihat README di sana
 ```
 
 ## Quick Start (Web)

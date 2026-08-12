@@ -1,6 +1,6 @@
 # WaterSafe Monitor — Project Status
 
-## Last Updated: 2026-08-10
+## Last Updated: 2026-08-12
 
 ---
 
@@ -29,6 +29,25 @@
 - [x] Sorting kolom di tabel data
 - [x] Alert settings (threshold pH/TDS/turbidity) — **client-side localStorage saja** (`watersafe-alert-config`); threshold edge function di server TIDAK berubah
 - [x] Notifikasi bisa di-dismiss per item / semua, persist ke localStorage (`watersafe-dismissed-notifs`)
+
+### Android App (Kotlin + Compose)
+- [x] Project setup (Gradle 8.9, AGP 8.7.3, JDK 21)
+- [x] Supabase REST API integration (Ktor Client + anon key)
+- [x] Dashboard: WQI Hero Card + 4 Gauge Cards (pH, Suhu, TDS, Turbidity)
+- [x] Safety indicator per gauge (hijau = aman, merah = di luar batas)
+- [x] WQI status berwarna (hijau SANGAT_LAYAK, kuning LAYAK, merah BAHAYA)
+- [x] Filter waktu (Semua / 1 Jam / 6 Jam / 24 Jam)
+- [x] Sensor detail screen (tab per sensor + chart)
+- [x] Polling data tiap 10 detik
+- [x] RLS policy: public read (anon tanpa login)
+- [x] Build & install ke device via ADB
+- [x] **Map: Google Maps → osmdroid (OpenStreetMap)** — gratis tanpa API key; pin berwarna sesuai status air; tap peta untuk tandai titik
+- [x] **UI/UX + design system overhaul** ("kotlin rasa Flutter"):
+  - Gradien latar "night sky" di root, semua layar transparan di atasnya
+  - Design system bersama: `PanelCard`, `SectionHeader`, `StatusPill` (dot berdenyut saat live)
+  - Animasi spring + count-up: ring WQI sweep, angka gauge, kartu masuk layar
+  - Bottom nav pill bar: ikon aktif membesar + glow, transisi layar fade+scale
+  - Chart riwayat: area gradien di bawah garis
 
 ### Firmware (ESP32)
 - [x] WiFi connection working

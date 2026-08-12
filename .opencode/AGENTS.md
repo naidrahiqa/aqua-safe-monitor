@@ -1,6 +1,12 @@
 ﻿# AGENTS.md — AquaSafeMonitor (aqua_safe_monitor_opsi_2026)
 
-IoT water-quality monitor: ESP32 sensors → Supabase (Postgres + edge function) → React/Vite dashboard. Docs are Indonesian; keep responses user-friendly in ID.
+IoT water-quality monitor: ESP32 sensors → Supabase (Postgres + edge function) → React/Vite dashboard + Android app. Docs are Indonesian; keep responses user-friendly in ID.
+
+## Android App
+- **Location**: `E:\opsi-andro` (separate repo/project)
+- **Stack**: Kotlin + Jetpack Compose + Ktor + Supabase REST (anon key)
+- **Build**: JDK 21 required, `gradlew.bat :app:assembleDebug`
+- **Docs**: See `E:\opsi-andro\README.md` and `.opencode/skills/awesome-claude-skills/android-supabase-iot/SKILL.md`
 
 ## Build & verify
 - `npm run dev` — dev server (http://localhost:3000)
