@@ -2,19 +2,16 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import ErrorBoundary from './ErrorBoundary';
 
-// Component that throws
 function ThrowingComponent() {
     throw new Error('Test error');
 }
 
-// Component that works
 function WorkingComponent() {
     return <div>Works!</div>;
 }
 
 describe('ErrorBoundary', () => {
-    // Suppress console.error for expected errors
-    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'error').mockImplementation(() => {});
 
     it('renders children when no error', () => {
         render(
