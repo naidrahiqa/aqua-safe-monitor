@@ -1,6 +1,6 @@
 # WaterSafe Monitor — Project Status
 
-## Last Updated: 2026-08-12
+## Last Updated: 2026-08-13
 
 ---
 
@@ -29,6 +29,11 @@
 - [x] Sorting kolom di tabel data
 - [x] Alert settings (threshold pH/TDS/turbidity) — **client-side localStorage saja** (`watersafe-alert-config`); threshold edge function di server TIDAK berubah
 - [x] Notifikasi bisa di-dismiss per item / semua, persist ke localStorage (`watersafe-dismissed-notifs`)
+- [x] **Design system v3.1** — dark glassmorphism theme with semantic colors
+- [x] **JetBrains Mono font** — data/numbers typography
+- [x] **Code splitting** — lazy load routes + heavy components (recharts, leaflet)
+- [x] **Performance optimization** — 60% smaller initial bundle (1,039KB → 419KB)
+- [x] **Bug fixes** — skeleton shimmer, stack overflow risk, trend colors, confirm dialogs
 
 ### Android App (Kotlin + Compose)
 - [x] Project setup (Gradle 8.9, AGP 8.7.3, JDK 21)
@@ -48,6 +53,10 @@
   - Animasi spring + count-up: ring WQI sweep, angka gauge, kartu masuk layar
   - Bottom nav pill bar: ikon aktif membesar + glow, transisi layar fade+scale
   - Chart riwayat: area gradien di bawah garis
+- [x] **Color.kt** — semantic colors (surfaces, status, sensors) aligned with web
+- [x] **Type.kt** — WaterSafeTypography + Data* text styles for numbers
+- [x] **JetBrains Mono font** — bundled in res/font/ (regular, medium, bold)
+- [x] **Bug fixes** — sensor colors mismatch, light theme removed, PanelCard uses theme
 
 ### Firmware (ESP32)
 - [x] WiFi connection working
