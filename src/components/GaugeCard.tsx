@@ -62,7 +62,7 @@ export default function GaugeCard({
     // compressed to a fixed width so the text never collides with the arc
     const valueStr = value.toFixed(decimals);
     const valueFontSize = valueStr.length > 6 ? 20 : valueStr.length > 4 ? 24 : 28;
-    const valueTextLength = valueStr.length > 4 ? 60 : undefined;
+
 
     useEffect(() => {
         const t = setTimeout(() => setProgress(pct), 150 + delay);
@@ -97,7 +97,7 @@ export default function GaugeCard({
             </div>
 
             {/* Gauge */}
-            <svg viewBox="0 0 120 95" className="w-full max-w-[140px]" aria-hidden="true">
+            <svg viewBox="0 0 120 80" className="w-full max-w-[140px]" aria-hidden="true">
                 <circle
                     cx="60"
                     cy="48"
@@ -122,13 +122,17 @@ export default function GaugeCard({
                     transform="rotate(180 60 48)"
                     style={{ transition: 'stroke-dasharray 1s ease-out, stroke 0.4s ease', filter: `drop-shadow(0 0 6px ${color}55)` }}
                 />
-                <text x="60" y="50" textAnchor="middle" fontSize={valueFontSize} fontWeight="800" fill="#f8fafc" fontFamily="Inter, system-ui, sans-serif" dominantBaseline="auto" textLength={valueTextLength} lengthAdjust="spacingAndGlyphs" style={{ fontVariantNumeric: 'tabular-nums' }}>
-                    {valueStr}
-                </text>
-                <text x="60" y="66" textAnchor="middle" fontSize="11" fontWeight="500" fill="#64748b" fontFamily="Inter, system-ui, sans-serif">
-                    {unit}
-                </text>
             </svg>
+            {/* Value + unit below arc */}
+            <div className="flex flex-col items-center -mt-1">
+                <span
+                    className="font-extrabold text-slate-50 leading-none"
+                    style={{ fontSize: `${valueFontSize}px`, fontVariantNumeric: 'tabular-nums' }}
+                >
+                    {valueStr}
+                </span>
+                <span className="text-[11px] font-medium text-slate-500">{unit}</span>
+            </div>
 
             {/* Status badge / subtitle */}
             {status ? (
