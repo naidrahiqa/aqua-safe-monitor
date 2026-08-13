@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { DEFAULT_LAT, DEFAULT_LNG } from '../lib/constants';
 import { mockReadings, latestReading, chartData, mockLocationPins } from '../data/mockData';
 import type { SensorReading, ChartDataPoint, SensorDataRecord, LocationPin } from '../types';
 
@@ -30,8 +31,8 @@ function dbRecordToReading(record: SensorDataRecord & { device_name?: string; lo
         wqiScore: record.wqi_score,
         status: record.status,
         location: {
-            lat: record.location_lat ?? -6.5833,
-            lng: record.location_lng ?? 110.6667,
+            lat: record.location_lat ?? DEFAULT_LAT,
+            lng: record.location_lng ?? DEFAULT_LNG,
         },
     };
 }
@@ -151,6 +152,11 @@ export function useSensorData(limit = 50): UseSensorDataResult {
         fetchData();
     }, [fetchData]);
 
+    // Derive location pins from readings (replaces side-effect inside setReadings)
+    useEffect(() => {
+        setPins(buildLocationPins(readings));
+    }, [readings]);
+
     // Real-time subscription
     useEffect(() => {
         if (!configured) return;
@@ -191,7 +197,6 @@ export function useSensorData(limit = 50): UseSensorDataResult {
 
                         setReadings((prev) => {
                             const updated = [newReading, ...prev].slice(0, limit);
-                            setPins(buildLocationPins(updated));
                             return updated;
                         });
                         setLatest(newReading);

@@ -11,4 +11,16 @@ export default defineConfig({
         port: 3000,
         host: true,
     },
+    build: {
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+                    'vendor-charts': ['recharts'],
+                    'vendor-maps': ['leaflet', 'react-leaflet'],
+                    'vendor-supabase': ['@supabase/supabase-js'],
+                },
+            },
+        },
+    },
 })

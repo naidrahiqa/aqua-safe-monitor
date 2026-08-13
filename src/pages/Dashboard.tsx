@@ -385,7 +385,7 @@ export default function Dashboard() {
 
             {/* Background decorative elements */}
             <div className="fixed top-0 right-0 w-[700px] h-[700px] pointer-events-none opacity-20 blur-3xl" aria-hidden="true">
-                <div className="absolute top-[-250px] right-[-250px] w-[600px] [600px] rounded-full bg-gradient-to-br from-water-500/15 to-ocean-600/5" />
+                <div className="absolute top-[-250px] right-[-250px] w-[600px] h-[600px] rounded-full bg-gradient-to-br from-water-500/15 to-ocean-600/5" />
             </div>
         </div>
     );

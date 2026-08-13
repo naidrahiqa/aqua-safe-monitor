@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents, useMap } from 'react-leaflet';
 import { MapPin, Plus, X, RefreshCw } from 'lucide-react';
 import L from 'leaflet';
+import { DEFAULT_LAT, DEFAULT_LNG, DEFAULT_ZOOM } from '../lib/constants';
 import type { TestLocation, WaterStatus } from '../types';
 
 // ===================================================================
@@ -90,7 +91,7 @@ interface LocationMapProps {
 }
 
 export default function LocationMap({ locations, onAddLocation, onRemoveLocation, onSyncLocation }: LocationMapProps) {
-    const defaultCenter: [number, number] = [-6.5833, 110.6667];
+    const defaultCenter: [number, number] = [DEFAULT_LAT, DEFAULT_LNG];
     const mapRef = useRef(null);
 
     const [addMode, setAddMode] = useState(false);
@@ -215,7 +216,7 @@ export default function LocationMap({ locations, onAddLocation, onRemoveLocation
                 <MapContainer
                     ref={mapRef}
                     center={defaultCenter}
-                    zoom={13}
+                    zoom={DEFAULT_ZOOM}
                     scrollWheelZoom={false}
                     style={{ height: '100%', width: '100%' }}
                     attributionControl={true}

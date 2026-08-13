@@ -42,6 +42,31 @@ npm run dev              # http://localhost:3000
 2. Copy `firmware/AquaSafeMonitor/secrets.h.example` → `secrets.h`, isi WiFi + API key
 3. Upload `AquaSafeMonitor.ino`, buka Serial Monitor 115200 baud
 
+## Integrasi Web + Android
+
+Dashboard web dan app Android berbagi backend yang sama:
+
+| Aspek | Web | Android |
+|-------|-----|---------|
+| **Backend** | Supabase (JS client) | Supabase (Ktor REST) |
+| **Data Source** | `sensor_data` + `devices` (join) | `sensor_data` (REST) |
+| **WQI Algorithm** | Weighted average (0.3 pH + 0.25 TDS + 0.25 Turb + 0.2 Temp) | Sama persis |
+| **Status Threshold** | >=80 SANGAT LAYAK, >=60 LAYAK, <60 BAHAYA | Sama persis |
+| **Real-time** | Supabase Realtime (push) | Polling 10 detik |
+| **Lokasi** | Leaflet (tile server) | osmdroid (OpenStreetMap) |
+
+### WQI Algorithm (Unified)
+
+```
+Sub-index pH:     100 if 6.5-8.5, interpolation 5.0-6.5 & 8.5-10.0
+Sub-index TDS:    100 if <=300, interpolation 300-500
+Sub-index Turb:   100 if <=1, interpolation 1-5
+Sub-index Temp:   100 if 20-30°C
+Weighted: pH*0.3 + TDS*0.25 + Turb*0.25 + Temp*0.2
+```
+
+Algorithm ini dijalankan di Edge Function (server-side) dan dicopy ke web client + Android untuk kalkulasi lokal (test locations).*
+
 ## Design System
 
 Dashboard menggunakan design system v3.1 dengan dark glassmorphism theme:

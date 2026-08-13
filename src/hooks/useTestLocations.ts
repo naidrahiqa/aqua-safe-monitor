@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { DEFAULT_LAT, DEFAULT_LNG } from '../lib/constants';
 import type { TestLocation, SensorReading, SensorDataRecord, WaterStatus } from '../types';
 
 // ===================================================================
@@ -13,31 +14,56 @@ function generateId(): string {
     return `TL-${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 6)}`;
 }
 
+/** Weighted-average WQI — matches Edge Function algorithm exactly */
 function computeWQI(reading: { pH: number; tds: number; turbidity: number; temperature: number }): number {
-    // Simplified WQI calculation
-    let score = 100;
+    // pH sub-index (ideal: 6.5-8.5)
+    let phScore: number;
+    if (reading.pH >= 6.5 && reading.pH <= 8.5) {
+        phScore = 100;
+    } else if (reading.pH >= 5.0 && reading.pH < 6.5) {
+        phScore = 60 + ((reading.pH - 5.0) / 1.5) * 40;
+    } else if (reading.pH > 8.5 && reading.pH <= 10.0) {
+        phScore = 60 + ((10.0 - reading.pH) / 1.5) * 40;
+    } else {
+        phScore = Math.max(0, 30 - Math.abs(reading.pH - 7.0) * 5);
+    }
 
-    // pH penalty (ideal 6.5-8.5)
-    if (reading.pH < 6.5 || reading.pH > 8.5) score -= 20;
-    if (reading.pH < 5 || reading.pH > 10) score -= 30;
+    // TDS sub-index (ideal: < 300 ppm, max: 500 ppm)
+    let tdsScore: number;
+    if (reading.tds <= 300) {
+        tdsScore = 100;
+    } else if (reading.tds <= 500) {
+        tdsScore = 100 - ((reading.tds - 300) / 200) * 50;
+    } else {
+        tdsScore = Math.max(0, 50 - ((reading.tds - 500) / 500) * 50);
+    }
 
-    // TDS penalty (ideal <500)
-    if (reading.tds > 500) score -= 15;
-    if (reading.tds > 1000) score -= 20;
+    // Turbidity sub-index (ideal: < 1 NTU, acceptable: < 5 NTU)
+    let turbScore: number;
+    if (reading.turbidity <= 1) {
+        turbScore = 100;
+    } else if (reading.turbidity <= 5) {
+        turbScore = 100 - ((reading.turbidity - 1) / 4) * 30;
+    } else {
+        turbScore = Math.max(0, 70 - ((reading.turbidity - 5) / 10) * 70);
+    }
 
-    // Turbidity penalty (ideal <5)
-    if (reading.turbidity > 5) score -= 15;
-    if (reading.turbidity > 25) score -= 25;
+    // Temperature sub-index (ideal: 20-30°C)
+    let tempScore: number;
+    if (reading.temperature >= 20 && reading.temperature <= 30) {
+        tempScore = 100;
+    } else {
+        tempScore = Math.max(0, 100 - Math.abs(reading.temperature - 25) * 5);
+    }
 
-    // Temperature penalty (ideal 20-30)
-    if (reading.temperature < 20 || reading.temperature > 30) score -= 10;
-
-    return Math.max(0, Math.min(100, score));
+    // Weighted average
+    const wqi = (phScore * 0.3) + (tdsScore * 0.25) + (turbScore * 0.25) + (tempScore * 0.2);
+    return Math.round(Math.min(100, Math.max(0, wqi)) * 10) / 10;
 }
 
 function getStatus(wqi: number): WaterStatus {
     if (wqi >= 80) return 'SANGAT LAYAK';
-    if (wqi >= 50) return 'LAYAK';
+    if (wqi >= 60) return 'LAYAK';
     return 'BAHAYA';
 }
 
@@ -63,12 +89,12 @@ function getMockLocations(): TestLocation[] {
         {
             id: generateId(),
             name: 'Sumur Warga RT 05',
-            location: { lat: -6.5833, lng: 110.6667 },
+            location: { lat: DEFAULT_LAT, lng: DEFAULT_LNG },
             temperature: 26.4,
             pH: 7.2,
             tds: 185,
             turbidity: 2.1,
-            wqiScore: 92,
+            wqiScore: 97.9,
             status: 'SANGAT LAYAK',
             notes: 'Air sumur belakang rumah Pak Budi',
             createdAt: now,
@@ -81,8 +107,8 @@ function getMockLocations(): TestLocation[] {
             pH: 6.5,
             tds: 245,
             turbidity: 5.2,
-            wqiScore: 65,
-            status: 'LAYAK',
+            wqiScore: 89.3,
+            status: 'SANGAT LAYAK',
             notes: 'Kolam depan sekolah',
             createdAt: now,
         },
@@ -94,8 +120,8 @@ function getMockLocations(): TestLocation[] {
             pH: 5.9,
             tds: 320,
             turbidity: 8.6,
-            wqiScore: 42,
-            status: 'BAHAYA',
+            wqiScore: 72.1,
+            status: 'LAYAK',
             notes: 'Saluran utama dari sungai',
             createdAt: now,
         },
@@ -180,7 +206,7 @@ export function useTestLocations(): UseTestLocationsResult {
                 turbidity: record.turbidity,
                 wqiScore: record.wqi_score,
                 status: record.status,
-                location: { lat: -6.5833, lng: 110.6667 }, // default, will be overridden
+                location: { lat: DEFAULT_LAT, lng: DEFAULT_LNG }, // default, will be overridden
             };
 
             setLocations((prev) => {

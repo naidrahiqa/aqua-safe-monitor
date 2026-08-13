@@ -1,11 +1,12 @@
 import type { SensorReading, ChartDataPoint, LocationPin } from '../types';
+import { DEFAULT_LAT, DEFAULT_LNG } from '../lib/constants';
 
 // ===================================================================
 // Mock Data — Simulates ESP32 sensor payloads for UI development.
 // All data strictly adheres to the SensorReading interface.
 // ===================================================================
 
-const BASE_LOCATION = { lat: -6.5833, lng: 110.6667 }; // Jepara, Indonesia
+const BASE_LOCATION = { lat: DEFAULT_LAT, lng: DEFAULT_LNG }; // Jepara, Indonesia
 
 function generateId(): string {
     return `WSM-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
@@ -25,7 +26,7 @@ export const mockReadings: SensorReading[] = [
         pH: 7.2,
         tds: 185,
         turbidity: 2.1,
-        wqiScore: 92,
+        wqiScore: 97.9,
         status: 'SANGAT LAYAK',
         location: { ...BASE_LOCATION },
     },
@@ -36,7 +37,7 @@ export const mockReadings: SensorReading[] = [
         pH: 7.0,
         tds: 192,
         turbidity: 2.4,
-        wqiScore: 88,
+        wqiScore: 97.4,
         status: 'SANGAT LAYAK',
         location: { lat: BASE_LOCATION.lat + 0.002, lng: BASE_LOCATION.lng - 0.001 },
     },
@@ -47,8 +48,8 @@ export const mockReadings: SensorReading[] = [
         pH: 6.8,
         tds: 210,
         turbidity: 3.8,
-        wqiScore: 76,
-        status: 'LAYAK',
+        wqiScore: 94.3,
+        status: 'SANGAT LAYAK',
         location: { lat: BASE_LOCATION.lat - 0.001, lng: BASE_LOCATION.lng + 0.003 },
     },
     {
@@ -58,8 +59,8 @@ export const mockReadings: SensorReading[] = [
         pH: 6.5,
         tds: 245,
         turbidity: 5.2,
-        wqiScore: 65,
-        status: 'LAYAK',
+        wqiScore: 89.3,
+        status: 'SANGAT LAYAK',
         location: { lat: BASE_LOCATION.lat + 0.004, lng: BASE_LOCATION.lng + 0.002 },
     },
     {
@@ -69,8 +70,8 @@ export const mockReadings: SensorReading[] = [
         pH: 5.9,
         tds: 320,
         turbidity: 8.6,
-        wqiScore: 42,
-        status: 'BAHAYA',
+        wqiScore: 72.1,
+        status: 'LAYAK',
         location: { lat: BASE_LOCATION.lat - 0.003, lng: BASE_LOCATION.lng - 0.002 },
     },
     {
@@ -80,7 +81,7 @@ export const mockReadings: SensorReading[] = [
         pH: 7.1,
         tds: 178,
         turbidity: 1.9,
-        wqiScore: 91,
+        wqiScore: 98.0,
         status: 'SANGAT LAYAK',
         location: { ...BASE_LOCATION },
     },
@@ -91,8 +92,8 @@ export const mockReadings: SensorReading[] = [
         pH: 6.7,
         tds: 230,
         turbidity: 4.1,
-        wqiScore: 72,
-        status: 'LAYAK',
+        wqiScore: 92.8,
+        status: 'SANGAT LAYAK',
         location: { lat: BASE_LOCATION.lat + 0.001, lng: BASE_LOCATION.lng + 0.001 },
     },
     {
@@ -102,8 +103,8 @@ export const mockReadings: SensorReading[] = [
         pH: 6.2,
         tds: 290,
         turbidity: 7.3,
-        wqiScore: 48,
-        status: 'BAHAYA',
+        wqiScore: 79.4,
+        status: 'LAYAK',
         location: { lat: BASE_LOCATION.lat - 0.002, lng: BASE_LOCATION.lng + 0.004 },
     },
 ];
@@ -160,21 +161,21 @@ export const mockLocationPins: LocationPin[] = [
         id: 'pin-utama',
         deviceName: 'ESP32-Sumber-Air-Utama',
         location: { ...LOCATIONS.utama },
-        latestReading: locReading(LOCATIONS.utama, 26.4, 7.2, 185, 2.1, 92, 'SANGAT LAYAK', 0),
+        latestReading: locReading(LOCATIONS.utama, 26.4, 7.2, 185, 2.1, 97.9, 'SANGAT LAYAK', 0),
         status: 'SANGAT LAYAK',
     },
     {
         id: 'pin-kolam',
         deviceName: 'ESP32-Kolam-Belakang',
         location: { ...LOCATIONS.kolam },
-        latestReading: locReading(LOCATIONS.kolam, 27.5, 6.5, 245, 5.2, 65, 'LAYAK', 3),
-        status: 'LAYAK',
+        latestReading: locReading(LOCATIONS.kolam, 27.5, 6.5, 245, 5.2, 89.3, 'SANGAT LAYAK', 3),
+        status: 'SANGAT LAYAK',
     },
     {
         id: 'pin-irigasi',
         deviceName: 'ESP32-Saluran-Irigasi',
         location: { ...LOCATIONS.irigasi },
-        latestReading: locReading(LOCATIONS.irigasi, 28.2, 5.9, 320, 8.6, 42, 'BAHAYA', 4),
-        status: 'BAHAYA',
+        latestReading: locReading(LOCATIONS.irigasi, 28.2, 5.9, 320, 8.6, 72.1, 'LAYAK', 4),
+        status: 'LAYAK',
     },
 ];

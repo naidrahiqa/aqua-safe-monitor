@@ -1,4 +1,4 @@
-import { useState, useEffect, type ReactNode } from 'react';
+import { useState, useEffect, useRef, type ReactNode } from 'react';
 import { Bell, Save, RotateCcw, Check, AlertCircle } from 'lucide-react';
 import type { AlertConfig } from '../lib/alertConfig';
 import { saveAlertConfig, DEFAULT_ALERT_CONFIG } from '../lib/alertConfig';
@@ -27,8 +27,16 @@ export default function AlertSettings({ config, onChange }: AlertSettingsProps) 
     const [form, setForm] = useState<AlertConfig>(config);
     const [saving, setSaving] = useState(false);
     const [msg, setMsg] = useState<{ type: 'ok' | 'err'; text: string } | null>(null);
+    const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useEffect(() => setForm(config), [config]);
+
+    // Cleanup timer on unmount
+    useEffect(() => {
+        return () => {
+            if (saveTimer.current) clearTimeout(saveTimer.current);
+        };
+    }, []);
 
     const update = (key: keyof AlertConfig, value: string) => {
         setForm((f) => ({ ...f, [key]: value === '' ? 0 : parseFloat(value) }));
@@ -51,7 +59,8 @@ export default function AlertSettings({ config, onChange }: AlertSettingsProps) 
         }
         setSaving(true);
         setMsg(null);
-        setTimeout(() => {
+        if (saveTimer.current) clearTimeout(saveTimer.current);
+        saveTimer.current = setTimeout(() => {
             persist(form);
             setSaving(false);
             setMsg({ type: 'ok', text: 'Pengaturan berhasil disimpan!' });
