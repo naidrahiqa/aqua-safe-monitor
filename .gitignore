@@ -1,0 +1,41 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build output
+dist/
+dist-ssr/
+
+# Environment variables (SENSITIVE!)
+.env
+.env.local
+.env.*.local
+
+# Local secrets (SENSITIVE!)
+firmware/AquaSafeMonitor/secrets.h
+pw-supabase.txt
+
+# Supabase CLI local cache
+supabase/.temp/
+
+# opencode config (local tooling) — only AGENTS.md is committed
+.opencode/*
+!.opencode/AGENTS.md
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# TypeScript cache
+*.tsbuildinfo

@@ -1,0 +1,297 @@
+@import "tailwindcss";
+
+/* ===== WaterSafe Design System — v3 ===== */
+/* Deep dark IoT dashboard with bold accents */
+@theme {
+  --color-water-50: #ecfeff;
+  --color-water-100: #cffafe;
+  --color-water-200: #a5f3fc;
+  --color-water-300: #67e8f9;
+  --color-water-400: #22d3ee;
+  --color-water-500: #06b6d4;
+  --color-water-600: #0891b2;
+  --color-water-700: #0e7490;
+  --color-water-800: #155e75;
+  --color-water-900: #164e63;
+  --color-water-950: #083344;
+
+  --color-ocean-50: #eff6ff;
+  --color-ocean-100: #dbeafe;
+  --color-ocean-200: #bfdbfe;
+  --color-ocean-300: #93c5fd;
+  --color-ocean-400: #60a5fa;
+  --color-ocean-500: #3b82f6;
+  --color-ocean-600: #2563eb;
+  --color-ocean-700: #1d4ed8;
+  --color-ocean-800: #1e40af;
+  --color-ocean-900: #1e3a8a;
+  --color-ocean-950: #172554;
+
+  --color-safe: #10b981;
+  --color-safe-light: #d1fae5;
+  --color-warning: #f59e0b;
+  --color-warning-light: #fef3c7;
+  --color-danger: #ef4444;
+  --color-danger-light: #fee2e2;
+  --color-info: #6366f1;
+  --color-info-light: #e0e7ff;
+  --color-accent: #8b5cf6;
+  --color-accent-light: #ede9fe;
+
+  --color-panel: #080d19;
+  --color-panel-light: #0f1729;
+  --color-panel-lighter: #182240;
+  --color-surface: #040810;
+  --color-border: rgba(148, 163, 184, 0.07);
+  --color-border-hover: rgba(6, 182, 212, 0.3);
+
+  /* Sensor accent colors */
+  --color-ph: #22d3ee;
+  --color-suhu: #f97316;
+  --color-tds: #60a5fa;
+  --color-turbid: #a78bfa;
+}
+
+/* ===== Global Base ===== */
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    font-family: 'Inter', 'SF Pro Display', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-size: 16px;
+    background-color: var(--color-surface);
+    color: #e2e8f0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(100, 116, 139, 0.25);
+    border-radius: 10px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(6, 182, 212, 0.4);
+  }
+
+  /* Focus ring */
+  :focus-visible {
+    outline: 2px solid var(--color-water-400);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+/* ===== Animations ===== */
+@layer utilities {
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fade-in-scale {
+    from { opacity: 0; transform: scale(0.97); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  @keyframes slide-up {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pulse-soft {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+  @keyframes glow {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(6, 182, 212, 0); }
+    50% { box-shadow: 0 0 24px 6px rgba(6, 182, 212, 0.12); }
+  }
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  .animate-fade-in-scale {
+    animation: fade-in-scale 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  .animate-slide-up {
+    animation: slide-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  .animate-pulse-soft {
+    animation: pulse-soft 2s ease-in-out infinite;
+  }
+  .animate-glow {
+    animation: glow 2.5s ease-in-out infinite;
+  }
+  .animate-shimmer {
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.04) 50%, transparent 100%);
+    background-size: 200% 100%;
+    animation: shimmer 1.8s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-fade-in,
+    .animate-fade-in-scale,
+    .animate-slide-up,
+    .animate-pulse-soft,
+    .animate-glow,
+    .animate-shimmer {
+      animation: none !important;
+    }
+  }
+}
+
+/* ===== Glass Panels — v3 ===== */
+.glass-panel {
+  background: linear-gradient(
+    145deg,
+    rgba(8, 13, 25, 0.95) 0%,
+    rgba(15, 23, 41, 0.9) 50%,
+    rgba(24, 34, 64, 0.85) 100%
+  );
+  backdrop-filter: blur(24px) saturate(1.3);
+  -webkit-backdrop-filter: blur(24px) saturate(1.3);
+  border: 1px solid rgba(148, 163, 184, 0.06);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.3),
+    0 8px 32px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.015);
+}
+
+.glass-panel-hover {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.glass-panel-hover:hover {
+  background: linear-gradient(
+    145deg,
+    rgba(15, 23, 41, 0.97) 0%,
+    rgba(24, 34, 64, 0.92) 50%,
+    rgba(30, 45, 74, 0.88) 100%
+  );
+  border-color: rgba(6, 182, 212, 0.2);
+  box-shadow:
+    0 4px 24px rgba(6, 182, 212, 0.06),
+    0 1px 3px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.025);
+  transform: translateY(-2px);
+}
+
+/* ===== Status Dot ===== */
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  position: relative;
+}
+.status-dot::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 1.5px solid currentColor;
+  opacity: 0.3;
+}
+.status-dot-pulse {
+  animation: pulse-soft 2s ease-in-out infinite;
+}
+
+/* ===== Leaflet Map Overrides ===== */
+.leaflet-container {
+  background: var(--color-panel) !important;
+  border-radius: 12px;
+}
+.leaflet-tile-pane {
+  filter: brightness(0.6) saturate(1.4) contrast(1.2);
+}
+.leaflet-control-zoom a {
+  background: var(--color-panel-light) !important;
+  color: #e2e8f0 !important;
+  border-color: rgba(148, 163, 184, 0.08) !important;
+  transition: background 0.15s ease;
+}
+.leaflet-control-zoom a:hover {
+  background: var(--color-panel-lighter) !important;
+}
+.leaflet-control-attribution {
+  background: rgba(8, 13, 25, 0.9) !important;
+  color: #64748b !important;
+  font-size: 9px !important;
+}
+.leaflet-control-attribution a {
+  color: var(--color-water-500) !important;
+}
+
+/* ===== Tabular Numbers ===== */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ===== Data Font (JetBrains Mono) ===== */
+.font-data {
+  font-family: 'JetBrains Mono', 'SF Mono', 'Cascadia Code', monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.font-data-bold {
+  font-family: 'JetBrains Mono', 'SF Mono', 'Cascadia Code', monospace;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+/* ===== Refined Glass Panel v3.1 — Mesh Gradient ===== */
+.glass-panel-mesh {
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(6, 182, 212, 0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 100%, rgba(99, 102, 241, 0.03) 0%, transparent 50%),
+    linear-gradient(
+      145deg,
+      rgba(8, 13, 25, 0.97) 0%,
+      rgba(15, 23, 41, 0.92) 50%,
+      rgba(24, 34, 64, 0.87) 100%
+    );
+  backdrop-filter: blur(24px) saturate(1.3);
+  -webkit-backdrop-filter: blur(24px) saturate(1.3);
+  border: 1px solid rgba(148, 163, 184, 0.06);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.3),
+    0 8px 32px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.015);
+}
+
+/* ===== Staggered Animations ===== */
+.stagger-1 { animation-delay: 0ms; }
+.stagger-2 { animation-delay: 60ms; }
+.stagger-3 { animation-delay: 120ms; }
+.stagger-4 { animation-delay: 180ms; }
+.stagger-5 { animation-delay: 240ms; }
+.stagger-6 { animation-delay: 300ms; }
+
+.animate-stagger-in {
+  animation: fade-in-scale 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ===== Number Counter Glow ===== */
+.number-glow {
+  text-shadow: 0 0 20px currentColor;
+}
+
+/* ===== Gradient Text ===== */
+.gradient-text {
+  background: linear-gradient(135deg, var(--color-water-400), var(--color-ocean-400));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
