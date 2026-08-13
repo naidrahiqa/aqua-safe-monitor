@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { SensorDataProvider } from './contexts/SensorDataContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import ErrorBoundary from './components/ErrorBoundary';
 import SkeletonCard from './components/SkeletonCard';
 
 const AuthPage = lazy(() => import('./pages/AuthPage'));
@@ -19,23 +20,25 @@ function PageFallback() {
 export default function App() {
     return (
         <BrowserRouter>
-            <AuthProvider>
-                <SensorDataProvider>
-                    <Suspense fallback={<PageFallback />}>
-                        <Routes>
-                            <Route path="/login" element={<AuthPage />} />
-                            <Route
-                                path="/*"
-                                element={
-                                    <ProtectedRoute>
-                                        <Dashboard />
-                                    </ProtectedRoute>
-                                }
-                            />
-                        </Routes>
-                    </Suspense>
-                </SensorDataProvider>
-            </AuthProvider>
+            <ErrorBoundary>
+                <AuthProvider>
+                    <SensorDataProvider>
+                        <Suspense fallback={<PageFallback />}>
+                            <Routes>
+                                <Route path="/login" element={<AuthPage />} />
+                                <Route
+                                    path="/*"
+                                    element={
+                                        <ProtectedRoute>
+                                            <Dashboard />
+                                        </ProtectedRoute>
+                                    }
+                                />
+                            </Routes>
+                        </Suspense>
+                    </SensorDataProvider>
+                </AuthProvider>
+            </ErrorBoundary>
         </BrowserRouter>
     );
 }

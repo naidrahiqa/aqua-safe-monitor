@@ -57,8 +57,6 @@ DROP POLICY IF EXISTS "Users can update own devices" ON public.devices;
 DROP POLICY IF EXISTS "Users can delete own devices" ON public.devices;
 DROP POLICY IF EXISTS "Users can view own sensor data" ON public.sensor_data;
 DROP POLICY IF EXISTS "Service role can insert sensor data" ON public.sensor_data;
-DROP POLICY IF EXISTS "Public can read sensor data" ON public.sensor_data;
-DROP POLICY IF EXISTS "Public can read devices" ON public.devices;
 
 -- DEVICES POLICIES
 CREATE POLICY "Users can view own devices"
@@ -92,16 +90,6 @@ CREATE POLICY "Users can view own sensor data"
 CREATE POLICY "Service role can insert sensor data"
     ON public.sensor_data FOR INSERT
     WITH CHECK (true);
-
--- Mode demo: aplikasi Android (anon, tanpa login) boleh membaca data sensor & daftar device.
--- Untuk produksi: hapus kedua policy ini dan wajibkan login (auth.uid()).
-CREATE POLICY "Public can read sensor data"
-    ON public.sensor_data FOR SELECT
-    USING (true);
-
-CREATE POLICY "Public can read devices"
-    ON public.devices FOR SELECT
-    USING (true);
 
 -- ========================
 -- 5. AUTO-UPDATE TRIGGER

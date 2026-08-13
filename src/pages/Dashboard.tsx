@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, memo, lazy, Suspense } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
     Thermometer,
     Droplets,
@@ -30,6 +31,8 @@ const SensorDetail = lazy(() => import('../components/SensorDetail'));
 const LocationMap = lazy(() => import('../components/LocationMap'));
 const DeviceManager = lazy(() => import('../components/DeviceManager'));
 const LocationSettings = lazy(() => import('../components/LocationSettings'));
+
+const VALID_TABS: NavSection[] = ['overview', 'ph', 'suhu', 'tds', 'turbidity', 'history', 'devices', 'settings'];
 
 const StatusIndicator = memo(function StatusIndicator({ secondsAgo }: { secondsAgo: number | null }) {
     const isOnline = secondsAgo !== null && secondsAgo < 120;
@@ -65,8 +68,17 @@ const StatusIndicator = memo(function StatusIndicator({ secondsAgo }: { secondsA
     );
 });
 
+function getTabFromSearch(params: URLSearchParams): NavSection {
+    const tab = params.get('tab');
+    if (tab && VALID_TABS.includes(tab as NavSection)) {
+        return tab as NavSection;
+    }
+    return 'overview';
+}
+
 export default function Dashboard() {
-    const [activeNav, setActiveNav] = useState<NavSection>('overview');
+    const [searchParams, setSearchParams] = useSearchParams();
+    const activeNav = getTabFromSearch(searchParams);
     const [showNotifications, setShowNotifications] = useState(false);
     const { user, signOut } = useAuth();
     const { latestReading, readings, loading, error, refresh } = useSensorContext();
@@ -85,6 +97,10 @@ export default function Dashboard() {
     const lastTs = latestReading?.timestamp ? new Date(latestReading.timestamp).getTime() : null;
     const secondsAgo = lastTs ? Math.max(0, Math.floor((now - lastTs) / 1000)) : null;
 
+    const handleNavigate = (tab: NavSection) => {
+        setSearchParams({ tab });
+    };
+
     // Page title mapping
     const PAGE_TITLES: Record<NavSection, string> = {
         overview: 'Overview',
@@ -99,7 +115,7 @@ export default function Dashboard() {
 
     return (
         <div className="flex min-h-screen bg-surface">
-            <Sidebar active={activeNav} onNavigate={setActiveNav} />
+            <Sidebar active={activeNav} onNavigate={handleNavigate} />
 
             {/* Main Content */}
             <main className="flex-1 min-h-screen overflow-y-auto">
@@ -369,7 +385,7 @@ export default function Dashboard() {
 
             {/* Background decorative elements */}
             <div className="fixed top-0 right-0 w-[700px] h-[700px] pointer-events-none opacity-20 blur-3xl" aria-hidden="true">
-                <div className="absolute top-[-250px] right-[-250px] w-[600px] h-[600px] rounded-full bg-gradient-to-br from-water-500/15 to-ocean-600/5" />
+                <div className="absolute top-[-250px] right-[-250px] w-[600px] [600px] rounded-full bg-gradient-to-br from-water-500/15 to-ocean-600/5" />
             </div>
         </div>
     );
