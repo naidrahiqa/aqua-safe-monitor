@@ -1,6 +1,17 @@
-# WaterSafe Monitor — Project Status
+# AquaSafe Monitor — Project Status
 
 ## Last Updated: 2026-08-13
+
+---
+
+## 📦 Repos
+
+| Repo | Description | URL |
+|------|-------------|-----|
+| `aqua-safe-monitor` | Web dashboard + firmware + Supabase | https://github.com/naidrahiqa/aqua-safe-monitor |
+| `aqua-safe-monitor-android` | Android app (Kotlin + Compose) | https://github.com/naidrahiqa/aqua-safe-monitor-android |
+
+**Previous monorepo**: `aqua_safe_monitor_opsi_2026` (archived)
 
 ---
 
@@ -186,7 +197,7 @@ When continuing development:
 ## 🗂️ Files to Backup (for device migration)
 
 ```
-opsi/
+aqua-safe-monitor/
 ├── firmware/AquaSafeMonitor/
 │   ├── AquaSafeMonitor.ino
 │   ├── config.h
@@ -203,4 +214,15 @@ opsi/
 ├── package.json
 ├── SETUP_GUIDE.md
 └── PROJECT_STATUS.md      ← This file
+
+aqua-safe-monitor-android/
+├── app/src/main/java/com/aquasafe/monitor/
+│   ├── data/              (SupabaseConfig, SensorRepository)
+│   ├── model/             (SensorReading, TestLocation)
+│   ├── viewmodel/         (DashboardViewModel)
+│   ├── ui/screens/        (Overview, Sensor, Map, History, Settings)
+│   ├── ui/components/     (GaugeCard, Panel, SensorChart, StatusChip)
+│   ├── ui/theme/          (Color.kt, Type.kt, Theme.kt)
+│   └── ui/navigation/     (AppNav.kt)
+└── app/src/main/res/font/ (JetBrains Mono)
 ```

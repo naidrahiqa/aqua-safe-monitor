@@ -19,6 +19,7 @@ Sistem monitoring kualitas air real-time:
 - **ESP32** → baca sensor pH, TDS, Turbidity, Suhu
 - **Supabase** → backend (database + edge function)
 - **React + Vite** → web dashboard
+- **Kotlin + Compose** → Android app ([aqua-safe-monitor-android](https://github.com/naidrahiqa/aqua-safe-monitor-android))
 
 ---
 
@@ -80,8 +81,8 @@ VALUES (
 
 ### 4.1 Clone & Install
 ```bash
-git clone <repo-url>
-cd opsi
+git clone https://github.com/naidrahiqa/aqua-safe-monitor.git
+cd aqua-safe-monitor
 npm install
 ```
 
@@ -274,7 +275,7 @@ pH:7.02 TDS:125.3ppm Turb:2.1NTU Temp:28.50C WiFi:OK SD:OK
 
 ### Folder Structure:
 ```
-opsi/
+aqua-safe-monitor/
 ├── firmware/
 │   └── AquaSafeMonitor/
 │       ├── AquaSafeMonitor.ino    # Main firmware
