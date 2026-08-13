@@ -63,6 +63,7 @@ export default function DeviceManager() {
     const [visibleKeys, setVisibleKeys] = useState<Set<string>>(new Set());
     const [error, setError] = useState<string | null>(null);
     const [newlyCreated, setNewlyCreated] = useState<Device | null>(null);
+    const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
 
     // ---- Fetch devices ----
     const fetchDevices = useCallback(async () => {
@@ -146,7 +147,7 @@ export default function DeviceManager() {
 
     // ---- Delete device ----
     const handleDelete = async (deviceId: string) => {
-        if (!confirm('Yakin ingin menghapus perangkat ini? Semua data sensor akan ikut terhapus.')) return;
+        setPendingDeleteId(null);
 
         if (!configured) {
             setDevices((prev) => prev.filter((d) => d.id !== deviceId));
@@ -453,13 +454,30 @@ String payload = "{\\"api_key\\":\\"" + String(API_KEY) + "\\","
                                     >
                                         <Power size={14} />
                                     </button>
-                                    <button
-                                        onClick={() => handleDelete(device.id)}
-                                        className="p-1.5 rounded-lg hover:bg-danger/10 text-danger/40 hover:text-danger transition-colors"
-                                        title="Hapus perangkat"
-                                    >
-                                        <Trash2 size={14} />
-                                    </button>
+                                    {pendingDeleteId === device.id ? (
+                                        <div className="flex items-center gap-1">
+                                            <button
+                                                onClick={() => handleDelete(device.id)}
+                                                className="px-2 py-1 rounded-lg bg-danger/15 text-danger text-[10px] font-semibold hover:bg-danger/25 transition-colors"
+                                            >
+                                                Hapus
+                                            </button>
+                                            <button
+                                                onClick={() => setPendingDeleteId(null)}
+                                                className="px-2 py-1 rounded-lg bg-white/5 text-slate-400 text-[10px] font-semibold hover:bg-white/10 transition-colors"
+                                            >
+                                                Batal
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <button
+                                            onClick={() => setPendingDeleteId(device.id)}
+                                            className="p-1.5 rounded-lg hover:bg-danger/10 text-danger/40 hover:text-danger transition-colors"
+                                            title="Hapus perangkat"
+                                        >
+                                            <Trash2 size={14} />
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         </div>

@@ -46,6 +46,7 @@ interface SensorConfig {
     safeMin: number;
     safeMax: number;
     decimals: number;
+    trendInverted?: boolean;
 }
 
 export const SENSOR_CONFIGS: Record<string, SensorConfig> = {
@@ -93,6 +94,7 @@ export const SENSOR_CONFIGS: Record<string, SensorConfig> = {
         safeMin: 0,
         safeMax: 500,
         decimals: 0,
+        trendInverted: true,
     },
     turbidity: {
         navId: 'turbidity',
@@ -108,6 +110,7 @@ export const SENSOR_CONFIGS: Record<string, SensorConfig> = {
         safeMin: 0,
         safeMax: 5,
         decimals: 1,
+        trendInverted: true,
     },
 };
 
@@ -148,7 +151,7 @@ function CustomTooltip({ active, payload, label, unit }: CustomTooltipProps) {
                         <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
                         <span className="text-xs text-slate-400">{entry.name}</span>
                     </div>
-                    <span className="text-xs font-bold text-white tabular-nums">
+                    <span className="text-xs font-data-bold text-white">
                         {entry.value}{unit ? ` ${unit}` : ''}
                     </span>
                 </div>
@@ -164,7 +167,7 @@ interface SensorDetailProps {
 export default function SensorDetail({ sensorKey }: SensorDetailProps) {
     const config = SENSOR_CONFIGS[sensorKey];
     const { latestReading, readings, chartData } = useSensorContext();
-    const alertCfg = loadAlertConfig();
+    const alertCfg = useMemo(() => loadAlertConfig(), []);
     const [timeRange, setTimeRange] = useState<TimeRange>('8J');
 
     const filteredData = useMemo(() => filterByRange(chartData, timeRange), [chartData, timeRange]);
@@ -174,8 +177,8 @@ export default function SensorDetail({ sensorKey }: SensorDetailProps) {
     // Compute stats
     const values = readings.map((r) => r[config.readingKey] as number);
     const avg = values.length ? values.reduce((a, b) => a + b, 0) / values.length : 0;
-    const min = values.length ? Math.min(...values) : 0;
-    const max = values.length ? Math.max(...values) : 0;
+    const min = values.length ? values.reduce((a, b) => Math.min(a, b), Infinity) : 0;
+    const max = values.length ? values.reduce((a, b) => Math.max(a, b), -Infinity) : 0;
     const dangerCount = readings.filter((r) => r.status === 'BAHAYA').length;
 
     // Recent trend (last 10 readings)
@@ -196,8 +199,8 @@ export default function SensorDetail({ sensorKey }: SensorDetailProps) {
 
     // Auto domain for chart
     const vals = filteredData.map((d) => d[config.dataKey] as number).filter((v) => v != null && !isNaN(v));
-    const autoMin = vals.length ? Math.min(...vals) : config.min;
-    const autoMax = vals.length ? Math.max(...vals) : config.max;
+    const autoMin = vals.length ? vals.reduce((a, b) => Math.min(a, b), Infinity) : config.min;
+    const autoMax = vals.length ? vals.reduce((a, b) => Math.max(a, b), -Infinity) : config.max;
     const padding = Math.max((autoMax - autoMin) * 0.15, 1);
     const chartDomain: [number, number] = [Math.floor(autoMin - padding), Math.ceil(autoMax + padding)];
 
@@ -260,7 +263,7 @@ export default function SensorDetail({ sensorKey }: SensorDetailProps) {
                         <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Rata-rata</span>
                     </div>
                     <div>
-                        <p className="text-2xl sm:text-3xl font-bold text-white tabular-nums truncate">{avg.toFixed(config.decimals)}</p>
+                        <p className="text-2xl sm:text-3xl font-data-bold text-white truncate">{avg.toFixed(config.decimals)}</p>
                         <p className="text-xs text-slate-500 mt-1">{config.unit} • Semua data</p>
                     </div>
                 </div>
@@ -273,11 +276,11 @@ export default function SensorDetail({ sensorKey }: SensorDetailProps) {
                     <div className="space-y-1">
                         <div className="flex items-baseline gap-2">
                             <span className="text-[10px] font-semibold uppercase text-slate-500 w-8">Min</span>
-                            <p className="text-2xl sm:text-3xl font-bold text-white tabular-nums truncate">{min.toFixed(config.decimals)}</p>
+                            <p className="text-2xl sm:text-3xl font-data-bold text-white truncate">{min.toFixed(config.decimals)}</p>
                         </div>
                         <div className="flex items-baseline gap-2">
                             <span className="text-[10px] font-semibold uppercase text-slate-500 w-8">Max</span>
-                            <p className="text-2xl sm:text-3xl font-bold text-white tabular-nums truncate">{max.toFixed(config.decimals)}</p>
+                            <p className="text-2xl sm:text-3xl font-data-bold text-white truncate">{max.toFixed(config.decimals)}</p>
                         </div>
                         <p className="text-xs text-slate-500 pt-1">{config.unit} • Rentang</p>
                     </div>
@@ -286,14 +289,14 @@ export default function SensorDetail({ sensorKey }: SensorDetailProps) {
                 <div className="glass-panel glass-panel-hover rounded-2xl p-5 flex flex-col justify-between">
                     <div className="flex items-center gap-2 mb-3">
                         {trend >= 0 ? (
-                            <TrendingUp size={16} className="text-safe" />
+                            <TrendingUp size={16} className={config.trendInverted ? 'text-danger' : 'text-safe'} />
                         ) : (
-                            <TrendingDown size={16} className="text-danger" />
+                            <TrendingDown size={16} className={config.trendInverted ? 'text-safe' : 'text-danger'} />
                         )}
                         <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Tren</span>
                     </div>
                     <div>
-                        <p className={`text-2xl sm:text-3xl font-bold tabular-nums truncate ${trend >= 0 ? 'text-safe' : 'text-danger'}`}>
+                        <p className={`text-2xl sm:text-3xl font-data-bold truncate ${trend >= 0 ? (config.trendInverted ? 'text-danger' : 'text-safe') : (config.trendInverted ? 'text-safe' : 'text-danger')}`}>
                             {trend >= 0 ? '+' : ''}{trend.toFixed(config.decimals)}
                         </p>
                         <p className="text-xs text-slate-500 mt-1">{config.unit} • 10 bacaan terakhir</p>
@@ -425,10 +428,10 @@ export default function SensorDetail({ sensorKey }: SensorDetailProps) {
                                 <div className="flex items-center gap-2">
                                     <span className="w-1.5 h-1.5 rounded-full bg-danger animate-pulse" />
                                     <span className="text-sm text-slate-300">
-                                        {config.title}: <span className="font-bold text-white tabular-nums">{(r[config.readingKey] as number).toFixed(config.decimals)}</span> {config.unit}
+                                        {config.title}: <span className="font-data-bold text-white">{(r[config.readingKey] as number).toFixed(config.decimals)}</span> {config.unit}
                                     </span>
                                 </div>
-                                <span className="text-xs text-slate-500 tabular-nums">
+                                <span className="text-xs text-slate-500 font-data">
                                     {new Date(r.timestamp).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
                                 </span>
                             </div>

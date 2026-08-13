@@ -110,7 +110,7 @@ export default function DataTable({ readings, showFilters = false }: DataTablePr
             setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
         } else {
             setSortKey(key);
-            setSortDir(key === 'timestamp' ? 'desc' : 'desc');
+            setSortDir(key === 'timestamp' ? 'desc' : 'asc');
         }
         setCurrentPage(1);
     };
@@ -243,12 +243,12 @@ export default function DataTable({ readings, showFilters = false }: DataTablePr
                                         <span className="text-xs text-slate-500">{formatDate(r.timestamp)}</span>
                                     </div>
                                 </td>
-                                        <td className="py-3 pr-4 text-[13px] text-slate-300 font-medium tabular-nums">{r.temperature}°C</td>
-                                        <td className="py-3 pr-4 text-[13px] text-slate-300 font-medium tabular-nums">{r.pH}</td>
-                                        <td className="py-3 pr-4 text-[13px] text-slate-300 font-medium tabular-nums">{r.tds} <span className="text-slate-500">ppm</span></td>
-                                        <td className="py-3 pr-4 text-[13px] text-slate-300 font-medium tabular-nums">{r.turbidity} <span className="text-slate-500">NTU</span></td>
+                                        <td className="py-3 pr-4 text-[13px] text-slate-300 font-medium font-data">{r.temperature}°C</td>
+                                        <td className="py-3 pr-4 text-[13px] text-slate-300 font-medium font-data">{r.pH}</td>
+                                        <td className="py-3 pr-4 text-[13px] text-slate-300 font-medium font-data">{r.tds} <span className="text-slate-500 font-sans">ppm</span></td>
+                                        <td className="py-3 pr-4 text-[13px] text-slate-300 font-medium font-data">{r.turbidity} <span className="text-slate-500 font-sans">NTU</span></td>
                                 <td className="py-3 pr-4">
-                                    <span className={`text-sm font-bold ${r.wqiScore >= 80 ? 'text-safe' :
+                                    <span className={`text-sm font-data-bold ${r.wqiScore >= 80 ? 'text-safe' :
                                             r.wqiScore >= 60 ? 'text-warning' : 'text-danger'
                                         }`}>
                                         {r.wqiScore}

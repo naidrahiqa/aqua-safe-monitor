@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, memo, lazy, Suspense } from 'react';
 import {
     Thermometer,
     Droplets,
@@ -14,12 +14,8 @@ import {
 } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 import GaugeCard from '../components/GaugeCard';
-import SensorDetail from '../components/SensorDetail';
-import LocationMap from '../components/LocationMap';
 import DataTable from '../components/DataTable';
-import DeviceManager from '../components/DeviceManager';
 import NotificationPanel from '../components/NotificationPanel';
-import LocationSettings from '../components/LocationSettings';
 import AlertSettings from '../components/AlertSettings';
 import SkeletonCard from '../components/SkeletonCard';
 import SkeletonChart from '../components/SkeletonChart';
@@ -29,6 +25,46 @@ import { useTestLocations } from '../hooks/useTestLocations';
 import { loadAlertConfig } from '../lib/alertConfig';
 import type { NavSection } from '../types';
 
+// Lazy load heavy components — only downloaded when their tab is active
+const SensorDetail = lazy(() => import('../components/SensorDetail'));
+const LocationMap = lazy(() => import('../components/LocationMap'));
+const DeviceManager = lazy(() => import('../components/DeviceManager'));
+const LocationSettings = lazy(() => import('../components/LocationSettings'));
+
+const StatusIndicator = memo(function StatusIndicator({ secondsAgo }: { secondsAgo: number | null }) {
+    const isOnline = secondsAgo !== null && secondsAgo < 120;
+    const label =
+        secondsAgo === null
+            ? 'Menunggu data…'
+            : secondsAgo < 60
+                ? `Online • ${secondsAgo} dtk lalu`
+                : secondsAgo < 120
+                    ? 'Online • 1 mnt lalu'
+                    : `Offline • ${Math.floor(secondsAgo / 60)} mnt lalu`;
+
+    return (
+        <div
+            className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg border ${
+                secondsAgo === null
+                    ? 'bg-white/[0.03] border-white/[0.05]'
+                    : isOnline
+                        ? 'bg-safe/10 border-safe/15'
+                        : 'bg-warning/10 border-warning/15'
+            }`}
+            title="Update terakhir dari sensor"
+        >
+            {secondsAgo === null ? (
+                <Wifi size={12} className="text-slate-500" />
+            ) : (
+                <span className={`w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-safe animate-pulse' : 'bg-warning'}`} />
+            )}
+            <span className={`text-xs font-semibold ${secondsAgo === null ? 'text-slate-500' : isOnline ? 'text-safe' : 'text-warning'}`}>
+                {label}
+            </span>
+        </div>
+    );
+});
+
 export default function Dashboard() {
     const [activeNav, setActiveNav] = useState<NavSection>('overview');
     const [showNotifications, setShowNotifications] = useState(false);
@@ -37,7 +73,7 @@ export default function Dashboard() {
     const { locations: testLocations, addLocation, removeLocation, syncFromSensor } = useTestLocations();
     const [alertCfg, setAlertCfg] = useState(loadAlertConfig);
 
-    const dangerCount = readings.filter((r) => r.status === 'BAHAYA').length;
+    const dangerCount = useMemo(() => readings.filter((r) => r.status === 'BAHAYA').length, [readings]);
     const isLoading = loading && readings.length === 0;
 
     const [now, setNow] = useState(Date.now());
@@ -48,15 +84,6 @@ export default function Dashboard() {
 
     const lastTs = latestReading?.timestamp ? new Date(latestReading.timestamp).getTime() : null;
     const secondsAgo = lastTs ? Math.max(0, Math.floor((now - lastTs) / 1000)) : null;
-    const isOnline = secondsAgo !== null && secondsAgo < 120;
-    const onlineLabel =
-        secondsAgo === null
-            ? 'Menunggu data…'
-            : secondsAgo < 60
-                ? `Online • ${secondsAgo} dtk lalu`
-                : secondsAgo < 120
-                    ? 'Online • 1 mnt lalu'
-                    : `Offline • ${Math.floor(secondsAgo / 60)} mnt lalu`;
 
     // Page title mapping
     const PAGE_TITLES: Record<NavSection, string> = {
@@ -112,25 +139,7 @@ export default function Dashboard() {
                             </button>
 
                             {/* Status indicator */}
-                            <div
-                                className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg border ${
-                                    secondsAgo === null
-                                        ? 'bg-white/[0.03] border-white/[0.05]'
-                                        : isOnline
-                                            ? 'bg-safe/10 border-safe/15'
-                                            : 'bg-warning/10 border-warning/15'
-                                }`}
-                                title="Update terakhir dari sensor"
-                            >
-                                {secondsAgo === null ? (
-                                    <Wifi size={12} className="text-slate-500" />
-                                ) : (
-                                    <span className={`w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-safe animate-pulse' : 'bg-warning'}`} />
-                                )}
-                                <span className={`text-xs font-semibold ${secondsAgo === null ? 'text-slate-500' : isOnline ? 'text-safe' : 'text-warning'}`}>
-                                    {onlineLabel}
-                                </span>
-                            </div>
+                            <StatusIndicator secondsAgo={secondsAgo} />
 
                             {/* Notifications */}
                             <button
@@ -285,12 +294,14 @@ export default function Dashboard() {
 
                             {/* Map */}
                             <section aria-label="Sensor locations">
-                                <LocationMap
-                                    locations={testLocations}
-                                    onAddLocation={addLocation}
-                                    onRemoveLocation={removeLocation}
-                                    onSyncLocation={syncFromSensor}
-                                />
+                                <Suspense fallback={<SkeletonCard height="h-72" />}>
+                                    <LocationMap
+                                        locations={testLocations}
+                                        onAddLocation={addLocation}
+                                        onRemoveLocation={removeLocation}
+                                        onSyncLocation={syncFromSensor}
+                                    />
+                                </Suspense>
                             </section>
 
                             {/* Data Table */}
@@ -300,7 +311,9 @@ export default function Dashboard() {
 
                     {/* ===== SENSOR DETAIL PAGES ===== */}
                     {!isLoading && (activeNav === 'ph' || activeNav === 'suhu' || activeNav === 'tds' || activeNav === 'turbidity') && (
-                        <SensorDetail sensorKey={activeNav} />
+                        <Suspense fallback={<SkeletonCard height="h-96" />}>
+                            <SensorDetail sensorKey={activeNav} />
+                        </Suspense>
                     )}
 
                     {/* ===== HISTORY ===== */}
@@ -312,14 +325,18 @@ export default function Dashboard() {
 
                     {/* ===== DEVICES ===== */}
                     {!isLoading && activeNav === 'devices' && (
-                        <DeviceManager />
+                        <Suspense fallback={<SkeletonCard rows={5} />}>
+                            <DeviceManager />
+                        </Suspense>
                     )}
 
                     {/* ===== SETTINGS ===== */}
                     {!isLoading && activeNav === 'settings' && (
                         <div className="animate-fade-in space-y-6">
                             <AlertSettings config={alertCfg} onChange={setAlertCfg} />
-                            <LocationSettings onSaved={refresh} />
+                            <Suspense fallback={<SkeletonCard height="h-48" />}>
+                                <LocationSettings onSaved={refresh} />
+                            </Suspense>
 
                             <section className="glass-panel rounded-2xl p-5 sm:p-6" aria-label="System information">
                                 <h2 className="text-base font-bold text-white mb-4">Informasi Sistem</h2>

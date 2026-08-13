@@ -87,7 +87,7 @@ export default function GaugeCard({
             id={id}
             role="figure"
             aria-label={ariaLabel}
-            className="glass-panel glass-panel-hover relative overflow-hidden rounded-2xl p-4 sm:p-5 transition-all duration-300 ease-out hover:scale-[1.02] hover:-translate-y-1 animate-fade-in flex flex-col items-center"
+            className="glass-panel glass-panel-hover relative overflow-hidden rounded-2xl p-4 sm:p-5 transition-all duration-300 ease-out animate-fade-in flex flex-col items-center"
             style={{ animationDelay: `${delay}ms` }}
         >
             {/* Header */}
@@ -126,8 +126,8 @@ export default function GaugeCard({
             {/* Value + unit below arc */}
             <div className="flex flex-col items-center -mt-1">
                 <span
-                    className="font-extrabold text-slate-50 leading-none"
-                    style={{ fontSize: `${valueFontSize}px`, fontVariantNumeric: 'tabular-nums' }}
+                    className="font-data-bold text-slate-50 leading-none"
+                    style={{ fontSize: `${valueFontSize}px` }}
                 >
                     {valueStr}
                 </span>

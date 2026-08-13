@@ -105,6 +105,7 @@ export default function LocationMap({ locations, onAddLocation, onRemoveLocation
     const totalLocations = locations.length;
     const dangerCount = locations.filter((l) => l.status === 'BAHAYA').length;
     const [syncingId, setSyncingId] = useState<string | null>(null);
+    const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
 
     const handleMapClick = useCallback((lat: number, lng: number) => {
         if (addMode) {
@@ -342,32 +343,68 @@ export default function LocationMap({ locations, onAddLocation, onRemoveLocation
                                     </button>
 
                                     {/* Delete button */}
-                                    <button
-                                        onClick={() => {
-                                            if (confirm(`Hapus lokasi "${loc.name}"?`)) {
-                                                onRemoveLocation(loc.id);
-                                            }
-                                        }}
-                                        style={{
-                                            marginTop: '4px',
-                                            width: '100%',
-                                            padding: '6px',
-                                            borderRadius: '8px',
-                                            border: '1px solid rgba(239,68,68,0.3)',
-                                            background: 'rgba(239,68,68,0.1)',
-                                            color: '#ef4444',
-                                            fontSize: '10px',
-                                            fontWeight: 600,
-                                            cursor: 'pointer',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            gap: '4px',
-                                        }}
-                                    >
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
-                                        Hapus
-                                    </button>
+                                    {pendingDeleteId === loc.id ? (
+                                        <div style={{ marginTop: '4px', display: 'flex', gap: '4px' }}>
+                                            <button
+                                                onClick={() => {
+                                                    onRemoveLocation(loc.id);
+                                                    setPendingDeleteId(null);
+                                                }}
+                                                style={{
+                                                    flex: 1,
+                                                    padding: '6px',
+                                                    borderRadius: '8px',
+                                                    border: '1px solid rgba(239,68,68,0.5)',
+                                                    background: 'rgba(239,68,68,0.2)',
+                                                    color: '#ef4444',
+                                                    fontSize: '10px',
+                                                    fontWeight: 600,
+                                                    cursor: 'pointer',
+                                                }}
+                                            >
+                                                Ya, Hapus
+                                            </button>
+                                            <button
+                                                onClick={() => setPendingDeleteId(null)}
+                                                style={{
+                                                    flex: 1,
+                                                    padding: '6px',
+                                                    borderRadius: '8px',
+                                                    border: '1px solid rgba(255,255,255,0.1)',
+                                                    background: 'rgba(255,255,255,0.05)',
+                                                    color: '#94a3b8',
+                                                    fontSize: '10px',
+                                                    fontWeight: 600,
+                                                    cursor: 'pointer',
+                                                }}
+                                            >
+                                                Batal
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <button
+                                            onClick={() => setPendingDeleteId(loc.id)}
+                                            style={{
+                                                marginTop: '4px',
+                                                width: '100%',
+                                                padding: '6px',
+                                                borderRadius: '8px',
+                                                border: '1px solid rgba(239,68,68,0.3)',
+                                                background: 'rgba(239,68,68,0.1)',
+                                                color: '#ef4444',
+                                                fontSize: '10px',
+                                                fontWeight: 600,
+                                                cursor: 'pointer',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                gap: '4px',
+                                            }}
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                                            Hapus
+                                        </button>
+                                    )}
                                 </div>
                             </Popup>
                         </Marker>
