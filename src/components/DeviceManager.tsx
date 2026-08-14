@@ -228,8 +228,7 @@ export default function DeviceManager() {
                     <button
                         id="refresh-devices-btn"
                         onClick={fetchDevices}
-                        className="p-2.5 rounded-xl bg-white/5 border border-white/5 hover:border-water-500/30
-                            text-slate-400 hover:text-white transition-all"
+                        className="p-2.5 border-2 border-black bg-panel text-slate-400 hover:bg-water-500 hover:text-black transition-all hard-shadow-sm active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
                         title="Refresh"
                     >
                         <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
@@ -237,11 +236,7 @@ export default function DeviceManager() {
                     <button
                         id="add-device-btn"
                         onClick={() => setShowAddForm(true)}
-                        className="flex items-center gap-2 px-4 py-2.5 rounded-xl
-                            bg-gradient-to-r from-water-500 to-ocean-500
-                            hover:from-water-400 hover:to-ocean-400
-                            text-white text-sm font-bold shadow-lg shadow-water-500/20
-                            transition-all duration-200 transform hover:scale-[1.02]"
+                        className="flex items-center gap-2 px-4 py-2.5 nb-btn text-sm"
                     >
                         <Plus size={16} /> Tambah Perangkat
                     </button>
@@ -250,7 +245,7 @@ export default function DeviceManager() {
 
             {/* Add Device Form */}
             {showAddForm && (
-                <div className="glass-panel rounded-2xl p-5 border border-water-500/20 animate-fade-in">
+                <div className="nb-panel p-5 border-water-500 animate-fade-in">
                     <h3 className="text-sm font-bold text-white mb-3">Tambah Perangkat Baru</h3>
                     <div className="flex gap-3">
                         <input
@@ -259,25 +254,20 @@ export default function DeviceManager() {
                             value={newDeviceName}
                             onChange={(e) => setNewDeviceName(e.target.value)}
                             placeholder="Nama perangkat, contoh: ESP32-Kolam-Utama"
-                            className="flex-1 px-4 py-2.5 rounded-xl bg-panel border border-white/5
-                                text-sm text-white placeholder-slate-500
-                                focus:outline-none focus:border-water-500/50 focus:ring-1 focus:ring-water-500/20
-                                transition-all"
+                            className="flex-1 nb-input"
                             onKeyDown={(e) => e.key === 'Enter' && handleAddDevice()}
                         />
                         <button
                             id="confirm-add-device"
                             onClick={handleAddDevice}
                             disabled={creating}
-                            className="px-5 py-2.5 rounded-xl bg-safe/20 text-safe border border-safe/20
-                                hover:bg-safe/30 font-semibold text-sm disabled:opacity-50 transition-all"
+                            className="px-5 py-2.5 nb-btn-dark text-sm disabled:opacity-50"
                         >
                             {creating ? <Loader2 size={16} className="animate-spin" /> : 'Buat'}
                         </button>
                         <button
                             onClick={() => { setShowAddForm(false); setNewDeviceName(''); }}
-                            className="px-4 py-2.5 rounded-xl bg-white/5 text-slate-400 border border-white/5
-                                hover:text-white hover:border-white/10 text-sm transition-all"
+                            className="px-4 py-2.5 nb-btn-dark text-sm"
                         >
                             Batal
                         </button>
@@ -287,9 +277,9 @@ export default function DeviceManager() {
 
             {/* Newly Created Device Alert */}
             {newlyCreated && (
-                <div className="glass-panel rounded-2xl p-5 border border-safe/30 bg-safe/5 animate-fade-in">
+                <div className="nb-panel p-5 border-safe hard-shadow-safe animate-fade-in">
                     <div className="flex items-start gap-3">
-                        <div className="p-2 rounded-xl bg-safe/15 text-safe">
+                        <div className="p-2 bg-safe text-black border-2 border-black hard-shadow-sm">
                             <Key size={20} />
                         </div>
                         <div className="flex-1">
@@ -302,28 +292,28 @@ export default function DeviceManager() {
 
                             {/* Device ID */}
                             <div className="space-y-2 mb-3">
-                                <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-panel/80 border border-white/5">
+                                <div className="flex items-center justify-between px-3 py-2 border-2 border-black bg-panel-light">
                                     <div>
                                         <span className="text-[10px] text-slate-500 uppercase tracking-wider block">Device ID</span>
                                         <code className="text-xs text-water-300 font-mono">{newlyCreated.id}</code>
                                     </div>
                                     <button
                                         onClick={() => handleCopy(newlyCreated.id, 'new-id')}
-                                        className="p-1.5 rounded-lg hover:bg-white/5 text-slate-400 hover:text-white transition-colors"
+                                        className="p-1.5 border-2 border-black bg-panel-light text-slate-400 hover:text-white transition-colors"
                                     >
                                         {copiedKey === 'new-id' ? <Check size={14} className="text-safe" /> : <Copy size={14} />}
                                     </button>
                                 </div>
 
                                 {/* API Key */}
-                                <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-panel/80 border border-warning/20">
+                                <div className="flex items-center justify-between px-3 py-2 border-2 border-black bg-panel-light">
                                     <div>
                                         <span className="text-[10px] text-slate-500 uppercase tracking-wider block">Secret API Key</span>
                                         <code className="text-xs text-warning font-mono">{newlyCreated.secret_api_key}</code>
                                     </div>
                                     <button
                                         onClick={() => handleCopy(newlyCreated.secret_api_key, 'new-key')}
-                                        className="p-1.5 rounded-lg hover:bg-white/5 text-slate-400 hover:text-white transition-colors"
+                                        className="p-1.5 border-2 border-black bg-panel-light text-slate-400 hover:text-white transition-colors"
                                     >
                                         {copiedKey === 'new-key' ? <Check size={14} className="text-safe" /> : <Copy size={14} />}
                                     </button>
@@ -331,7 +321,7 @@ export default function DeviceManager() {
                             </div>
 
                             {/* ESP32 Code Snippet */}
-                            <div className="px-3 py-2 rounded-lg bg-panel/80 border border-white/5">
+                            <div className="px-3 py-2 border-2 border-black bg-panel-light">
                                 <span className="text-[10px] text-slate-500 uppercase tracking-wider block mb-1">ESP32 Arduino Code</span>
                                 <pre className="text-xs text-slate-300 font-mono whitespace-pre-wrap leading-relaxed">{`// WiFi & HTTP headers
 #define API_KEY "${newlyCreated.secret_api_key}"
@@ -358,7 +348,7 @@ String payload = "{\\"api_key\\":\\"" + String(API_KEY) + "\\","
 
             {/* Error message */}
             {error && (
-                <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-danger/10 border border-danger/20 text-danger text-xs font-medium animate-fade-in">
+                <div className="flex items-center gap-2 px-4 py-3 border-2 border-black bg-danger text-black text-xs font-bold animate-fade-in hard-shadow-sm">
                     <AlertTriangle size={14} />
                     {error}
                 </div>
@@ -370,9 +360,9 @@ String payload = "{\\"api_key\\":\\"" + String(API_KEY) + "\\","
                     <Loader2 size={24} className="text-water-400 animate-spin" />
                 </div>
             ) : devices.length === 0 ? (
-                <div className="glass-panel rounded-2xl p-12 text-center">
+                <div className="nb-panel p-12 text-center">
                     <Cpu size={40} className="text-slate-500 mx-auto mb-3" />
-                    <p className="text-sm text-slate-400 font-medium">Belum ada perangkat terdaftar</p>
+                    <p className="text-sm text-slate-400 font-bold">Belum ada perangkat terdaftar</p>
                     <p className="text-xs text-slate-500 mt-1">Klik "Tambah Perangkat" untuk mendaftarkan ESP32 kamu</p>
                 </div>
             ) : (
@@ -380,16 +370,14 @@ String payload = "{\\"api_key\\":\\"" + String(API_KEY) + "\\","
                     {devices.map((device) => (
                         <div
                             key={device.id}
-                            className={`glass-panel rounded-2xl p-5 transition-all duration-300
-                                ${device.is_active
-                                    ? 'border border-white/5 hover:border-water-500/20'
-                                    : 'border border-white/5 opacity-60'
-                                }`}
+                            className={`nb-panel p-5 transition-all duration-150
+                                ${device.is_active ? '' : 'opacity-60'}
+                            `}
                         >
                             {/* Device Header */}
                             <div className="flex items-center justify-between mb-4">
                                 <div className="flex items-center gap-3">
-                                    <div className={`p-2.5 rounded-xl ${device.is_active ? 'bg-water-500/10 text-water-400' : 'bg-white/5 text-slate-500'}`}>
+                                    <div className={`p-2.5 border-2 border-black hard-shadow-sm ${device.is_active ? 'bg-water-500 text-black' : 'bg-panel-light text-slate-500'}`}>
                                         <Cpu size={18} />
                                     </div>
                                     <div>
@@ -399,11 +387,11 @@ String payload = "{\\"api_key\\":\\"" + String(API_KEY) + "\\","
                                 </div>
                                 <div className="flex items-center gap-1">
                                     {device.is_active ? (
-                                        <span className="flex items-center gap-1 text-[10px] font-semibold text-safe">
+                                        <span className="flex items-center gap-1 text-[10px] font-bold text-safe">
                                             <Wifi size={10} /> Aktif
                                         </span>
                                     ) : (
-                                        <span className="flex items-center gap-1 text-[10px] font-semibold text-slate-500">
+                                        <span className="flex items-center gap-1 text-[10px] font-bold text-slate-500">
                                             <WifiOff size={10} /> Nonaktif
                                         </span>
                                     )}
@@ -411,7 +399,7 @@ String payload = "{\\"api_key\\":\\"" + String(API_KEY) + "\\","
                             </div>
 
                             {/* API Key */}
-                            <div className="px-3 py-2.5 rounded-xl bg-panel/60 border border-white/5 mb-3">
+                            <div className="px-3 py-2.5 border-2 border-black bg-panel-light mb-3">
                                 <div className="flex items-center justify-between">
                                     <div className="flex-1 min-w-0">
                                         <span className="text-[9px] text-slate-500 uppercase tracking-wider block mb-0.5">API Key</span>
@@ -422,14 +410,14 @@ String payload = "{\\"api_key\\":\\"" + String(API_KEY) + "\\","
                                     <div className="flex items-center gap-1 ml-2 flex-shrink-0">
                                         <button
                                             onClick={() => toggleKeyVisibility(device.id)}
-                                            className="p-1.5 rounded-lg hover:bg-white/5 text-slate-500 hover:text-white transition-colors"
+                                            className="p-1.5 border-2 border-black bg-panel-light text-slate-500 hover:text-white transition-colors"
                                             title={visibleKeys.has(device.id) ? 'Sembunyikan' : 'Tampilkan'}
                                         >
                                             {visibleKeys.has(device.id) ? <EyeOff size={12} /> : <Eye size={12} />}
                                         </button>
                                         <button
                                             onClick={() => handleCopy(device.secret_api_key, device.id)}
-                                            className="p-1.5 rounded-lg hover:bg-white/5 text-slate-500 hover:text-white transition-colors"
+                                            className="p-1.5 border-2 border-black bg-panel-light text-slate-500 hover:text-white transition-colors"
                                             title="Copy API Key"
                                         >
                                             {copiedKey === device.id ? <Check size={12} className="text-safe" /> : <Copy size={12} />}
@@ -446,9 +434,9 @@ String payload = "{\\"api_key\\":\\"" + String(API_KEY) + "\\","
                                 <div className="flex items-center gap-1">
                                     <button
                                         onClick={() => handleToggleActive(device)}
-                                        className={`p-1.5 rounded-lg transition-colors ${device.is_active
-                                                ? 'hover:bg-warning/10 text-warning/60 hover:text-warning'
-                                                : 'hover:bg-safe/10 text-safe/60 hover:text-safe'
+                                        className={`p-1.5 border-2 border-black transition-colors ${device.is_active
+                                                ? 'bg-panel-light text-warning hover:bg-warning hover:text-black'
+                                                : 'bg-panel-light text-safe/60 hover:bg-safe hover:text-black'
                                             }`}
                                         title={device.is_active ? 'Nonaktifkan' : 'Aktifkan'}
                                     >
@@ -458,13 +446,13 @@ String payload = "{\\"api_key\\":\\"" + String(API_KEY) + "\\","
                                         <div className="flex items-center gap-1">
                                             <button
                                                 onClick={() => handleDelete(device.id)}
-                                                className="px-2 py-1 rounded-lg bg-danger/15 text-danger text-[10px] font-semibold hover:bg-danger/25 transition-colors"
+                                                className="px-2 py-1 nb-chip nb-chip-danger text-[10px]"
                                             >
                                                 Hapus
                                             </button>
                                             <button
                                                 onClick={() => setPendingDeleteId(null)}
-                                                className="px-2 py-1 rounded-lg bg-white/5 text-slate-400 text-[10px] font-semibold hover:bg-white/10 transition-colors"
+                                                className="px-2 py-1 nb-chip nb-chip-neutral text-[10px]"
                                             >
                                                 Batal
                                             </button>
@@ -472,7 +460,7 @@ String payload = "{\\"api_key\\":\\"" + String(API_KEY) + "\\","
                                     ) : (
                                         <button
                                             onClick={() => setPendingDeleteId(device.id)}
-                                            className="p-1.5 rounded-lg hover:bg-danger/10 text-danger/40 hover:text-danger transition-colors"
+                                            className="p-1.5 border-2 border-black bg-panel-light text-danger/40 hover:bg-danger hover:text-white transition-colors"
                                             title="Hapus perangkat"
                                         >
                                             <Trash2 size={14} />

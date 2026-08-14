@@ -63,7 +63,7 @@ export default function NotificationPanel({ readings, onClose }: NotificationPan
         <button
             onClick={() => dismiss(id)}
             title="Tandai sudah dibaca"
-            className="p-0.5 rounded-md text-slate-600 hover:text-white hover:bg-white/10 transition-colors"
+            className="p-0.5 border-2 border-black bg-panel-light text-slate-500 hover:text-white hover:bg-water-500 hover:text-black transition-colors"
         >
             <X size={12} />
         </button>
@@ -72,17 +72,17 @@ export default function NotificationPanel({ readings, onClose }: NotificationPan
     return (
         <div className="fixed inset-0 z-50 flex justify-end">
             {/* Backdrop */}
-            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
+            <div className="absolute inset-0 bg-black/70" onClick={onClose} />
 
             {/* Panel */}
-            <div className="relative w-full max-w-md bg-panel/95 backdrop-blur-xl border-l border-white/5 shadow-2xl animate-slide-in-left overflow-y-auto">
+            <div className="relative w-full max-w-md bg-panel border-l-2 border-black animate-slide-in-left overflow-y-auto">
                 {/* Header */}
-                <div className="sticky top-0 bg-panel/95 backdrop-blur-xl border-b border-white/5 px-5 py-4 flex items-center justify-between z-10">
+                <div className="sticky top-0 bg-panel border-b-2 border-black px-5 py-4 flex items-center justify-between z-10">
                     <div className="flex items-center gap-2">
                         <Bell size={18} className="text-water-400" />
                         <h2 className="text-sm font-bold text-white">Notifikasi</h2>
                         {dangerReadings.length > 0 && (
-                            <span className="px-2 py-0.5 rounded-full bg-danger/20 text-danger text-[10px] font-bold">
+                            <span className="px-2 py-0.5 nb-chip nb-chip-danger text-[10px]">
                                 {dangerReadings.length}
                             </span>
                         )}
@@ -91,7 +91,7 @@ export default function NotificationPanel({ readings, onClose }: NotificationPan
                         {totalVisible > 0 && (
                             <button
                                 onClick={dismissAll}
-                                className="flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-semibold text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 transition-colors"
+                                className="flex items-center gap-1 px-2 py-1 nb-btn-dark text-[10px]"
                             >
                                 <CheckCheck size={12} />
                                 Tandai dibaca
@@ -99,7 +99,7 @@ export default function NotificationPanel({ readings, onClose }: NotificationPan
                         )}
                         <button
                             onClick={onClose}
-                            className="p-1.5 rounded-lg hover:bg-white/5 text-slate-400 hover:text-white transition-colors"
+                            className="p-1.5 border-2 border-black bg-panel-light text-slate-400 hover:text-white transition-colors"
                         >
                             <X size={16} />
                         </button>
@@ -111,7 +111,7 @@ export default function NotificationPanel({ readings, onClose }: NotificationPan
                     {/* Danger alerts */}
                     {dangerReadings.length > 0 && (
                         <div>
-                            <h3 className="flex items-center gap-1.5 text-xs font-semibold text-danger uppercase tracking-wider mb-3">
+                            <h3 className="flex items-center gap-1.5 text-xs font-bold text-danger uppercase tracking-wider mb-3">
                                 <AlertTriangle size={12} />
                                 Peringatan BAHAYA
                             </h3>
@@ -119,7 +119,7 @@ export default function NotificationPanel({ readings, onClose }: NotificationPan
                                 {dangerReadings.slice(0, 10).map((r) => (
                                     <div
                                         key={r.id}
-                                        className="px-4 py-3 rounded-xl bg-danger/5 border border-danger/20 animate-fade-in"
+                                        className="px-4 py-3 border-2 border-black bg-danger/10 hard-shadow-sm animate-fade-in"
                                     >
                                         <div className="flex items-center justify-between mb-1">
                                             <span className="text-[10px] font-bold text-danger uppercase">Bahaya</span>
@@ -131,11 +131,11 @@ export default function NotificationPanel({ readings, onClose }: NotificationPan
                                         <div className="grid grid-cols-2 gap-2 text-xs">
                                             <div className="flex items-center gap-1.5">
                                                 <FlaskConical size={10} className="text-slate-500" />
-                                                <span className="text-slate-400">pH: <span className="text-white font-medium">{r.pH}</span></span>
+                                                <span className="text-slate-400">pH: <span className="text-white font-bold">{r.pH}</span></span>
                                             </div>
                                             <div className="flex items-center gap-1.5">
                                                 <Droplets size={10} className="text-slate-500" />
-                                                <span className="text-slate-400">TDS: <span className="text-white font-medium">{r.tds}</span></span>
+                                                <span className="text-slate-400">TDS: <span className="text-white font-bold">{r.tds}</span></span>
                                             </div>
                                         </div>
                                         <div className="mt-1.5 flex items-center gap-1.5 text-xs">
@@ -151,7 +151,7 @@ export default function NotificationPanel({ readings, onClose }: NotificationPan
                     {/* Warning alerts */}
                     {warningReadings.length > 0 && (
                         <div>
-                            <h3 className="flex items-center gap-1.5 text-xs font-semibold text-warning uppercase tracking-wider mb-3">
+                            <h3 className="flex items-center gap-1.5 text-xs font-bold text-warning uppercase tracking-wider mb-3">
                                 <Shield size={12} />
                                 Peringatan LAYAK
                             </h3>
@@ -159,7 +159,7 @@ export default function NotificationPanel({ readings, onClose }: NotificationPan
                                 {warningReadings.slice(0, 5).map((r) => (
                                     <div
                                         key={r.id}
-                                        className="px-4 py-3 rounded-xl bg-warning/5 border border-warning/20 animate-fade-in"
+                                        className="px-4 py-3 border-2 border-black bg-warning/10 hard-shadow-sm animate-fade-in"
                                     >
                                         <div className="flex items-center justify-between mb-1">
                                             <span className="text-[10px] font-bold text-warning uppercase">Peringatan</span>
@@ -182,7 +182,7 @@ export default function NotificationPanel({ readings, onClose }: NotificationPan
                     {dangerReadings.length === 0 && warningReadings.length === 0 && (
                         <div className="text-center py-12">
                             <Shield size={32} className="text-safe mx-auto mb-3" />
-                            <p className="text-sm text-slate-400 font-medium">Semua aman!</p>
+                            <p className="text-sm text-slate-400 font-bold">Semua aman!</p>
                             <p className="text-xs text-slate-500 mt-1">Tidak ada peringatan aktif</p>
                         </div>
                     )}

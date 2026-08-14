@@ -5,13 +5,13 @@ import SkeletonCard from './SkeletonCard';
 describe('SkeletonCard', () => {
     it('renders default card skeleton', () => {
         render(<SkeletonCard />);
-        const card = document.querySelector('.glass-panel');
+        const card = document.querySelector('.nb-panel');
         expect(card).toBeInTheDocument();
     });
 
     it('applies custom height class', () => {
         render(<SkeletonCard height="h-72" />);
-        const card = document.querySelector('.glass-panel');
+        const card = document.querySelector('.nb-panel');
         expect(card?.className).toContain('h-72');
     });
 
@@ -23,7 +23,7 @@ describe('SkeletonCard', () => {
 
     it('applies animation delay', () => {
         render(<SkeletonCard delay={200} />);
-        const card = document.querySelector('.glass-panel');
+        const card = document.querySelector('.nb-panel');
         expect(card?.getAttribute('style')).toContain('200');
     });
 });

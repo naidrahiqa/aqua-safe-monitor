@@ -25,7 +25,7 @@ export default class ErrorBoundary extends Component<Props, State> {
             return (
                 this.props.fallback ?? (
                     <div className="min-h-screen bg-surface flex items-center justify-center p-8">
-                        <div className="glass-panel rounded-2xl p-8 max-w-md text-center">
+                        <div className="nb-panel p-8 max-w-md text-center">
                             <div className="text-4xl mb-4">⚠️</div>
                             <h2 className="text-xl font-bold text-text-primary mb-2">
                                 Terjadi Kesalahan
@@ -38,7 +38,7 @@ export default class ErrorBoundary extends Component<Props, State> {
                                     this.setState({ hasError: false, error: null });
                                     window.location.reload();
                                 }}
-                                className="px-4 py-2 bg-accent/20 text-accent rounded-lg hover:bg-accent/30 transition-colors text-sm font-medium"
+                                className="px-4 py-2 nb-btn text-sm"
                             >
                                 Muat Ulang
                             </button>

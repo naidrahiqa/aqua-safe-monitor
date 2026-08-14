@@ -26,13 +26,10 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
         return (
             <div className="min-h-screen bg-surface flex items-center justify-center">
                 <div className="flex flex-col items-center gap-4 animate-fade-in">
-                    <div className="relative">
-                        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-water-400 to-ocean-500 flex items-center justify-center shadow-lg shadow-water-500/30">
-                            <Loader2 size={24} className="text-white animate-spin" />
-                        </div>
-                        <div className="absolute inset-0 rounded-2xl bg-water-400/20 animate-pulse-ring" />
+                    <div className="w-14 h-14 bg-water-500 border-2 border-black flex items-center justify-center hard-shadow-sm">
+                        <Loader2 size={24} className="text-black animate-spin" />
                     </div>
-                    <p className="text-sm text-slate-400 font-medium">Memuat...</p>
+                    <p className="text-sm text-slate-400 font-bold">Memuat...</p>
                 </div>
             </div>
         );

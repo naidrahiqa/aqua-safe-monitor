@@ -5,7 +5,7 @@
 // Set to 1 to skip normal operation and just print raw ADC + voltage
 // for pH/TDS/Turbidity every 500ms, so you can dip probes in buffer
 // / standard solutions and read stable values off Serial Monitor.
-#define CALIBRATION_MODE 0
+#define CALIBRATION_MODE 1
 
 // ===== SENSOR PINS (must match physical wiring - see
 //       .opencode/skills/HARDWARE_INTEGRATION.md) =====

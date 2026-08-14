@@ -10,9 +10,9 @@ interface AlertSettingsProps {
 
 function Row({ label, desc, children }: { label: string; desc: string; children: ReactNode }) {
     return (
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between py-3 border-b border-white/5 last:border-0 gap-2">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between py-3 border-b-2 border-black last:border-0 gap-2">
             <div>
-                <p className="text-sm font-medium text-slate-200">{label}</p>
+                <p className="text-sm font-bold text-slate-200">{label}</p>
                 <p className="text-[13px] text-slate-400 mt-0.5">{desc}</p>
             </div>
             <div className="flex items-center gap-2 self-start sm:self-auto">{children}</div>
@@ -21,7 +21,7 @@ function Row({ label, desc, children }: { label: string; desc: string; children:
 }
 
 const inputClass =
-    'w-20 px-2.5 py-1.5 rounded-lg bg-panel-dark border border-white/10 text-white text-sm text-center focus:outline-none focus:border-water-400/50 transition';
+    'w-20 px-2.5 py-1.5 nb-input text-sm text-center';
 
 export default function AlertSettings({ config, onChange }: AlertSettingsProps) {
     const [form, setForm] = useState<AlertConfig>(config);
@@ -74,7 +74,7 @@ export default function AlertSettings({ config, onChange }: AlertSettingsProps) 
     };
 
     return (
-        <div className="glass-panel rounded-2xl p-5 sm:p-6">
+        <div className="nb-panel p-5 sm:p-6">
             <h2 className="flex items-center gap-2 text-base font-bold text-white mb-1">
                 <Bell size={18} className="text-water-400" />
                 Pengaturan Sensor & Alert
@@ -83,7 +83,7 @@ export default function AlertSettings({ config, onChange }: AlertSettingsProps) 
 
             <div>
                 <Row label="Interval Pembacaan" desc="Frekuensi pengambilan data sensor">
-                    <span className="px-3 py-1 rounded-lg bg-water-500/10 text-water-400 text-xs font-semibold border border-water-500/20 whitespace-nowrap">
+                    <span className="px-3 py-1 nb-chip nb-chip-neutral text-xs whitespace-nowrap">
                         5 detik
                     </span>
                 </Row>
@@ -109,7 +109,7 @@ export default function AlertSettings({ config, onChange }: AlertSettingsProps) 
                     <span className="text-slate-500 text-sm">°C</span>
                 </Row>
                 <Row label="Notifikasi" desc="Alert ketika status BAHAYA terdeteksi">
-                    <span className="px-3 py-1 rounded-lg bg-safe/10 text-safe text-xs font-semibold border border-safe/20 whitespace-nowrap">
+                    <span className="px-3 py-1 nb-chip nb-chip-safe text-xs whitespace-nowrap">
                         Aktif
                     </span>
                 </Row>
@@ -119,20 +119,20 @@ export default function AlertSettings({ config, onChange }: AlertSettingsProps) 
                 <button
                     onClick={handleSave}
                     disabled={saving}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-water-500 hover:bg-water-600 text-white text-sm font-medium transition disabled:opacity-50"
+                    className="flex items-center gap-2 px-4 py-2 nb-btn text-sm disabled:opacity-50"
                 >
                     <Save size={14} />
                     Simpan
                 </button>
                 <button
                     onClick={handleReset}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:border-white/20 text-slate-300 text-sm font-medium transition"
+                    className="flex items-center gap-2 px-4 py-2 nb-btn-dark text-sm"
                 >
                     <RotateCcw size={14} />
                     Reset
                 </button>
                 {msg && (
-                    <span className={`flex items-center gap-1.5 text-xs font-medium ${msg.type === 'ok' ? 'text-safe' : 'text-danger'}`}>
+                    <span className={`flex items-center gap-1.5 text-xs font-bold ${msg.type === 'ok' ? 'text-safe' : 'text-danger'}`}>
                         {msg.type === 'ok' ? <Check size={13} /> : <AlertCircle size={13} />}
                         {msg.text}
                     </span>

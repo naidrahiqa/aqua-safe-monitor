@@ -68,7 +68,7 @@ export default function Sidebar({ active, onNavigate }: SidebarProps) {
             <button
                 id="sidebar-mobile-toggle"
                 onClick={() => setMobileOpen(!mobileOpen)}
-                className="fixed top-3 left-3 sm:top-4 sm:left-4 z-50 lg:hidden p-2.5 rounded-xl glass-panel text-water-300 hover:text-white transition-colors"
+                className="fixed top-3 left-3 sm:top-4 sm:left-4 z-50 lg:hidden p-2.5 nb-panel text-water-300 hover:text-white transition-colors"
                 aria-label={mobileOpen ? 'Close sidebar' : 'Open sidebar'}
                 aria-expanded={mobileOpen}
                 aria-controls="sidebar"
@@ -79,7 +79,7 @@ export default function Sidebar({ active, onNavigate }: SidebarProps) {
             {/* Overlay */}
             {mobileOpen && (
                 <div
-                    className="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 lg:hidden"
+                    className="fixed inset-0 bg-black/70 z-40 lg:hidden"
                     onClick={() => setMobileOpen(false)}
                     aria-hidden="true"
                 />
@@ -93,8 +93,8 @@ export default function Sidebar({ active, onNavigate }: SidebarProps) {
                 className={`
                     fixed top-0 left-0 h-screen z-40
                     flex flex-col
-                    bg-panel/98 backdrop-blur-2xl
-                    border-r border-white/[0.04]
+                    bg-panel
+                    border-r-2 border-black
                     transition-all duration-300 ease-in-out
                     ${collapsed ? 'w-[72px]' : 'w-64'}
                     ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}
@@ -102,23 +102,23 @@ export default function Sidebar({ active, onNavigate }: SidebarProps) {
                 `}
             >
                 {/* Logo */}
-                <div className={`flex items-center gap-3 px-5 py-5 border-b border-white/[0.04] ${collapsed ? 'justify-center px-0' : ''}`}>
+                <div className={`flex items-center gap-3 px-5 py-5 border-b-2 border-black ${collapsed ? 'justify-center px-0' : ''}`}>
                     <div className="relative flex-shrink-0">
-                        <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-water-400 to-ocean-500 flex items-center justify-center shadow-lg shadow-water-500/25">
-                            <Droplets size={22} className="text-white" />
+                        <div className="w-10 h-10 bg-water-500 flex items-center justify-center border-2 border-black hard-shadow-sm">
+                            <Droplets size={22} className="text-black" />
                         </div>
-                        <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-safe rounded-full border-2 border-panel" />
+                        <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-safe border-2 border-black" />
                     </div>
                     {!collapsed && (
                         <div className="animate-fade-in overflow-hidden">
                             <h1 className="text-sm font-bold text-white tracking-tight">WaterSafe</h1>
-                            <p className="text-[10px] text-water-400 font-medium tracking-widest uppercase">Monitor</p>
+                            <p className="text-[10px] text-water-400 font-bold tracking-widest uppercase">Monitor</p>
                         </div>
                     )}
                 </div>
 
                 {/* Navigation */}
-                <nav ref={navRef} className="flex-1 px-3 py-3 space-y-0.5 overflow-y-auto" aria-label="Primary">
+                <nav ref={navRef} className="flex-1 px-3 py-3 space-y-1 overflow-y-auto" aria-label="Primary">
                     {NAV_ITEMS.map((item) => {
                         const isActive = active === item.id;
                         const accentColor = item.color || '#06b6d4';
@@ -133,30 +133,25 @@ export default function Sidebar({ active, onNavigate }: SidebarProps) {
                                     }}
                                     aria-current={isActive ? 'page' : undefined}
                                     className={`
-                                        group/btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl
-                                        transition-all duration-200 cursor-pointer
+                                        group/btn w-full flex items-center gap-3 px-3 py-2.5 border-2
+                                        transition-all duration-150 cursor-pointer font-bold
                                         ${collapsed ? 'justify-center px-2' : ''}
                                         ${isActive
-                                            ? 'shadow-sm'
-                                            : 'text-slate-400 hover:bg-white/[0.03] hover:text-slate-200'
+                                            ? 'border-black hard-shadow-sm'
+                                            : 'border-transparent text-slate-400 hover:bg-panel-light hover:text-slate-200'
                                         }
                                     `}
-                                    style={isActive ? {
-                                        background: `linear-gradient(135deg, ${accentColor}15, ${accentColor}08)`,
-                                        color: accentColor,
-                                        boxShadow: `0 0 20px ${accentColor}10`,
-                                    } : undefined}
+                                    style={isActive ? { background: accentColor, color: '#000000' } : undefined}
                                 >
-                                    <span className={`flex-shrink-0 transition-transform duration-200 ${isActive ? 'scale-110' : 'group-hover/btn:scale-105'}`}>
+                                    <span className={`flex-shrink-0 transition-transform duration-150 ${isActive ? 'scale-110' : 'group-hover/btn:scale-105'}`}>
                                         {item.icon}
                                     </span>
                                     {!collapsed && (
-                                        <span className="text-sm font-medium truncate">{item.label}</span>
+                                        <span className="text-sm font-bold truncate">{item.label}</span>
                                     )}
                                     {isActive && !collapsed && (
                                         <div
-                                            className="ml-auto w-1.5 h-1.5 rounded-full animate-pulse"
-                                            style={{ backgroundColor: accentColor }}
+                                            className="ml-auto w-2 h-2 bg-black"
                                             aria-hidden="true"
                                         />
                                     )}
@@ -164,9 +159,8 @@ export default function Sidebar({ active, onNavigate }: SidebarProps) {
 
                                 {/* Tooltip for collapsed mode */}
                                 {collapsed && (
-                                    <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2.5 py-1.5 rounded-lg bg-panel-light border border-white/10 text-xs text-white font-medium whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-200 z-50 shadow-lg" role="tooltip">
+                                    <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2.5 py-1.5 nb-panel text-xs text-white font-bold whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-150 z-50" role="tooltip">
                                         {item.label}
-                                        <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-panel-light" aria-hidden="true" />
                                     </div>
                                 )}
                             </div>
@@ -175,18 +169,18 @@ export default function Sidebar({ active, onNavigate }: SidebarProps) {
                 </nav>
 
                 {/* Collapse toggle (desktop) */}
-                <div className="hidden lg:flex px-3 py-4 border-t border-white/[0.04]">
+                <div className="hidden lg:flex px-3 py-4 border-t-2 border-black">
                     <button
                         id="sidebar-collapse-toggle"
                         onClick={() => setCollapsed(!collapsed)}
                         aria-expanded={!collapsed}
                         aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-                        className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl
-                            text-slate-500 hover:text-slate-300 hover:bg-white/[0.03]
-                            transition-all duration-200"
+                        className="w-full flex items-center justify-center gap-2 px-3 py-2 border-2 border-transparent
+                            text-slate-500 hover:text-slate-300 hover:bg-panel-light
+                            transition-all duration-150 font-bold"
                     >
                         <Waves size={16} />
-                        {!collapsed && <span className="text-xs font-medium">Collapse</span>}
+                        {!collapsed && <span className="text-xs font-bold">Collapse</span>}
                     </button>
                 </div>
             </aside>

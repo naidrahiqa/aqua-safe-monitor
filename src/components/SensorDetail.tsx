@@ -143,12 +143,12 @@ interface CustomTooltipProps {
 function CustomTooltip({ active, payload, label, unit }: CustomTooltipProps) {
     if (!active || !payload?.length) return null;
     return (
-        <div className="glass-panel rounded-xl p-3 shadow-2xl border border-white/10 min-w-[140px]">
-            <p className="text-xs font-semibold text-slate-300 mb-2 border-b border-white/5 pb-1.5">{label}</p>
+        <div className="nb-panel p-3 min-w-[140px]">
+            <p className="text-xs font-bold text-slate-300 mb-2 border-b-2 border-black pb-1.5">{label}</p>
             {payload.map((entry, i) => (
                 <div key={i} className="flex items-center justify-between gap-4 py-0.5">
                     <div className="flex items-center gap-1.5">
-                        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
+                        <div className="w-2 h-2 border-2 border-black" style={{ backgroundColor: entry.color }} />
                         <span className="text-xs text-slate-400">{entry.name}</span>
                     </div>
                     <span className="text-xs font-data-bold text-white">
@@ -210,7 +210,7 @@ export default function SensorDetail({ sensorKey }: SensorDetailProps) {
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-3">
-                        <span className="p-2 rounded-xl" style={{ backgroundColor: `${config.color}15`, color: config.color }}>
+                        <span className="p-2 border-2 border-black bg-panel-light hard-shadow-sm" style={{ color: config.color }}>
                             {config.icon}
                         </span>
                         {config.title}
@@ -218,17 +218,17 @@ export default function SensorDetail({ sensorKey }: SensorDetailProps) {
                     <p className="text-sm text-slate-500 mt-1">{config.subtitle}</p>
                 </div>
                 {/* Time range selector */}
-                <div className="flex items-center gap-0.5 bg-white/[0.04] rounded-xl p-1 border border-white/[0.06]">
+                <div className="flex items-center gap-1 bg-panel p-1 border-2 border-black">
                     {TIME_RANGES.map((r) => (
                         <button
                             key={r.key}
                             onClick={() => setTimeRange(r.key)}
-                            className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${
+                            className={`px-2.5 py-1 text-xs font-bold transition-all ${
                                 timeRange === r.key
-                                    ? 'text-white shadow-sm'
+                                    ? 'border-2 border-black hard-shadow-sm'
                                     : 'text-slate-500 hover:text-slate-300'
                             }`}
-                            style={timeRange === r.key ? { backgroundColor: `${config.color}20`, color: config.color } : undefined}
+                            style={timeRange === r.key ? { backgroundColor: config.color, color: '#000000' } : undefined}
                         >
                             {r.label}
                         </button>
@@ -257,10 +257,10 @@ export default function SensorDetail({ sensorKey }: SensorDetailProps) {
                 </div>
 
                 {/* Stats Cards */}
-                <div className="glass-panel glass-panel-hover rounded-2xl p-5 flex flex-col justify-between">
+                <div className="nb-panel p-5 flex flex-col justify-between">
                     <div className="flex items-center gap-2 mb-3">
                         <TrendingUp size={16} className="text-safe" />
-                        <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Rata-rata</span>
+                        <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Rata-rata</span>
                     </div>
                     <div>
                         <p className="text-2xl sm:text-3xl font-data-bold text-white truncate">{avg.toFixed(config.decimals)}</p>
@@ -268,32 +268,32 @@ export default function SensorDetail({ sensorKey }: SensorDetailProps) {
                     </div>
                 </div>
 
-                <div className="glass-panel glass-panel-hover rounded-2xl p-5 flex flex-col justify-between">
+                <div className="nb-panel p-5 flex flex-col justify-between">
                     <div className="flex items-center gap-2 mb-3">
                         <Activity size={16} className="text-ocean-400" />
-                        <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Min / Max</span>
+                        <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Min / Max</span>
                     </div>
                     <div className="space-y-1">
                         <div className="flex items-baseline gap-2">
-                            <span className="text-[10px] font-semibold uppercase text-slate-500 w-8">Min</span>
+                            <span className="text-[10px] font-bold uppercase text-slate-500 w-8">Min</span>
                             <p className="text-2xl sm:text-3xl font-data-bold text-white truncate">{min.toFixed(config.decimals)}</p>
                         </div>
                         <div className="flex items-baseline gap-2">
-                            <span className="text-[10px] font-semibold uppercase text-slate-500 w-8">Max</span>
+                            <span className="text-[10px] font-bold uppercase text-slate-500 w-8">Max</span>
                             <p className="text-2xl sm:text-3xl font-data-bold text-white truncate">{max.toFixed(config.decimals)}</p>
                         </div>
                         <p className="text-xs text-slate-500 pt-1">{config.unit} • Rentang</p>
                     </div>
                 </div>
 
-                <div className="glass-panel glass-panel-hover rounded-2xl p-5 flex flex-col justify-between">
+                <div className="nb-panel p-5 flex flex-col justify-between">
                     <div className="flex items-center gap-2 mb-3">
                         {trend >= 0 ? (
                             <TrendingUp size={16} className={config.trendInverted ? 'text-danger' : 'text-safe'} />
                         ) : (
                             <TrendingDown size={16} className={config.trendInverted ? 'text-safe' : 'text-danger'} />
                         )}
-                        <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Tren</span>
+                        <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Tren</span>
                     </div>
                     <div>
                         <p className={`text-2xl sm:text-3xl font-data-bold truncate ${trend >= 0 ? (config.trendInverted ? 'text-danger' : 'text-safe') : (config.trendInverted ? 'text-safe' : 'text-danger')}`}>
@@ -305,7 +305,7 @@ export default function SensorDetail({ sensorKey }: SensorDetailProps) {
             </div>
 
             {/* Full-width Chart */}
-            <div className="glass-panel rounded-2xl p-5">
+            <div className="nb-panel p-5">
                 <div className="flex items-center justify-between mb-4">
                     <div>
                         <h2 className="text-base font-bold text-white flex items-center gap-2">
@@ -318,17 +318,17 @@ export default function SensorDetail({ sensorKey }: SensorDetailProps) {
                     </div>
                 </div>
                 {/* Safe range legend */}
-                <div className="flex items-center gap-4 mb-3 text-[10px] text-slate-500">
+                <div className="flex items-center gap-4 mb-3 text-[10px] text-slate-500 font-bold">
                     <div className="flex items-center gap-1.5">
-                        <span className="w-3 h-1.5 rounded-full bg-green-500/30 border border-green-500/40" />
+                        <span className="w-3 h-3 bg-safe border-2 border-black" />
                         <span>Aman ({safeMin}–{safeMax} {config.unit})</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                        <span className="w-3 h-1.5 rounded-full bg-amber-500/30 border border-amber-500/40" />
+                        <span className="w-3 h-3 bg-warning border-2 border-black" />
                         <span>Waspada</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                        <span className="w-3 h-1.5 rounded-full bg-red-500/30 border border-red-500/40" />
+                        <span className="w-3 h-3 bg-danger border-2 border-black" />
                         <span>Bahaya</span>
                     </div>
                 </div>
@@ -417,16 +417,16 @@ export default function SensorDetail({ sensorKey }: SensorDetailProps) {
 
             {/* Recent Alerts */}
             {dangerCount > 0 && (
-                <div className="glass-panel rounded-2xl p-5">
+                <div className="nb-panel p-5">
                     <h2 className="text-base font-bold text-white flex items-center gap-2 mb-3">
                         <AlertTriangle size={18} className="text-danger" />
                         Peringatan Terakhir
                     </h2>
                     <div className="space-y-2">
                         {readings.filter((r) => r.status === 'BAHAYA').slice(0, 5).map((r) => (
-                            <div key={r.id} className="flex items-center justify-between px-4 py-2.5 rounded-xl bg-danger/5 border border-danger/10">
+                            <div key={r.id} className="flex items-center justify-between px-4 py-2.5 border-2 border-black bg-panel-light hard-shadow-sm">
                                 <div className="flex items-center gap-2">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-danger animate-pulse" />
+                                    <span className="status-dot status-dot-pulse bg-danger" />
                                     <span className="text-sm text-slate-300">
                                         {config.title}: <span className="font-data-bold text-white">{(r[config.readingKey] as number).toFixed(config.decimals)}</span> {config.unit}
                                     </span>

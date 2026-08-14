@@ -47,21 +47,21 @@ const StatusIndicator = memo(function StatusIndicator({ secondsAgo }: { secondsA
 
     return (
         <div
-            className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg border ${
+            className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 border-2 border-black hard-shadow-sm ${
                 secondsAgo === null
-                    ? 'bg-white/[0.03] border-white/[0.05]'
+                    ? 'bg-panel-light'
                     : isOnline
-                        ? 'bg-safe/10 border-safe/15'
-                        : 'bg-warning/10 border-warning/15'
+                        ? 'bg-safe'
+                        : 'bg-warning'
             }`}
             title="Update terakhir dari sensor"
         >
             {secondsAgo === null ? (
-                <Wifi size={12} className="text-slate-500" />
+                <Wifi size={12} className="text-slate-400" />
             ) : (
-                <span className={`w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-safe animate-pulse' : 'bg-warning'}`} />
+                <span className={`status-dot status-dot-pulse ${isOnline ? 'bg-black' : 'bg-black'}`} />
             )}
-            <span className={`text-xs font-semibold ${secondsAgo === null ? 'text-slate-500' : isOnline ? 'text-safe' : 'text-warning'}`}>
+            <span className={`text-xs font-bold ${secondsAgo === null ? 'text-slate-400' : 'text-black'}`}>
                 {label}
             </span>
         </div>
@@ -120,20 +120,20 @@ export default function Dashboard() {
             {/* Main Content */}
             <main className="flex-1 min-h-screen overflow-y-auto">
                 {/* ===== Top Bar ===== */}
-                <header id="top-bar" className="sticky top-0 z-30 backdrop-blur-2xl bg-surface/70 border-b border-white/[0.04]">
+                <header id="top-bar" className="sticky top-0 z-30 bg-surface border-b-2 border-black">
                     <div className="flex items-center justify-between px-4 py-3 sm:px-6 sm:py-4 lg:px-8">
                         <div className="pl-10 sm:pl-12 lg:pl-0">
                             <h1 className="text-base sm:text-lg font-bold text-white tracking-tight">
                                 {PAGE_TITLES[activeNav]}
                             </h1>
-                            <p className="text-xs text-slate-500 mt-0.5">
+                            <p className="text-xs text-slate-500 mt-0.5 font-bold tracking-wide uppercase">
                                 {activeNav === 'overview' ? 'Monitoring kualitas air real-time • ESP32 IoT' : 'WaterSafe Monitor'}
                             </p>
                         </div>
 
                         <div className="flex items-center gap-2 sm:gap-3">
                             {/* Search */}
-                            <div className="hidden lg:flex items-center gap-2 px-3 py-2 rounded-xl bg-white/[0.03] border border-white/[0.05] text-slate-500 hover:border-water-500/20 focus-within:border-water-500/30 focus-within:ring-1 focus-within:ring-water-500/15 transition-all w-52">
+                            <div className="hidden lg:flex items-center gap-2 px-3 py-2 border-2 border-black bg-panel text-slate-500 focus-within:border-water-500 transition-all w-52 hard-shadow-sm">
                                 <Search size={14} />
                                 <input
                                     id="search-input"
@@ -147,7 +147,7 @@ export default function Dashboard() {
                             {/* Refresh */}
                             <button
                                 onClick={refresh}
-                                className="p-2 sm:p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.05] hover:border-water-500/20 text-slate-400 hover:text-white transition-all"
+                                className="p-2 sm:p-2.5 border-2 border-black bg-panel text-slate-400 hover:bg-water-500 hover:text-black transition-all hard-shadow-sm active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
                                 title="Refresh data"
                                 aria-label="Refresh sensor data"
                             >
@@ -161,13 +161,13 @@ export default function Dashboard() {
                             <button
                                 id="notification-button"
                                 onClick={() => setShowNotifications(!showNotifications)}
-                                className="relative p-2 sm:p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.05] hover:border-water-500/20 text-slate-400 hover:text-white transition-all"
+                                className="relative p-2 sm:p-2.5 border-2 border-black bg-panel text-slate-400 hover:bg-water-500 hover:text-black transition-all hard-shadow-sm active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
                                 aria-label={`Notifications${dangerCount > 0 ? ` (${dangerCount} alerts)` : ''}`}
                                 aria-expanded={showNotifications}
                             >
                                 <Bell size={16} />
                                 {dangerCount > 0 && (
-                                    <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-danger rounded-full animate-pulse" aria-hidden="true" />
+                                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-danger border-2 border-black animate-pulse" aria-hidden="true" />
                                 )}
                             </button>
 
@@ -175,7 +175,7 @@ export default function Dashboard() {
                             <button
                                 id="sign-out-button"
                                 onClick={signOut}
-                                className="hidden sm:flex p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.05] hover:border-danger/20 text-slate-400 hover:text-danger transition-all"
+                                className="hidden sm:flex p-2.5 border-2 border-black bg-panel text-slate-400 hover:bg-danger hover:text-white transition-all hard-shadow-sm active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
                                 title="Keluar"
                                 aria-label="Sign out"
                             >
@@ -185,7 +185,7 @@ export default function Dashboard() {
                             {/* Avatar */}
                             <div
                                 id="user-avatar"
-                                className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-water-500 to-ocean-600 flex items-center justify-center text-white text-[10px] sm:text-xs font-bold ring-2 ring-water-500/15 cursor-pointer hover:ring-water-500/30 transition-all"
+                                className="w-8 h-8 sm:w-9 sm:h-9 bg-water-500 border-2 border-black flex items-center justify-center text-black text-[10px] sm:text-xs font-bold hard-shadow-sm cursor-pointer hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all"
                                 title={user?.email ?? 'Demo User'}
                                 role="img"
                                 aria-label={`User: ${user?.email ?? 'Demo User'}`}
@@ -228,7 +228,7 @@ export default function Dashboard() {
 
                     {/* Error state */}
                     {error && (
-                        <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-danger/10 border border-danger/20 text-danger text-xs font-medium mb-6" role="alert">
+                        <div className="flex items-center gap-2 px-4 py-3 border-2 border-black bg-danger text-black text-xs font-bold mb-6 hard-shadow-sm" role="alert">
                             <AlertTriangle size={14} />
                             {error}
                         </div>
@@ -354,19 +354,19 @@ export default function Dashboard() {
                                 <LocationSettings onSaved={refresh} />
                             </Suspense>
 
-                            <section className="glass-panel rounded-2xl p-5 sm:p-6" aria-label="System information">
+                            <section className="nb-panel p-5 sm:p-6" aria-label="System information">
                                 <h2 className="text-base font-bold text-white mb-4">Informasi Sistem</h2>
                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                    <div className="px-4 py-3 rounded-xl bg-panel-light border border-white/[0.05]">
-                                        <p className="text-[10px] text-slate-500 uppercase tracking-wider">Total Pembacaan</p>
+                                    <div className="px-4 py-3 border-2 border-black bg-panel-light hard-shadow-sm">
+                                        <p className="text-[10px] text-slate-500 uppercase tracking-wider font-bold">Total Pembacaan</p>
                                         <p className="text-xl font-bold text-white mt-1 tabular-nums">{readings.length}</p>
                                     </div>
-                                    <div className="px-4 py-3 rounded-xl bg-panel-light border border-white/[0.05]">
-                                        <p className="text-[10px] text-slate-500 uppercase tracking-wider">Status BAHAYA</p>
+                                    <div className="px-4 py-3 border-2 border-black bg-panel-light hard-shadow-sm">
+                                        <p className="text-[10px] text-slate-500 uppercase tracking-wider font-bold">Status BAHAYA</p>
                                         <p className="text-xl font-bold text-danger mt-1 tabular-nums">{dangerCount}</p>
                                     </div>
-                                    <div className="px-4 py-3 rounded-xl bg-panel-light border border-white/[0.05]">
-                                        <p className="text-[10px] text-slate-500 uppercase tracking-wider">Status LAYAK</p>
+                                    <div className="px-4 py-3 border-2 border-black bg-panel-light hard-shadow-sm">
+                                        <p className="text-[10px] text-slate-500 uppercase tracking-wider font-bold">Status LAYAK</p>
                                         <p className="text-xl font-bold text-warning mt-1 tabular-nums">{readings.filter((r) => r.status === 'LAYAK').length}</p>
                                     </div>
                                 </div>
@@ -376,17 +376,12 @@ export default function Dashboard() {
                 </div>
 
                 {/* Footer */}
-                <footer className="px-4 py-4 sm:px-6 lg:px-8 border-t border-white/[0.04]">
-                    <p className="text-xs text-slate-500 text-center">
+                <footer className="px-4 py-4 sm:px-6 lg:px-8 border-t-2 border-black">
+                    <p className="text-xs text-slate-500 text-center font-bold">
                         WaterSafe-Monitor v1.0 — IoT Water Quality Dashboard • Powered by ESP32
                     </p>
                 </footer>
             </main>
-
-            {/* Background decorative elements */}
-            <div className="fixed top-0 right-0 w-[700px] h-[700px] pointer-events-none opacity-20 blur-3xl" aria-hidden="true">
-                <div className="absolute top-[-250px] right-[-250px] w-[600px] h-[600px] rounded-full bg-gradient-to-br from-water-500/15 to-ocean-600/5" />
-            </div>
         </div>
     );
 }

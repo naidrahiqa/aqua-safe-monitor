@@ -74,7 +74,7 @@ export default function LocationSettings({ onSaved }: LocationSettingsProps) {
 
     if (!configured) {
         return (
-            <div className="glass-panel rounded-2xl p-5 sm:p-6">
+            <div className="nb-panel p-5 sm:p-6">
                 <h2 className="flex items-center gap-2 text-base font-bold text-white mb-3">
                     <MapPin size={18} className="text-water-400" />
                     Lokasi Sensor
@@ -85,7 +85,7 @@ export default function LocationSettings({ onSaved }: LocationSettingsProps) {
     }
 
     return (
-        <div className="glass-panel rounded-2xl p-5 sm:p-6">
+        <div className="nb-panel p-5 sm:p-6">
             <h2 className="flex items-center gap-2 text-base font-bold text-white mb-1">
                 <MapPin size={18} className="text-water-400" />
                 Lokasi Sensor
@@ -102,29 +102,29 @@ export default function LocationSettings({ onSaved }: LocationSettingsProps) {
                 <div className="space-y-3">
                     <div className="grid grid-cols-2 gap-3">
                         <div>
-                            <label className="block text-xs text-slate-400 uppercase tracking-wider mb-1">Latitude</label>
+                            <label className="nb-label">Latitude</label>
                             <input
                                 type="text"
                                 value={lat}
                                 onChange={(e) => setLat(e.target.value)}
                                 placeholder="-6.5833"
-                                className="w-full px-3 py-2 rounded-lg bg-panel-dark border border-white/10 text-white text-sm focus:outline-none focus:border-water-400/50 transition"
+                                className="nb-input"
                             />
                         </div>
                         <div>
-                            <label className="block text-xs text-slate-400 uppercase tracking-wider mb-1">Longitude</label>
+                            <label className="nb-label">Longitude</label>
                             <input
                                 type="text"
                                 value={lng}
                                 onChange={(e) => setLng(e.target.value)}
                                 placeholder="110.6667"
-                                className="w-full px-3 py-2 rounded-lg bg-panel-dark border border-white/10 text-white text-sm focus:outline-none focus:border-water-400/50 transition"
+                                className="nb-input"
                             />
                         </div>
                     </div>
 
                     <div>
-                        <label className="block text-xs text-slate-400 uppercase tracking-wider mb-1">Pilih di peta</label>
+                        <label className="nb-label">Pilih di peta</label>
                         <MapPicker lat={pickerLat} lng={pickerLng} onPick={(l, n) => { setLat(String(l)); setLng(String(n)); }} />
                         <p className="mt-1.5 text-xs text-slate-500">Klik peta atau geser pin untuk mengisi koordinat.</p>
                     </div>
@@ -133,14 +133,14 @@ export default function LocationSettings({ onSaved }: LocationSettingsProps) {
                         <button
                             onClick={handleSave}
                             disabled={saving}
-                            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-water-500 hover:bg-water-600 text-white text-sm font-medium transition disabled:opacity-50"
+                            className="flex items-center gap-2 px-4 py-2 nb-btn text-sm disabled:opacity-50"
                         >
                             {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
                             Simpan
                         </button>
 
                         {msg && (
-                            <span className={`flex items-center gap-1.5 text-xs font-medium ${msg.type === 'ok' ? 'text-safe' : 'text-danger'}`}>
+                            <span className={`flex items-center gap-1.5 text-xs font-bold ${msg.type === 'ok' ? 'text-safe' : 'text-danger'}`}>
                                 {msg.type === 'ok' ? <Check size={13} /> : <AlertCircle size={13} />}
                                 {msg.text}
                             </span>

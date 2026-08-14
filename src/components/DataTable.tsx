@@ -12,15 +12,15 @@ interface DataTableProps {
 
 function StatusBadge({ status }: { status: WaterStatus }) {
     const styles = {
-        'SANGAT LAYAK': 'bg-safe/10 text-safe border-safe/20',
-        'LAYAK': 'bg-warning/10 text-warning border-warning/20',
-        'BAHAYA': 'bg-danger/10 text-danger border-danger/20 animate-pulse',
+        'SANGAT LAYAK': 'nb-chip nb-chip-safe',
+        'LAYAK': 'nb-chip nb-chip-warning',
+        'BAHAYA': 'nb-chip nb-chip-danger animate-pulse-soft',
     };
 
     return (
-        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider border ${styles[status]}`}>
-            <span className={`w-1.5 h-1.5 rounded-full ${status === 'SANGAT LAYAK' ? 'bg-safe' :
-                    status === 'LAYAK' ? 'bg-warning' : 'bg-danger'
+        <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] ${styles[status]}`}>
+            <span className={`status-dot ${status === 'SANGAT LAYAK' ? 'bg-black' :
+                    status === 'LAYAK' ? 'bg-black' : 'bg-white'
                 }`} />
             {status}
         </span>
@@ -140,7 +140,7 @@ export default function DataTable({ readings, showFilters = false }: DataTablePr
     };
 
     return (
-        <div id="data-table" className="glass-panel rounded-2xl p-5 animate-fade-in" style={{ animationDelay: '500ms' }}>
+        <div id="data-table" className="nb-panel p-5 animate-fade-in" style={{ animationDelay: '500ms' }}>
             {/* Header */}
             <div className="flex items-center justify-between mb-4">
                 <div>
@@ -158,9 +158,8 @@ export default function DataTable({ readings, showFilters = false }: DataTablePr
                     disabled={filteredReadings.length === 0}
                     title="Export data ke CSV"
                     aria-label="Export filtered data to CSV"
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold
-                        text-water-400 hover:text-water-300 bg-water-500/10 hover:bg-water-500/15
-                        border border-water-500/20 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="flex items-center gap-1.5 px-3 py-1.5 nb-btn text-xs
+                        disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none disabled:translate-x-0.5 disabled:translate-y-0.5"
                 >
                     <Download size={12} aria-hidden="true" />
                     Export CSV
@@ -169,26 +168,26 @@ export default function DataTable({ readings, showFilters = false }: DataTablePr
 
             {/* Filters */}
             {showFilters && (
-                <div className="flex flex-wrap items-center gap-3 mb-4 pb-4 border-b border-white/5">
+                <div className="flex flex-wrap items-center gap-3 mb-4 pb-4 border-b-2 border-black">
                     {/* Status filter */}
                     <div className="flex items-center gap-1.5">
                         <Filter size={12} className="text-slate-500" />
-                        <span className="text-xs text-slate-500 font-medium">Status:</span>
+                        <span className="text-xs text-slate-500 font-bold">Status:</span>
                     </div>
                     {(['all', 'SANGAT LAYAK', 'LAYAK', 'BAHAYA'] as const).map((filter) => (
                         <button
                             key={filter}
                             onClick={() => handleFilterChange(filter)}
-                            className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
+                            className={`px-2.5 py-1 text-xs font-bold border-2 border-black transition-all ${
                                 statusFilter === filter
                                     ? filter === 'BAHAYA'
-                                        ? 'bg-danger/20 text-danger border border-danger/30'
+                                        ? 'bg-danger text-white hard-shadow-sm'
                                         : filter === 'LAYAK'
-                                            ? 'bg-warning/20 text-warning border border-warning/30'
+                                            ? 'bg-warning text-black hard-shadow-sm'
                                             : filter === 'SANGAT LAYAK'
-                                                ? 'bg-safe/20 text-safe border border-safe/30'
-                                                : 'bg-water-500/20 text-water-400 border border-water-500/30'
-                                    : 'bg-white/5 text-slate-500 border border-white/5 hover:text-slate-300'
+                                                ? 'bg-safe text-black hard-shadow-sm'
+                                                : 'bg-water-500 text-black hard-shadow-sm'
+                                    : 'bg-panel-light text-slate-500 hover:text-slate-300'
                             }`}
                         >
                             {filter === 'all' ? 'Semua' : filter}
@@ -196,7 +195,7 @@ export default function DataTable({ readings, showFilters = false }: DataTablePr
                     ))}
 
                     {/* Search */}
-                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/5 text-slate-500 ml-auto w-48">
+                    <div className="flex items-center gap-2 px-3 py-1.5 border-2 border-black bg-panel text-slate-500 ml-auto w-48">
                         <Search size={12} />
                         <input
                             type="text"
@@ -213,9 +212,9 @@ export default function DataTable({ readings, showFilters = false }: DataTablePr
             <div className="overflow-x-auto -mx-5 px-5">
                 <table className="w-full text-left min-w-[640px]" aria-label="Sensor reading history">
                     <thead>
-                        <tr className="border-b border-white/5">
+                        <tr className="border-b-2 border-black">
                             {COLUMNS.map((col) => (
-                                <th key={col.key} className="pb-3 pr-4 text-xs font-semibold uppercase tracking-wider text-slate-500 whitespace-nowrap">
+                                <th key={col.key} className="pb-3 pr-4 text-xs font-bold uppercase tracking-wider text-slate-500 whitespace-nowrap">
                                     <button
                                         onClick={() => handleSort(col.key)}
                                         className={`flex items-center gap-1 transition-colors ${
@@ -230,11 +229,11 @@ export default function DataTable({ readings, showFilters = false }: DataTablePr
                             ))}
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-white/[0.03]">
+                    <tbody className="divide-y divide-slate-800">
                         {paginatedReadings.map((r, i) => (
                             <tr
                                 key={r.id}
-                                className="group hover:bg-white/[0.02] transition-colors duration-150"
+                                className="group hover:bg-panel-light transition-colors duration-150"
                                 style={{ animationDelay: `${600 + i * 50}ms` }}
                             >
                                 <td className="py-3 pr-4">
@@ -272,7 +271,7 @@ export default function DataTable({ readings, showFilters = false }: DataTablePr
 
             {/* Pagination */}
             {totalPages > 1 && (
-                <div className="flex items-center justify-between mt-4 pt-4 border-t border-white/5">
+                <div className="flex items-center justify-between mt-4 pt-4 border-t-2 border-black">
                     <p className="text-xs text-slate-500">
                         Halaman {currentPage} dari {totalPages}
                     </p>
@@ -280,7 +279,7 @@ export default function DataTable({ readings, showFilters = false }: DataTablePr
                         <button
                             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                             disabled={currentPage === 1}
-                            className="px-3 py-1.5 rounded-lg text-xs font-medium bg-white/5 border border-white/5 text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                            className="px-3 py-1.5 text-xs font-bold border-2 border-black bg-panel-light text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                         >
                             Prev
                         </button>
@@ -299,10 +298,10 @@ export default function DataTable({ readings, showFilters = false }: DataTablePr
                                 <button
                                     key={pageNum}
                                     onClick={() => setCurrentPage(pageNum)}
-                                    className={`w-7 h-7 rounded-lg text-xs font-medium transition-all ${
+                                    className={`w-7 h-7 text-xs font-bold border-2 border-black transition-all ${
                                         currentPage === pageNum
-                                            ? 'bg-water-500/20 text-water-400 border border-water-500/30'
-                                            : 'bg-white/5 border border-white/5 text-slate-400 hover:text-white'
+                                            ? 'bg-water-500 text-black hard-shadow-sm'
+                                            : 'bg-panel-light text-slate-400 hover:text-white'
                                     }`}
                                 >
                                     {pageNum}
@@ -312,7 +311,7 @@ export default function DataTable({ readings, showFilters = false }: DataTablePr
                         <button
                             onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                             disabled={currentPage === totalPages}
-                            className="px-3 py-1.5 rounded-lg text-xs font-medium bg-white/5 border border-white/5 text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                            className="px-3 py-1.5 text-xs font-bold border-2 border-black bg-panel-light text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                         >
                             Next
                         </button>

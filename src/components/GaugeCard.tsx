@@ -73,10 +73,10 @@ export default function GaugeCard({
 
     const badgeClass =
         status === 'SANGAT LAYAK'
-            ? 'bg-safe/15 text-safe border-safe/20'
+            ? 'nb-chip nb-chip-safe'
             : status === 'LAYAK'
-                ? 'bg-warning/15 text-warning border-warning/20'
-                : 'bg-danger/15 text-danger border-danger/20';
+                ? 'nb-chip nb-chip-warning'
+                : 'nb-chip nb-chip-danger';
 
     const ariaLabel = status
         ? `${title}: ${value.toFixed(decimals)} ${unit}, status ${status}`
@@ -87,13 +87,13 @@ export default function GaugeCard({
             id={id}
             role="figure"
             aria-label={ariaLabel}
-            className="glass-panel glass-panel-hover relative overflow-hidden rounded-2xl p-4 sm:p-5 transition-all duration-300 ease-out animate-fade-in flex flex-col items-center"
+            className="nb-panel relative p-4 sm:p-5 transition-all duration-150 ease-out animate-fade-in flex flex-col items-center"
             style={{ animationDelay: `${delay}ms` }}
         >
             {/* Header */}
             <div className="flex items-center justify-between w-full mb-1 gap-1.5">
                 <span className="text-[11px] font-semibold uppercase tracking-normal text-slate-400 truncate flex-1 min-w-0">{title}</span>
-                <div className="p-1.5 rounded-lg bg-water-500/10 text-water-400 border border-water-500/10 flex-shrink-0" aria-hidden="true">{icon}</div>
+                <div className="p-1.5 bg-water-500 text-black border-2 border-black flex-shrink-0" aria-hidden="true">{icon}</div>
             </div>
 
             {/* Gauge */}
@@ -104,9 +104,9 @@ export default function GaugeCard({
                     r="40"
                     pathLength={100}
                     fill="none"
-                    stroke="rgba(148,163,184,0.12)"
+                    stroke="rgba(148,163,184,0.15)"
                     strokeWidth="9"
-                    strokeLinecap="round"
+                    strokeLinecap="butt"
                     strokeDasharray="50 100"
                 />
                 <circle
@@ -117,10 +117,10 @@ export default function GaugeCard({
                     fill="none"
                     stroke={color}
                     strokeWidth="9"
-                    strokeLinecap="round"
+                    strokeLinecap="butt"
                     strokeDasharray={`${arc} 100`}
                     transform="rotate(180 60 48)"
-                    style={{ transition: 'stroke-dasharray 1s ease-out, stroke 0.4s ease', filter: `drop-shadow(0 0 6px ${color}55)` }}
+                    style={{ transition: 'stroke-dasharray 1s ease-out, stroke 0.4s ease' }}
                 />
             </svg>
             {/* Value + unit below arc */}
@@ -136,12 +136,12 @@ export default function GaugeCard({
 
             {/* Status badge / subtitle */}
             {status ? (
-                <span className={`mt-1 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider border ${badgeClass}`} role="status">
-                    <span className={`w-1.5 h-1.5 rounded-full ${status === 'SANGAT LAYAK' ? 'bg-safe' : status === 'LAYAK' ? 'bg-warning' : 'bg-danger animate-pulse'}`} aria-hidden="true" />
+                <span className={`mt-1.5 inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] ${badgeClass}`} role="status">
+                    <span className={`status-dot ${status === 'BAHAYA' ? 'status-dot-pulse' : ''} ${status === 'SANGAT LAYAK' ? 'bg-safe' : status === 'LAYAK' ? 'bg-warning' : 'bg-danger'}`} aria-hidden="true" />
                     {status}
                 </span>
             ) : subtitle ? (
-                <p className="mt-1 text-[11px] text-slate-500 text-center">{subtitle}</p>
+                <p className="mt-1.5 text-[11px] text-slate-500 text-center">{subtitle}</p>
             ) : null}
         </div>
     );

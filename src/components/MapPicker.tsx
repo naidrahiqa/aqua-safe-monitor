@@ -37,7 +37,7 @@ export default function MapPicker({ lat, lng, onPick }: MapPickerProps) {
     const center: [number, number] = [lat, lng];
 
     return (
-        <div className="h-52 rounded-xl overflow-hidden ring-1 ring-white/5">
+        <div className="h-52 border-2 border-black overflow-hidden">
             <MapContainer
                 center={center}
                 zoom={13}

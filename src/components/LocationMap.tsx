@@ -161,7 +161,7 @@ export default function LocationMap({ locations, onAddLocation, onRemoveLocation
     };
 
     return (
-        <div id="location-map" className="glass-panel rounded-2xl p-5 animate-fade-in" style={{ animationDelay: '400ms' }}>
+        <div id="location-map" className="nb-panel p-5 animate-fade-in" style={{ animationDelay: '400ms' }}>
             {/* Header */}
             <div className="flex items-center justify-between mb-4">
                 <div>
@@ -175,17 +175,17 @@ export default function LocationMap({ locations, onAddLocation, onRemoveLocation
                 </div>
                 <div className="flex items-center gap-2">
                     {/* Legend */}
-                    <div className="hidden sm:flex items-center gap-3 text-[10px] text-slate-500 mr-2">
+                    <div className="hidden sm:flex items-center gap-3 text-[10px] text-slate-500 mr-2 font-bold">
                         <div className="flex items-center gap-1">
-                            <span className="w-2 h-2 rounded-full bg-green-500" />
+                            <span className="w-2 h-2 border-2 border-black bg-green-500" />
                             <span>Layak</span>
                         </div>
                         <div className="flex items-center gap-1">
-                            <span className="w-2 h-2 rounded-full bg-amber-500" />
+                            <span className="w-2 h-2 border-2 border-black bg-amber-500" />
                             <span>Waspada</span>
                         </div>
                         <div className="flex items-center gap-1">
-                            <span className="w-2 h-2 rounded-full bg-red-500" />
+                            <span className="w-2 h-2 border-2 border-black bg-red-500" />
                             <span>Bahaya</span>
                         </div>
                     </div>
@@ -193,10 +193,10 @@ export default function LocationMap({ locations, onAddLocation, onRemoveLocation
                     {/* Add / Cancel button */}
                     <button
                         onClick={addMode ? cancelAdd : () => setAddMode(true)}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                        className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold border-2 border-black transition-all ${
                             addMode
-                                ? 'bg-danger/15 text-danger border border-danger/30 hover:bg-danger/25'
-                                : 'bg-water-500/15 text-water-400 border border-water-500/30 hover:bg-water-500/25'
+                                ? 'bg-danger text-white hard-shadow-sm'
+                                : 'bg-water-500 text-black hard-shadow-sm'
                         }`}
                     >
                         {addMode ? <><X size={14} /> Batal</> : <><Plus size={14} /> Tambah</>}
@@ -206,13 +206,13 @@ export default function LocationMap({ locations, onAddLocation, onRemoveLocation
 
             {/* Add mode banner */}
             {addMode && !pendingCoords && (
-                <div className="mb-3 px-4 py-2.5 rounded-xl bg-water-500/10 border border-water-500/20 text-water-300 text-xs font-medium animate-fade-in">
+                <div className="mb-3 px-4 py-2.5 border-2 border-black bg-water-500 text-black text-xs font-bold animate-fade-in hard-shadow-sm">
                     Klik di peta untuk menentukan lokasi pengujian
                 </div>
             )}
 
             {/* Map */}
-            <div className="h-72 rounded-xl overflow-hidden ring-1 ring-white/5">
+            <div className="h-72 border-2 border-black">
                 <MapContainer
                     ref={mapRef}
                     center={defaultCenter}
@@ -236,14 +236,14 @@ export default function LocationMap({ locations, onAddLocation, onRemoveLocation
                         >
                             <Popup>
                                 <div style={{
-                                    background: '#1e293b',
+                                    background: '#121726',
                                     padding: '14px 18px',
-                                    borderRadius: '12px',
+                                    border: '2px solid #000000',
                                     color: '#e2e8f0',
                                     minWidth: '220px',
-                                    fontFamily: 'Inter, system-ui, sans-serif',
+                                    fontFamily: 'JetBrains Mono, monospace',
                                     margin: '-14px -20px',
-                                    boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+                                    boxShadow: '4px 4px 0 0 #000000',
                                 }}>
                                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
                                         <p style={{ fontWeight: 700, fontSize: '13px', color: '#22d3ee' }}>
@@ -253,13 +253,11 @@ export default function LocationMap({ locations, onAddLocation, onRemoveLocation
                                             fontSize: '9px',
                                             fontWeight: 700,
                                             padding: '2px 8px',
-                                            borderRadius: '6px',
-                                            background: loc.status === 'SANGAT LAYAK' ? 'rgba(34,197,94,0.15)' :
-                                                        loc.status === 'LAYAK' ? 'rgba(245,158,11,0.15)' :
-                                                        'rgba(239,68,68,0.15)',
-                                            color: loc.status === 'SANGAT LAYAK' ? '#22c55e' :
-                                                   loc.status === 'LAYAK' ? '#f59e0b' :
-                                                   '#ef4444',
+                                            border: '2px solid #000000',
+                                            background: loc.status === 'SANGAT LAYAK' ? '#10b981' :
+                                                        loc.status === 'LAYAK' ? '#f59e0b' :
+                                                        '#ef4444',
+                                            color: loc.status === 'BAHAYA' ? '#ffffff' : '#000000',
                                         }}>
                                             {loc.status}
                                         </span>
@@ -270,14 +268,14 @@ export default function LocationMap({ locations, onAddLocation, onRemoveLocation
                                         <div style={{
                                             marginBottom: '8px',
                                             padding: '4px 8px',
-                                            borderRadius: '6px',
-                                            background: 'rgba(34,211,238,0.08)',
-                                            border: '1px solid rgba(34,211,238,0.15)',
+                                            border: '2px solid #000000',
+                                            background: '#22d3ee',
                                             fontSize: '9px',
-                                            color: '#22d3ee',
+                                            color: '#000000',
                                             display: 'flex',
                                             alignItems: 'center',
                                             gap: '4px',
+                                            fontWeight: 700,
                                         }}>
                                             <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                                             Data dari ESP32 sensor
@@ -301,12 +299,12 @@ export default function LocationMap({ locations, onAddLocation, onRemoveLocation
                                             <span>👁 Turbidity</span>
                                             <strong style={{ color: '#e2e8f0' }}>{loc.turbidity} NTU</strong>
                                         </div>
-                                        <div style={{ borderTop: '1px solid rgba(148,163,184,0.15)', marginTop: '6px', paddingTop: '6px', display: 'flex', justifyContent: 'space-between' }}>
+                                        <div style={{ borderTop: '2px solid #000000', marginTop: '6px', paddingTop: '6px', display: 'flex', justifyContent: 'space-between' }}>
                                             <span>📊 WQI</span>
                                             <strong style={{ color: '#22d3ee' }}>{loc.wqiScore}/100</strong>
                                         </div>
                                         {loc.notes && (
-                                            <div style={{ marginTop: '6px', paddingTop: '6px', borderTop: '1px solid rgba(148,163,184,0.15)', fontSize: '10px', color: '#64748b' }}>
+                                            <div style={{ marginTop: '6px', paddingTop: '6px', borderTop: '2px solid #000000', fontSize: '10px', color: '#64748b' }}>
                                                 📝 {loc.notes}
                                             </div>
                                         )}
@@ -325,18 +323,18 @@ export default function LocationMap({ locations, onAddLocation, onRemoveLocation
                                             marginTop: '8px',
                                             width: '100%',
                                             padding: '7px',
-                                            borderRadius: '8px',
-                                            border: '1px solid rgba(34,211,238,0.3)',
-                                            background: syncingId === loc.id ? 'rgba(34,211,238,0.05)' : 'rgba(34,211,238,0.1)',
-                                            color: '#22d3ee',
+                                            border: '2px solid #000000',
+                                            background: '#22d3ee',
+                                            color: '#000000',
                                             fontSize: '10px',
-                                            fontWeight: 600,
+                                            fontWeight: 700,
                                             cursor: syncingId === loc.id ? 'wait' : 'pointer',
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
                                             gap: '4px',
                                             opacity: syncingId === loc.id ? 0.6 : 1,
+                                            boxShadow: '2px 2px 0 0 #000000',
                                         }}
                                     >
                                         <RefreshCw size={11} className={syncingId === loc.id ? 'animate-spin' : ''} />
@@ -354,12 +352,11 @@ export default function LocationMap({ locations, onAddLocation, onRemoveLocation
                                                 style={{
                                                     flex: 1,
                                                     padding: '6px',
-                                                    borderRadius: '8px',
-                                                    border: '1px solid rgba(239,68,68,0.5)',
-                                                    background: 'rgba(239,68,68,0.2)',
-                                                    color: '#ef4444',
+                                                    border: '2px solid #000000',
+                                                    background: '#ef4444',
+                                                    color: '#ffffff',
                                                     fontSize: '10px',
-                                                    fontWeight: 600,
+                                                    fontWeight: 700,
                                                     cursor: 'pointer',
                                                 }}
                                             >
@@ -370,12 +367,11 @@ export default function LocationMap({ locations, onAddLocation, onRemoveLocation
                                                 style={{
                                                     flex: 1,
                                                     padding: '6px',
-                                                    borderRadius: '8px',
-                                                    border: '1px solid rgba(255,255,255,0.1)',
-                                                    background: 'rgba(255,255,255,0.05)',
+                                                    border: '2px solid #000000',
+                                                    background: '#1a2133',
                                                     color: '#94a3b8',
                                                     fontSize: '10px',
-                                                    fontWeight: 600,
+                                                    fontWeight: 700,
                                                     cursor: 'pointer',
                                                 }}
                                             >
@@ -389,12 +385,11 @@ export default function LocationMap({ locations, onAddLocation, onRemoveLocation
                                                 marginTop: '4px',
                                                 width: '100%',
                                                 padding: '6px',
-                                                borderRadius: '8px',
-                                                border: '1px solid rgba(239,68,68,0.3)',
-                                                background: 'rgba(239,68,68,0.1)',
+                                                border: '2px solid #000000',
+                                                background: '#1a2133',
                                                 color: '#ef4444',
                                                 fontSize: '10px',
-                                                fontWeight: 600,
+                                                fontWeight: 700,
                                                 cursor: 'pointer',
                                                 display: 'flex',
                                                 alignItems: 'center',
@@ -415,7 +410,7 @@ export default function LocationMap({ locations, onAddLocation, onRemoveLocation
 
             {/* Add form — shows when coords are picked */}
             {addMode && pendingCoords && (
-                <div className="mt-4 p-4 rounded-xl bg-panel-light border border-water-500/20 animate-fade-in">
+                <div className="mt-4 p-4 border-2 border-black bg-panel-light hard-shadow-sm animate-fade-in">
                     <div className="flex items-center justify-between mb-3">
                         <h3 className="text-sm font-bold text-white">Tambah Lokasi Baru</h3>
                         <span className="text-[10px] text-slate-500 font-mono">
@@ -424,28 +419,28 @@ export default function LocationMap({ locations, onAddLocation, onRemoveLocation
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div className="sm:col-span-2">
-                            <label className="block text-[10px] text-slate-500 uppercase tracking-wider mb-1">Nama Lokasi *</label>
+                            <label className="nb-label">Nama Lokasi *</label>
                             <input
                                 type="text"
                                 value={formName}
                                 onChange={(e) => setFormName(e.target.value)}
                                 placeholder="Contoh: Sumur RT 05"
-                                className="w-full px-3 py-2 rounded-lg bg-surface border border-white/10 text-sm text-white placeholder-slate-600 outline-none focus:border-water-500/40 transition-all"
+                                className="nb-input"
                             />
                         </div>
                         <div>
-                            <label className="block text-[10px] text-slate-500 uppercase tracking-wider mb-1">Suhu (°C)</label>
+                            <label className="nb-label">Suhu (°C)</label>
                             <input
                                 type="number"
                                 step="0.1"
                                 value={formTemp}
                                 onChange={(e) => setFormTemp(e.target.value)}
                                 placeholder="26.5"
-                                className="w-full px-3 py-2 rounded-lg bg-surface border border-white/10 text-sm text-white placeholder-slate-600 outline-none focus:border-water-500/40 transition-all"
+                                className="nb-input"
                             />
                         </div>
                         <div>
-                            <label className="block text-[10px] text-slate-500 uppercase tracking-wider mb-1">pH</label>
+                            <label className="nb-label">pH</label>
                             <input
                                 type="number"
                                 step="0.1"
@@ -454,11 +449,11 @@ export default function LocationMap({ locations, onAddLocation, onRemoveLocation
                                 value={formPH}
                                 onChange={(e) => setFormPH(e.target.value)}
                                 placeholder="7.0"
-                                className="w-full px-3 py-2 rounded-lg bg-surface border border-white/10 text-sm text-white placeholder-slate-600 outline-none focus:border-water-500/40 transition-all"
+                                className="nb-input"
                             />
                         </div>
                         <div>
-                            <label className="block text-[10px] text-slate-500 uppercase tracking-wider mb-1">TDS (ppm)</label>
+                            <label className="nb-label">TDS (ppm)</label>
                             <input
                                 type="number"
                                 step="1"
@@ -466,11 +461,11 @@ export default function LocationMap({ locations, onAddLocation, onRemoveLocation
                                 value={formTDS}
                                 onChange={(e) => setFormTDS(e.target.value)}
                                 placeholder="185"
-                                className="w-full px-3 py-2 rounded-lg bg-surface border border-white/10 text-sm text-white placeholder-slate-600 outline-none focus:border-water-500/40 transition-all"
+                                className="nb-input"
                             />
                         </div>
                         <div>
-                            <label className="block text-[10px] text-slate-500 uppercase tracking-wider mb-1">Turbidity (NTU)</label>
+                            <label className="nb-label">Turbidity (NTU)</label>
                             <input
                                 type="number"
                                 step="0.1"
@@ -478,31 +473,31 @@ export default function LocationMap({ locations, onAddLocation, onRemoveLocation
                                 value={formTurbidity}
                                 onChange={(e) => setFormTurbidity(e.target.value)}
                                 placeholder="2.1"
-                                className="w-full px-3 py-2 rounded-lg bg-surface border border-white/10 text-sm text-white placeholder-slate-600 outline-none focus:border-water-500/40 transition-all"
+                                className="nb-input"
                             />
                         </div>
                         <div className="sm:col-span-2">
-                            <label className="block text-[10px] text-slate-500 uppercase tracking-wider mb-1">Catatan</label>
+                            <label className="nb-label">Catatan</label>
                             <input
                                 type="text"
                                 value={formNotes}
                                 onChange={(e) => setFormNotes(e.target.value)}
                                 placeholder="Opsional..."
-                                className="w-full px-3 py-2 rounded-lg bg-surface border border-white/10 text-sm text-white placeholder-slate-600 outline-none focus:border-water-500/40 transition-all"
+                                className="nb-input"
                             />
                         </div>
                     </div>
                     <div className="flex justify-end gap-2 mt-4">
                         <button
                             onClick={cancelAdd}
-                            className="px-4 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:text-white border border-white/10 hover:border-white/20 transition-all"
+                            className="px-4 py-2 nb-btn-dark text-xs"
                         >
                             Batal
                         </button>
                         <button
                             onClick={handleSubmit}
                             disabled={!formName.trim()}
-                            className="px-4 py-2 rounded-lg text-xs font-bold bg-water-500 text-white hover:bg-water-400 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                            className="px-4 py-2 nb-btn text-xs disabled:opacity-40 disabled:cursor-not-allowed"
                         >
                             Simpan Lokasi
                         </button>
