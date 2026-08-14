@@ -174,17 +174,21 @@ export default function SensorDetail({ sensorKey }: SensorDetailProps) {
 
     const currentValue = latestReading[config.readingKey] as number;
 
-    // Compute stats
-    const values = readings.map((r) => r[config.readingKey] as number);
-    const avg = values.length ? values.reduce((a, b) => a + b, 0) / values.length : 0;
-    const min = values.length ? values.reduce((a, b) => Math.min(a, b), Infinity) : 0;
-    const max = values.length ? values.reduce((a, b) => Math.max(a, b), -Infinity) : 0;
+    // Compute stats from the SELECTED time range (same data as the chart),
+    // so the numbers always match what's plotted.
+    const filteredVals = filteredData
+        .map((d) => d[config.dataKey] as number)
+        .filter((v) => v != null && !isNaN(v));
+    const avg = filteredVals.length ? filteredVals.reduce((a, b) => a + b, 0) / filteredVals.length : 0;
+    const min = filteredVals.length ? filteredVals.reduce((a, b) => Math.min(a, b), Infinity) : 0;
+    const max = filteredVals.length ? filteredVals.reduce((a, b) => Math.max(a, b), -Infinity) : 0;
     const dangerCount = readings.filter((r) => r.status === 'BAHAYA').length;
 
-    // Recent trend (last 10 readings)
-    const recentVals = readings.slice(0, 10).map((r) => r[config.readingKey] as number);
+    // Recent trend (last 10 points of the selected range).
+    // chartData is oldest-first, so the 10 newest are at the tail.
+    const recentVals = filteredVals.slice(-10);
     const trend = recentVals.length >= 2
-        ? recentVals[0] - recentVals[recentVals.length - 1]
+        ? recentVals[recentVals.length - 1] - recentVals[0]
         : 0;
 
     // Safe range override from config
@@ -264,7 +268,7 @@ export default function SensorDetail({ sensorKey }: SensorDetailProps) {
                     </div>
                     <div>
                         <p className="text-2xl sm:text-3xl font-data-bold text-white truncate">{avg.toFixed(config.decimals)}</p>
-                        <p className="text-xs text-slate-500 mt-1">{config.unit} • Semua data</p>
+                        <p className="text-xs text-slate-500 mt-1">{config.unit} • {timeRange === 'all' ? 'Semua data' : `${timeRange} terakhir`}</p>
                     </div>
                 </div>
 
@@ -320,98 +324,94 @@ export default function SensorDetail({ sensorKey }: SensorDetailProps) {
                 {/* Safe range legend */}
                 <div className="flex items-center gap-4 mb-3 text-[10px] text-slate-500 font-bold">
                     <div className="flex items-center gap-1.5">
-                        <span className="w-3 h-3 bg-safe border-2 border-black" />
+                        <span className="w-3 h-3 border-2 border-black" style={{ backgroundColor: '#57c77e' }} />
                         <span>Aman ({safeMin}–{safeMax} {config.unit})</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                        <span className="w-3 h-3 bg-warning border-2 border-black" />
+                        <span className="w-3 h-3 border-2 border-black" style={{ backgroundColor: '#e0a94e' }} />
                         <span>Waspada</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                        <span className="w-3 h-3 bg-danger border-2 border-black" />
+                        <span className="w-3 h-3 border-2 border-black" style={{ backgroundColor: '#e4646b' }} />
                         <span>Bahaya</span>
                     </div>
                 </div>
 
-                <div className="h-[320px]">
-                    {filteredData.length === 0 ? (
-                        <div className="h-full flex items-center justify-center text-slate-600 text-sm">
-                            Tidak ada data untuk rentang ini
-                        </div>
-                    ) : (
-                        <ResponsiveContainer width="100%" height="100%">
-                            <LineChart data={filteredData} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
-                                <defs>
-                                    <linearGradient id={`grad-${sensorKey}`} x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="0%" stopColor={config.color} stopOpacity={0.2} />
-                                        <stop offset="100%" stopColor={config.color} stopOpacity={0} />
-                                    </linearGradient>
-                                </defs>
-                                <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.06)" vertical={false} />
-                                {/* Safe range band */}
-                                <ReferenceArea
-                                    y1={safeMin}
-                                    y2={safeMax}
-                                    fill="#22c55e"
-                                    fillOpacity={0.06}
-                                    stroke="#22c55e"
-                                    strokeOpacity={0.15}
-                                    strokeDasharray="3 3"
-                                />
-                                {/* Caution band (1.5x safe range) */}
-                                {safeMin > config.min && (
+                <div className="border-2 border-black bg-panel-light/40 p-2">
+                    <div className="h-[320px]">
+                        {filteredData.length === 0 ? (
+                            <div className="h-full flex items-center justify-center text-slate-600 text-sm">
+                                Tidak ada data untuk rentang ini
+                            </div>
+                        ) : (
+                            <ResponsiveContainer width="100%" height="100%">
+                                <LineChart data={filteredData} margin={{ top: 5, right: 16, left: -8, bottom: 5 }}>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.07)" vertical={false} />
+                                    {/* Safe range band */}
                                     <ReferenceArea
-                                        y1={Math.max(config.min, safeMin - (safeMax - safeMin) * 0.5)}
-                                        y2={safeMin}
-                                        fill="#f59e0b"
-                                        fillOpacity={0.04}
-                                        stroke="#f59e0b"
-                                        strokeOpacity={0.1}
+                                        y1={safeMin}
+                                        y2={safeMax}
+                                        fill="#57c77e"
+                                        fillOpacity={0.08}
+                                        stroke="#57c77e"
+                                        strokeOpacity={0.2}
                                         strokeDasharray="3 3"
                                     />
-                                )}
-                                {safeMax < config.max && (
-                                    <ReferenceArea
-                                        y1={safeMax}
-                                        y2={Math.min(config.max, safeMax + (safeMax - safeMin) * 0.5)}
-                                        fill="#f59e0b"
-                                        fillOpacity={0.04}
-                                        stroke="#f59e0b"
-                                        strokeOpacity={0.1}
-                                        strokeDasharray="3 3"
+                                    {/* Caution band (1.5x safe range) */}
+                                    {safeMin > config.min && (
+                                        <ReferenceArea
+                                            y1={Math.max(config.min, safeMin - (safeMax - safeMin) * 0.5)}
+                                            y2={safeMin}
+                                            fill="#e0a94e"
+                                            fillOpacity={0.05}
+                                            stroke="#e0a94e"
+                                            strokeOpacity={0.12}
+                                            strokeDasharray="3 3"
+                                        />
+                                    )}
+                                    {safeMax < config.max && (
+                                        <ReferenceArea
+                                            y1={safeMax}
+                                            y2={Math.min(config.max, safeMax + (safeMax - safeMin) * 0.5)}
+                                            fill="#e0a94e"
+                                            fillOpacity={0.05}
+                                            stroke="#e0a94e"
+                                            strokeOpacity={0.12}
+                                            strokeDasharray="3 3"
+                                        />
+                                    )}
+                                    {/* Safe range boundary lines */}
+                                    <ReferenceLine y={safeMin} stroke="#57c77e" strokeOpacity={0.35} strokeDasharray="6 3" />
+                                    <ReferenceLine y={safeMax} stroke="#57c77e" strokeOpacity={0.35} strokeDasharray="6 3" />
+                                    <XAxis
+                                        dataKey="time"
+                                        tick={{ fontSize: 10, fill: '#878d99', fontFamily: 'JetBrains Mono, monospace' }}
+                                        tickLine={false}
+                                        axisLine={{ stroke: 'rgba(148,163,184,0.12)' }}
+                                        interval={Math.max(0, Math.ceil(filteredData.length / 8) - 1)}
                                     />
-                                )}
-                                {/* Safe range boundary lines */}
-                                <ReferenceLine y={safeMin} stroke="#22c55e" strokeOpacity={0.3} strokeDasharray="6 3" />
-                                <ReferenceLine y={safeMax} stroke="#22c55e" strokeOpacity={0.3} strokeDasharray="6 3" />
-                                <XAxis
-                                    dataKey="time"
-                                    tick={{ fontSize: 10, fill: '#64748b' }}
-                                    tickLine={false}
-                                    axisLine={{ stroke: 'rgba(148,163,184,0.08)' }}
-                                    interval={Math.max(0, Math.ceil(filteredData.length / 8) - 1)}
-                                />
-                                <YAxis
-                                    domain={chartDomain}
-                                    tick={{ fontSize: 10, fill: '#64748b' }}
-                                    tickLine={false}
-                                    axisLine={false}
-                                    width={40}
-                                    tickFormatter={(v: number) => config.decimals === 0 ? String(Math.round(v)) : v.toFixed(1)}
-                                />
-                                <Tooltip content={<CustomTooltip unit={config.unit} />} />
-                                <Line
-                                    type="monotone"
-                                    dataKey={config.dataKey}
-                                    name={config.title}
-                                    stroke={config.color}
-                                    strokeWidth={2.5}
-                                    dot={false}
-                                    activeDot={{ r: 6, fill: config.color, stroke: '#080d19', strokeWidth: 3 }}
-                                />
-                            </LineChart>
-                        </ResponsiveContainer>
-                    )}
+                                    <YAxis
+                                        domain={chartDomain}
+                                        tick={{ fontSize: 10, fill: '#878d99', fontFamily: 'JetBrains Mono, monospace' }}
+                                        tickLine={false}
+                                        axisLine={false}
+                                        width={44}
+                                        tickFormatter={(v: number) => config.decimals === 0 ? String(Math.round(v)) : v.toFixed(1)}
+                                    />
+                                    <Tooltip content={<CustomTooltip unit={config.unit} />} />
+                                    <Line
+                                        type="monotone"
+                                        dataKey={config.dataKey}
+                                        name={config.title}
+                                        stroke="#22d3ee"
+                                        strokeWidth={2.5}
+                                        dot={false}
+                                        activeDot={{ r: 6, fill: '#22d3ee', stroke: '#0a0e1a', strokeWidth: 3 }}
+                                    />
+                                </LineChart>
+                            </ResponsiveContainer>
+                        )}
+                    </div>
                 </div>
             </div>
 

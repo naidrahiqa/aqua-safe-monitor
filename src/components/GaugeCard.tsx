@@ -26,17 +26,17 @@ interface GaugeCardProps {
 }
 
 const STATUS_COLORS: Record<WaterStatus, string> = {
-    'SANGAT LAYAK': '#10b981',
-    LAYAK: '#f59e0b',
-    BAHAYA: '#ef4444',
+    'SANGAT LAYAK': '#57c77e',
+    LAYAK: '#e0a94e',
+    BAHAYA: '#e4646b',
 };
 
 function getGaugeColor(value: number, safeMin?: number, safeMax?: number): string {
     if (safeMin === undefined || safeMax === undefined) return '#22d3ee';
-    if (value >= safeMin && value <= safeMax) return '#10b981';
+    if (value >= safeMin && value <= safeMax) return '#57c77e';
     const margin = Math.max((safeMax - safeMin) * 0.5, 1);
-    if (value < safeMin - margin || value > safeMax + margin) return '#ef4444';
-    return '#f59e0b';
+    if (value < safeMin - margin || value > safeMax + margin) return '#e4646b';
+    return '#e0a94e';
 }
 
 export default function GaugeCard({
@@ -61,7 +61,7 @@ export default function GaugeCard({
     // Dynamic font size based on value length; long values are also
     // compressed to a fixed width so the text never collides with the arc
     const valueStr = value.toFixed(decimals);
-    const valueFontSize = valueStr.length > 6 ? 20 : valueStr.length > 4 ? 24 : 28;
+    const valueFontSize = valueStr.length > 8 ? 16 : valueStr.length > 6 ? 20 : valueStr.length > 4 ? 24 : 28;
 
 
     useEffect(() => {
@@ -104,8 +104,8 @@ export default function GaugeCard({
                     r="40"
                     pathLength={100}
                     fill="none"
-                    stroke="rgba(148,163,184,0.15)"
-                    strokeWidth="9"
+                    stroke="rgba(148,163,184,0.22)"
+                    strokeWidth="10"
                     strokeLinecap="butt"
                     strokeDasharray="50 100"
                 />
@@ -116,7 +116,7 @@ export default function GaugeCard({
                     pathLength={100}
                     fill="none"
                     stroke={color}
-                    strokeWidth="9"
+                    strokeWidth="10"
                     strokeLinecap="butt"
                     strokeDasharray={`${arc} 100`}
                     transform="rotate(180 60 48)"
@@ -124,14 +124,15 @@ export default function GaugeCard({
                 />
             </svg>
             {/* Value + unit below arc */}
-            <div className="flex flex-col items-center -mt-1">
+            <div className="flex flex-col items-center mt-1.5 px-1 w-full max-w-[140px]">
                 <span
-                    className="font-data-bold text-slate-50 leading-none"
+                    className="font-data-bold text-slate-50 leading-none tabular-nums truncate max-w-full"
                     style={{ fontSize: `${valueFontSize}px` }}
+                    title={valueStr}
                 >
                     {valueStr}
                 </span>
-                <span className="text-[11px] font-medium text-slate-500">{unit}</span>
+                <span className="text-[11px] font-medium text-slate-500 mt-0.5">{unit}</span>
             </div>
 
             {/* Status badge / subtitle */}
