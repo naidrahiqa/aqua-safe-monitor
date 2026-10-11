@@ -1,16 +1,16 @@
 # AquaSafeMonitor — OPSI 2026
 
-Sistem monitoring kualitas air real-time berbasis IoT.
+Real-time IoT-based water quality monitoring system.
 
-- **ESP32** — membaca sensor pH, TDS, Turbidity, dan Suhu (DS18B20), menampilkan ke LCD, mengirim data ke cloud
+- **ESP32** — reads pH, TDS, Turbidity, and Temperature (DS18B20) sensors, displays to LCD, sends data to the cloud
 - **Supabase** — backend (PostgreSQL + edge function `ingest-sensor-data`)
 - **React + Vite + TypeScript + Tailwind + Leaflet** — web dashboard
 - **Kotlin + Jetpack Compose** — Android app → [aqua-safe-monitor-android](https://github.com/naidrahiqa/aqua-safe-monitor-android)
 
-## Struktur
+## Structure
 
 ```
-├── firmware/AquaSafeMonitor/   # Firmware ESP32 (Arduino IDE)
+├── firmware/AquaSafeMonitor/   # ESP32 firmware (Arduino IDE)
 ├── src/                        # Web dashboard (React + Vite)
 │   ├── components/             # UI components (GaugeCard, DataTable, etc.)
 │   ├── contexts/               # React context (Auth, SensorData)
@@ -18,11 +18,11 @@ Sistem monitoring kualitas air real-time berbasis IoT.
 │   ├── lib/                    # Utilities (supabase, alertConfig, exportCSV)
 │   ├── pages/                  # Route pages (Dashboard, AuthPage)
 │   └── index.css               # Design system v3.1 (colors, glass, animations)
-├── supabase/                   # Schema SQL + edge function + config CLI
-├── tools/i2c_scanner/          # Sketsa Arduino untuk scan alamat I2C (debug LCD)
-├── SETUP_GUIDE.md              # Panduan setup lengkap dari 0 (Bahasa Indonesia)
-├── SETUP_CHECKLIST.md          # Checklist menghubungkan backend Supabase asli
-└── PROJECT_STATUS.md           # Status proyek terkini (selesai / pending / blocked)
+├── supabase/                   # Schema SQL + edge function + CLI config
+├── tools/i2c_scanner/          # Arduino sketch for scanning I2C addresses (LCD debugging)
+├── SETUP_GUIDE.md              # Full setup guide from scratch (in Indonesian)
+├── SETUP_CHECKLIST.md          # Checklist for connecting the real Supabase backend
+└── PROJECT_STATUS.md           # Current project status (done / pending / blocked)
 
 **Related repos:**
 - [aqua-safe-monitor-android](https://github.com/naidrahiqa/aqua-safe-monitor-android) — Android app (Kotlin + Compose)
@@ -32,28 +32,28 @@ Sistem monitoring kualitas air real-time berbasis IoT.
 
 ```bash
 npm install
-copy .env.example .env   # isi VITE_SUPABASE_URL & VITE_SUPABASE_ANON_KEY
+copy .env.example .env   # fill in VITE_SUPABASE_URL & VITE_SUPABASE_ANON_KEY
 npm run dev              # http://localhost:3000
 ```
 
 ## Quick Start (Firmware)
 
-1. Arduino IDE → Board: **ESP32 Dev Module**, core **2.0.17** (jangan 3.x)
-2. Copy `firmware/AquaSafeMonitor/secrets.h.example` → `secrets.h`, isi WiFi + API key
-3. Upload `AquaSafeMonitor.ino`, buka Serial Monitor 115200 baud
+1. Arduino IDE → Board: **ESP32 Dev Module**, core **2.0.17** (not 3.x)
+2. Copy `firmware/AquaSafeMonitor/secrets.h.example` → `secrets.h`, fill in WiFi + API key
+3. Upload `AquaSafeMonitor.ino`, open Serial Monitor at 115200 baud
 
-## Integrasi Web + Android
+## Web + Android Integration
 
-Dashboard web dan app Android berbagi backend yang sama:
+The web dashboard and the Android app share the same backend:
 
-| Aspek | Web | Android |
+| Aspect | Web | Android |
 |-------|-----|---------|
 | **Backend** | Supabase (JS client) | Supabase (Ktor REST) |
 | **Data Source** | `sensor_data` + `devices` (join) | `sensor_data` (REST) |
-| **WQI Algorithm** | Weighted average (0.3 pH + 0.25 TDS + 0.25 Turb + 0.2 Temp) | Sama persis |
-| **Status Threshold** | >=80 SANGAT LAYAK, >=60 LAYAK, <60 BAHAYA | Sama persis |
-| **Real-time** | Supabase Realtime (push) | Polling 10 detik |
-| **Lokasi** | Leaflet (tile server) | osmdroid (OpenStreetMap) |
+| **WQI Algorithm** | Weighted average (0.3 pH + 0.25 TDS + 0.25 Turb + 0.2 Temp) | Identical |
+| **Status Threshold** | >=80 VERY SUITABLE, >=60 SUITABLE, <60 DANGER | Identical |
+| **Real-time** | Supabase Realtime (push) | 10-second polling |
+| **Location** | Leaflet (tile server) | osmdroid (OpenStreetMap) |
 
 ### WQI Algorithm (Unified)
 
@@ -65,49 +65,49 @@ Sub-index Temp:   100 if 20-30°C
 Weighted: pH*0.3 + TDS*0.25 + Turb*0.25 + Temp*0.2
 ```
 
-Algorithm ini dijalankan di Edge Function (server-side) dan dicopy ke web client + Android untuk kalkulasi lokal (test locations).*
+This algorithm runs in the Edge Function (server-side) and is copied to the web client + Android for local calculation (test locations).*
 
 ## Design System
 
-Dashboard menggunakan design system v3.1 dengan dark glassmorphism theme:
+The dashboard uses design system v3.1 with a dark glassmorphism theme:
 
 ### Colors
 | Token | Hex | Usage |
 |-------|-----|-------|
-| `--color-surface` | `#040810` | Background utama |
-| `--color-surface-deep` | `#060D1B` | Gradient bawah |
-| `--color-panel` | `#0B1526` | Kartu panel |
-| `--color-panel-light` | `#13203A` | Kartu hover |
-| `--color-accent` | `#22D3EE` | Aksen utama (cyan) |
-| `--color-safe` | `#22C55E` | Status aman |
-| `--color-warning` | `#F59E0B` | Status peringatan |
-| `--color-danger` | `#EF4444` | Status bahaya |
+| `--color-surface` | `#040810` | Main background |
+| `--color-surface-deep` | `#060D1B` | Bottom gradient |
+| `--color-panel` | `#0B1526` | Panel cards |
+| `--color-panel-light` | `#13203A` | Hover cards |
+| `--color-accent` | `#22D3EE` | Primary accent (cyan) |
+| `--color-safe` | `#22C55E` | Safe status |
+| `--color-warning` | `#F59E0B` | Warning status |
+| `--color-danger` | `#EF4444` | Danger status |
 
 ### Typography
 - **Inter** — UI text (labels, headings)
 - **JetBrains Mono** — Data/numbers (`.font-data`, `.font-data-bold`)
 
 ### Glass Effects
-- `.glass-panel` — kartu utama dengan backdrop-blur
-- `.glass-panel-hover` — efek hover dengan border glow
+- `.glass-panel` — main cards with backdrop blur
+- `.glass-panel-hover` — hover effect with border glow
 - `.glass-panel-mesh` — mesh gradient overlay
 
 ### Animations
-- `.animate-fade-in` — masuk layar
-- `.animate-slide-up` — geser dari bawah
-- `.animate-pulse-soft` — denyut lembut
+- `.animate-fade-in` — screen entrance
+- `.animate-slide-up` — slide up from below
+- `.animate-pulse-soft` — soft pulse
 - `.animate-shimmer` — loading skeleton
-- `.animate-glow` — efek bercahaya
-- `.stagger-1` hingga `.stagger-6` — delay bertahap
+- `.animate-glow` — glow effect
+- `.stagger-1` through `.stagger-6` — staggered delays
 
 ## Performance
 
-Dashboard menggunakan **code splitting** untuk load time optimal:
+The dashboard uses **code splitting** for optimal load time:
 
 | Chunk | Size | When Loaded |
 |-------|------|-------------|
 | `index.js` (main) | 419 KB | Initial load |
-| `SensorDetail.js` (recharts) | 404 KB | pH/Suhu/TDS/Turbidity tab |
+| `SensorDetail.js` (recharts) | 404 KB | pH/Temperature/TDS/Turbidity tab |
 | `TileLayer.js` (leaflet) | 154 KB | Overview map or settings |
 | `Dashboard.js` | 47 KB | After login |
 | `DeviceManager.js` | 14 KB | Devices tab |
@@ -124,9 +124,9 @@ Dashboard menggunakan **code splitting** untuk load time optimal:
 - Extracted StatusIndicator as React.memo
 - Replaced window.confirm() with inline confirmation UI
 
-## Catatan Penting
+## Important Notes
 
-- **Jangan commit secrets**: `secrets.h`, `.env`, `pw-supabase.txt` (sudah di `.gitignore`)
-- Dashboard menampilkan **mock data** sampai ada perangkat nyata yang mengirim data
-- Kalibrasi sensor (pH/TDS/turbidity) masih pending — butuh buffer solution fisik
-- Lihat `SETUP_GUIDE.md` untuk wiring pin, kalibrasi, dan troubleshooting
+- **Never commit secrets**: `secrets.h`, `.env`, `pw-supabase.txt` (already in `.gitignore`)
+- The dashboard displays **mock data** until a real device sends data
+- Sensor calibration (pH/TDS/turbidity) is still pending — physical buffer solutions required
+- See `SETUP_GUIDE.md` for pin wiring, calibration, and troubleshooting
